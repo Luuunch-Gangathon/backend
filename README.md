@@ -1,6 +1,10 @@
 # Backend — Spherecast Supply Chain Co-Pilot
 
-FastAPI service matching the contract in `frontend/knowledge/api-contract.md`.
+FastAPI service. Paired with a Next.js frontend (sibling repo: clone it next to this one as `../frontend`).
+
+- **Contract (source of truth):** [`../frontend/knowledge/api-contract.md`](../frontend/knowledge/api-contract.md)
+- **Agent-facing notes:** [`CLAUDE.md`](./CLAUDE.md)
+- **Frontend repo:** `../frontend` — see its README for startup.
 
 ## Setup
 
