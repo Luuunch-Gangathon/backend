@@ -13,3 +13,11 @@ pip install -r requirements.txt
 ```bash
 uvicorn main:app --reload
 ```
+
+## API
+
+Interactive docs: `http://localhost:8000/docs`
+
+```bash
+curl http://localhost:8000/openapi.json
+```
