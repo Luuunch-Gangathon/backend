@@ -4,3 +4,8 @@
 .github/instructions/codacy.instructions.md
 .venv
 .codacy
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo

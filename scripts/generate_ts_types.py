@@ -100,6 +100,23 @@ def _render_literal_alias(name: str, tp: Any) -> str:
     return f"export type {name} = {values};"
 
 
+CHAT_EVENTS_BLOCK = """\
+export interface TextEvent       { type: 'text';        content: string; }
+export interface ToolCallEvent   { type: 'tool_call';   name: string; args: unknown; }
+export interface ToolResultEvent { type: 'tool_result'; name: string; result: unknown; }
+export interface EvidenceEvent   { type: 'evidence';    items: EvidenceItem[]; }
+export interface TraceEvent      { type: 'trace';       agent?: string | null; step: string; }
+export interface DoneEvent       { type: 'done'; }
+
+export type ChatEvent =
+  | TextEvent
+  | ToolCallEvent
+  | ToolResultEvent
+  | EvidenceEvent
+  | TraceEvent
+  | DoneEvent;"""
+
+
 def main() -> None:
     blocks: list[str] = []
 
@@ -119,6 +136,8 @@ def main() -> None:
     ]
     for model in model_order:
         blocks.append(_render_model(model))
+
+    blocks.append(CHAT_EVENTS_BLOCK)
 
     output = HEADER + "\n\n".join(blocks) + "\n"
 
