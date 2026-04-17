@@ -1,0 +1,70 @@
+{
+  "ing_1": [
+    {
+      "id": "sup_1",
+      "name": "Jost Chemical",
+      "certifications": ["ISO 9001", "Kosher"],
+      "lead_time_days": 21,
+      "moq": 500,
+      "country": "US"
+    },
+    {
+      "id": "sup_2",
+      "name": "PureBulk",
+      "certifications": ["Organic"],
+      "lead_time_days": 14,
+      "moq": 250,
+      "country": "US"
+    }
+  ],
+  "ing_2": [
+    {
+      "id": "sup_3",
+      "name": "Cargill",
+      "certifications": ["Non-GMO", "Kosher"],
+      "lead_time_days": 30,
+      "moq": 1000,
+      "country": "US"
+    }
+  ],
+  "ing_3": [
+    {
+      "id": "sup_4",
+      "name": "Peter Greven",
+      "certifications": ["ISO 9001"],
+      "lead_time_days": 28,
+      "moq": 500,
+      "country": "DE"
+    }
+  ],
+  "ing_4": [
+    {
+      "id": "sup_5",
+      "name": "Wholesome Sweeteners",
+      "certifications": ["Organic", "Fair Trade"],
+      "lead_time_days": 35,
+      "moq": 2000,
+      "country": "US"
+    }
+  ],
+  "ing_5": [
+    {
+      "id": "sup_6",
+      "name": "ASR Group",
+      "certifications": ["ISO 9001"],
+      "lead_time_days": 20,
+      "moq": 5000,
+      "country": "US"
+    }
+  ],
+  "ing_6": [
+    {
+      "id": "sup_7",
+      "name": "DSM",
+      "certifications": ["ISO 9001", "Kosher", "Halal"],
+      "lead_time_days": 45,
+      "moq": 100,
+      "country": "NL"
+    }
+  ]
+}

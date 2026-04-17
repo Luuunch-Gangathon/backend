@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ing_1",
+    "name": "Soy Lecithin",
+    "canonical_name": "lecithin",
+    "company_id": "co_1",
+    "sku": "SKU-001"
+  },
+  {
+    "id": "ing_2",
+    "name": "Sunflower Lecithin",
+    "canonical_name": "lecithin",
+    "company_id": "co_2",
+    "sku": "SKU-002"
+  },
+  {
+    "id": "ing_3",
+    "name": "Magnesium Stearate",
+    "canonical_name": "magnesium-stearate",
+    "company_id": "co_1",
+    "sku": "SKU-003"
+  },
+  {
+    "id": "ing_4",
+    "name": "Organic Cane Sugar",
+    "canonical_name": "cane-sugar",
+    "company_id": "co_3",
+    "sku": "SKU-004"
+  },
+  {
+    "id": "ing_5",
+    "name": "Refined Cane Sugar",
+    "canonical_name": "cane-sugar",
+    "company_id": "co_4",
+    "sku": "SKU-005"
+  },
+  {
+    "id": "ing_6",
+    "name": "Ascorbic Acid",
+    "canonical_name": "vitamin-c",
+    "company_id": "co_2",
+    "sku": "SKU-006"
+  }
+]

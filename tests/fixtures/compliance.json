@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "requirements": ["allergen-free", "non-GMO"],
+  "evidence": {
+    "summary": "Sunflower lecithin is a common allergen-free substitute for soy lecithin.",
+    "items": [
+      {
+        "claim": "Sunflower lecithin functions as an emulsifier equivalent to soy lecithin.",
+        "source_url": "https://example.com/lecithin-substitution",
+        "source_type": "web",
+        "confidence": 0.86,
+        "snippet": "Sunflower lecithin performs equivalently in emulsification applications..."
+      },
+      {
+        "claim": "Three Spherecast companies source soy lecithin; one sources sunflower.",
+        "source_url": null,
+        "source_type": "internal_db",
+        "confidence": 1.0,
+        "snippet": null
+      }
+    ]
+  }
+}
