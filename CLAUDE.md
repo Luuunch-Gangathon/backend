@@ -4,26 +4,32 @@ FastAPI service implementing the contract in `../frontend/knowledge/api-contract
 
 ## Type generation flow
 
-The backend is the **source of truth for shared types**. Pydantic models in `app/schemas/` are mirrored 1:1 into the frontend's `lib/types.ts` by `scripts/generate_ts_types.py`.
+Pydantic models in `app/schemas/` are the source of truth for REST types.
+The frontend consumes them via FastAPI's built-in `/openapi.json`, generated
+into TypeScript by [`openapi-typescript`](https://www.npmjs.com/package/openapi-typescript).
 
-**Run it after any change under `app/schemas/`:**
+**After any change under `app/schemas/`**, restart the backend, then from the
+frontend:
 ```bash
-source .venv/bin/activate
-python scripts/generate_ts_types.py
+cd ../frontend
+npm run gen:types   # reads http://localhost:8000/openapi.json
 ```
-It overwrites `../frontend/lib/types.ts`. Commit the regenerated file in the frontend repo.
 
-### What the generator emits
-- Literal aliases: `SourceType`, `MessageRole`
-- Models (in declared order): `Ingredient`, `Supplier`, `ConsolidationGroup`, `EvidenceItem`, `EvidenceBundle`, `Message`, `ComplianceInput`, `ComplianceResult`, `ChatRequest`
-- A hand-written `CHAT_EVENTS_BLOCK` constant (in the generator itself) appending the SSE event union: `TextEvent`, `ToolCallEvent`, `ToolResultEvent`, `EvidenceEvent`, `TraceEvent`, `DoneEvent`, and the `ChatEvent` discriminated union
-
-### Why ChatEvent is a static block, not generated
-Backend models the union as a Pydantic `Annotated[Union[...], Field(discriminator="type")]` (`app/schemas/chat.py`). The generator's model walker doesn't render discriminated unions, so the TS equivalent is hard-coded in `CHAT_EVENTS_BLOCK` inside `scripts/generate_ts_types.py`. **If you add/rename a ChatEvent variant in `app/schemas/chat.py`, update `CHAT_EVENTS_BLOCK` in the generator too** — they must stay in sync by hand.
+### SSE events are hand-mirrored
+`ChatEvent` and its variants live in `app/schemas/chat.py` as a Pydantic
+`Annotated[Union[...], Field(discriminator="type")]`. OpenAPI does not describe
+SSE payload shapes, so the TS equivalent is hand-written in
+`../frontend/lib/types.ts` (the SSE block at the bottom of the file). **If you
+add or rename a ChatEvent variant here, mirror the change in the frontend's
+`lib/types.ts`.**
 
 ### Contract quirks to preserve
-- `ComplianceResult.passed: bool = Field(alias="pass")` — `pass` is a Python keyword. The router MUST return `JSONResponse(result.model_dump(by_alias=True))` so the wire key is `pass`, not `passed`. See `app/api/enrichment.py`.
-- `/chat` is SSE: `data: <json>\n\n` frames, headers `Cache-Control: no-cache`, `Connection: keep-alive`, `X-Accel-Buffering: no`, terminated by `{"type":"done"}`.
+- `ComplianceResult.passed: bool = Field(alias="pass")` — `pass` is a Python
+  keyword. The router MUST return `JSONResponse(result.model_dump(by_alias=True))`
+  so the wire key is `pass`, not `passed`. See `app/api/enrichment.py`.
+- `/chat` is SSE: `data: <json>\n\n` frames, headers `Cache-Control: no-cache`,
+  `Connection: keep-alive`, `X-Accel-Buffering: no`, terminated by
+  `{"type":"done"}`.
 - CORS allows `http://localhost:3000` only (`app/main.py`).
 - IDs are strings: `ing_*`, `sup_*`, `cg_*`, `co_*`. Never raw ints on the wire.
 

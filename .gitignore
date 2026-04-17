@@ -1,11 +1,12 @@
-
-
-#Ignore vscode AI rules
+# Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
-.venv
 .codacy
 
-# Python bytecode
+# Python
+.venv
 __pycache__/
 *.pyc
 *.pyo
+
+# macOS
+.DS_Store

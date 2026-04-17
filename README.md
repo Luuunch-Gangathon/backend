@@ -17,27 +17,25 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 Interactive docs: http://localhost:8000/docs
+OpenAPI schema: http://localhost:8000/openapi.json
 
 ## Layout
 
 ```
 app/
   main.py               # FastAPI app, CORS (localhost:3000), router wiring
-  schemas/              # Pydantic v2 models, 1:1 with frontend/lib/types.ts
+  schemas/              # Pydantic v2 models — consumed by the frontend via
+                        # /openapi.json + `openapi-typescript`
   api/                  # one router per domain
   data/                 # fixture loader + repo (DB-first, fixtures fallback)
 tests/fixtures/         # JSON seed data keyed with the same IDs as frontend mocks
-scripts/
-  generate_ts_types.py  # regenerate ../frontend/lib/types.ts from Pydantic
 ```
 
-## Regenerate TypeScript types
+## Frontend TypeScript types
 
-```bash
-python scripts/generate_ts_types.py
-```
-
-Overwrites `../frontend/lib/types.ts` with an auto-generated header.
+Types are generated on the frontend side from this backend's live OpenAPI
+schema — no Python-side codegen. After editing `app/schemas/`, restart the
+backend and run `npm run gen:types` from `../frontend`.
 
 ## ID scheme
 
