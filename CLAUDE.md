@@ -2,36 +2,34 @@
 
 FastAPI service implementing the contract in `../frontend/knowledge/api-contract.md`.
 
+The repo ships with a **single template endpoint** (`GET /ingredients`) that demonstrates the full layering: schema → fixture → repo → router → main. Every new endpoint should follow the same shape.
+
+## Template pattern
+
+1. **Schema** — `app/schemas/<domain>.py` defines a Pydantic `BaseModel`. Add the class to `app/schemas/__init__.py` so it's importable as `from app.schemas import <Name>`.
+2. **Fixture** — drop JSON under `tests/fixtures/<domain>.json`, loaded into a Pydantic list in `app/data/fixtures.py`.
+3. **Repo** — `app/data/repo.py` exposes a plain function (e.g. `list_ingredients(...)`) that merges fixtures with optional DB rows. DB rows are namespaced with `_db` (e.g. `ing_db_<n>`) so they never collide with fixture IDs.
+4. **Router** — `app/api/<domain>.py` declares an `APIRouter` with `response_model=` on every route (required so the schema lands in `/openapi.json`).
+5. **Wire** — `app.include_router(...)` in `app/main.py`.
+
+Then the frontend runs `yarn gen:types` against `/openapi.json` and consumes the new type immediately.
+
 ## Type generation flow
 
-Pydantic models in `app/schemas/` are the source of truth for REST types.
-The frontend consumes them via FastAPI's built-in `/openapi.json`, generated
-into TypeScript by [`openapi-typescript`](https://www.npmjs.com/package/openapi-typescript).
+Pydantic models in `app/schemas/` are the source of truth for REST types. The frontend consumes them via FastAPI's built-in `/openapi.json`, generated into TypeScript by [`openapi-typescript`](https://www.npmjs.com/package/openapi-typescript).
 
-**After any change under `app/schemas/`**, restart the backend, then from the
-frontend:
+**After any change under `app/schemas/`**, restart the backend, then from the frontend:
 ```bash
 cd ../frontend
-npm run gen:types   # reads http://localhost:8000/openapi.json
+yarn gen:types   # reads http://localhost:8000/openapi.json
 ```
 
-### SSE events are hand-mirrored
-`ChatEvent` and its variants live in `app/schemas/chat.py` as a Pydantic
-`Annotated[Union[...], Field(discriminator="type")]`. OpenAPI does not describe
-SSE payload shapes, so the TS equivalent is hand-written in
-`../frontend/lib/types.ts` (the SSE block at the bottom of the file). **If you
-add or rename a ChatEvent variant here, mirror the change in the frontend's
-`lib/types.ts`.**
-
-### Contract quirks to preserve
-- `ComplianceResult.passed: bool = Field(alias="pass")` — `pass` is a Python
-  keyword. The router MUST return `JSONResponse(result.model_dump(by_alias=True))`
-  so the wire key is `pass`, not `passed`. See `app/api/enrichment.py`.
-- `/chat` is SSE: `data: <json>\n\n` frames, headers `Cache-Control: no-cache`,
-  `Connection: keep-alive`, `X-Accel-Buffering: no`, terminated by
-  `{"type":"done"}`.
+## Conventions to preserve
 - CORS allows `http://localhost:3000` only (`app/main.py`).
-- IDs are strings: `ing_*`, `sup_*`, `cg_*`, `co_*`. Never raw ints on the wire.
+- IDs are strings: `ing_*`, `co_*`. Never raw ints on the wire.
+- `response_model=` is not optional — it's how schemas reach OpenAPI.
+- For fields whose JSON key is a Python reserved word (e.g. `pass`), use
+  `Field(alias="pass")` + `response_model_by_alias=True` on the route.
 
 ## Run locally
 ```bash

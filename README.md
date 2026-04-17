@@ -23,26 +23,29 @@ uvicorn app.main:app --reload --port 8000
 Interactive docs: http://localhost:8000/docs
 OpenAPI schema: http://localhost:8000/openapi.json
 
-## Layout
+## What's here
+
+Only one template endpoint (`GET /ingredients`) is implemented. It demonstrates
+the full layering pattern — schema, fixture, repo, router — that every new
+endpoint should follow. See `CLAUDE.md` for the recipe.
 
 ```
 app/
-  main.py               # FastAPI app, CORS (localhost:3000), router wiring
-  schemas/              # Pydantic v2 models — consumed by the frontend via
-                        # /openapi.json + `openapi-typescript`
-  api/                  # one router per domain
-  data/                 # fixture loader + repo (DB-first, fixtures fallback)
-tests/fixtures/         # JSON seed data keyed with the same IDs as frontend mocks
+  main.py               — FastAPI app, CORS, router wiring, /health
+  schemas/
+    ingredient.py       — Pydantic model (template)
+  api/
+    ingredients.py      — router (template)
+  data/
+    db.py               — SQLite connection helper (optional DB-backed rows)
+    fixtures.py         — JSON fixtures loaded into Pydantic
+    repo.py             — domain queries (template)
+tests/fixtures/
+  ingredients.json      — seed data
 ```
 
 ## Frontend TypeScript types
 
 Types are generated on the frontend side from this backend's live OpenAPI
 schema — no Python-side codegen. After editing `app/schemas/`, restart the
-backend and run `npm run gen:types` from `../frontend`.
-
-## ID scheme
-
-String IDs everywhere. Hand-authored fixtures use `ing_<n>`, `sup_<n>`,
-`co_<n>`, `cg_<n>`. Rows sourced from `data/db.sqlite` are namespaced with a
-`_db` infix (`ing_db_<Product.Id>`, etc.) so they never collide with mock IDs.
+backend and run `yarn gen:types` from `../frontend`.

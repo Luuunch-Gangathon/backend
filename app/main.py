@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import chat, consolidation, enrichment, ingredients
+from app.api import ingredients
 
 app = FastAPI(title="Spherecast Supply Chain Co-Pilot")
 
@@ -16,9 +16,6 @@ app.add_middleware(
 )
 
 app.include_router(ingredients.router)
-app.include_router(consolidation.router)
-app.include_router(chat.router)
-app.include_router(enrichment.router)
 
 
 @app.get("/health")
