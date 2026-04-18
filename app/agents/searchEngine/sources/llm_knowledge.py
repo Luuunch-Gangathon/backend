@@ -59,7 +59,7 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
     """
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
-        logger.debug("ANTHROPIC_API_KEY not set — skipping llm_knowledge handler")
+        logger.warning("ANTHROPIC_API_KEY not set — skipping llm_knowledge handler")
         return []
 
     try:
