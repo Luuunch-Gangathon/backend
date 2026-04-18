@@ -8,4 +8,4 @@ router = APIRouter(prefix="/substitutions", tags=["substitutions"])
 
 @router.get("", response_model=list[Substitution])
 async def list_substitutions() -> list[Substitution]:
-    return await repo.list_substitutions()
+    return []

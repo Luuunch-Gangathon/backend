@@ -8,12 +8,9 @@ router = APIRouter(prefix="/proposals", tags=["proposals"])
 
 @router.get("", response_model=list[Proposal])
 async def list_proposals() -> list[Proposal]:
-    return await repo.list_proposals()
+    return []
 
 
 @router.get("/{proposal_id}", response_model=Proposal)
 async def get_proposal(proposal_id: int) -> Proposal:
-    result = await repo.get_proposal(proposal_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="Proposal not found")
-    return result
+    raise HTTPException(status_code=404, detail="Proposal not found")
