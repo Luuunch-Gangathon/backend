@@ -32,6 +32,9 @@ from app.api.search_engine.sources.nih_dsld import (
 from app.api.search_engine.sources.llm_knowledge import (
     llm_knowledge_enrich as _llm_knowledge_enrich_real,
 )
+from app.api.search_engine.sources.web_search import (
+    web_search_enrich as _web_search_enrich_real,
+)
 
 
 def _stub(name: str, context: dict) -> list[dict]:
@@ -72,7 +75,7 @@ def retail_page_enrich(name: str, context: dict) -> list[dict]:
 
 
 def web_search_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
+    return _web_search_enrich_real(name, context)
 
 
 def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
@@ -90,6 +93,6 @@ SOURCE_HANDLERS: dict[str, callable] = {
     "fda_eafus": fda_eafus_enrich,
     "efsa": efsa_enrich,
     "retail_page": retail_page_enrich,
-    "web_search": web_search_enrich,
+    "web_search": _web_search_enrich_real,
     "llm_knowledge": _llm_knowledge_enrich_real,
 }
