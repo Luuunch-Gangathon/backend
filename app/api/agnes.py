@@ -14,4 +14,4 @@ async def get_suggestions(proposal_id: int) -> list[AgnesSuggestedQuestion]:
 
 @router.post("/ask", response_model=AgnesAskResponse)
 async def ask_agnes(req: AgnesAskRequest) -> AgnesAskResponse:
-    return await ask(req.proposal_id, req.message, req.session_id)
+    return await ask(req.message, req.session_id)
