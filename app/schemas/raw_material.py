@@ -8,12 +8,12 @@ from pydantic import BaseModel, ConfigDict
 class RawMaterial(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    id: str                         # ing_db_{Product.Id}
+    id: str                         # ing_db_{Product.id}
     sku: str
     name: str                       # human-readable, derived from SKU
-    canonical_name: str             # normalized ingredient name, e.g. "whey-protein-isolate"
+    canonical_name: str             # normalized, e.g. "whey-protein-isolate"
     company_id: str
-    supplier_ids: list[str]         # sup_db_{Supplier.Id}
+    supplier_ids: list[str]         # sup_db_{Supplier.id}
 
 
 class RawMaterialDetail(BaseModel):
@@ -25,6 +25,6 @@ class RawMaterialDetail(BaseModel):
     canonical_name: str
     company_id: str
     supplier_ids: list[str]
-    used_in_product_ids: list[str]          # finished-good IDs that include this in BOM
-    substitute_ids: list[str]               # other raw-material IDs that are functionally equivalent
-    enriched: Optional[dict] = None         # placeholder for SearchEngine output (specs, price, certs)
+    used_in_product_ids: list[str]   # finished-good IDs that include this in BOM
+    substitute_ids: list[str]        # functionally equivalent raw-material IDs
+    enriched: Optional[dict] = None  # SearchEngine output: specs, price, certs

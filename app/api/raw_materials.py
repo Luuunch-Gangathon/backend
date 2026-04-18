@@ -11,16 +11,16 @@ router = APIRouter(prefix="/raw-materials", tags=["raw-materials"])
 
 
 @router.get("", response_model=list[RawMaterial])
-def list_raw_materials(
+async def list_raw_materials(
     name: Optional[str] = None,
     company_id: Optional[str] = None,
 ) -> list[RawMaterial]:
-    return controller.list_raw_materials(name=name, company_id=company_id)
+    return await controller.list_raw_materials(name=name, company_id=company_id)
 
 
 @router.get("/{rm_id}", response_model=RawMaterialDetail)
-def get_raw_material(rm_id: str) -> RawMaterialDetail:
-    result = controller.get_raw_material(rm_id)
+async def get_raw_material(rm_id: str) -> RawMaterialDetail:
+    result = await controller.get_raw_material(rm_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Raw material not found")
     return result
