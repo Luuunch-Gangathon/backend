@@ -258,24 +258,43 @@ async def similarity_compliance_check(original_name: str) -> dict:
 
 
 @tool
-async def web_search_enrich(query: str) -> dict:
-    """Search the web for candidate raw materials matching the query, enrich them, and embed for future searches.
+async def show_company(company_id: int) -> str:
+    """Show company info and its products."""
+    company = await repo.get_company(company_id)
+    if not company:
+        return f"Company {company_id} not found."
+    products = await repo.list_products(company_id=company_id)
+    lines = [f"Company: {company.name} (id: {company.id})", f"Products ({len(products)}):"]
+    for p in products[:10]:
+        lines.append(f"- {p.sku} (id: {p.id})")
+    if len(products) > 10:
+        lines.append(f"  (+{len(products) - 10} more)")
+    return "\n".join(lines)
 
-    Use when local catalog search returns nothing or when the user mentions
-    a novel ingredient. Returns the candidate raw-material names that are
-    now indexed and discoverable.
-    """
-    logger.info("[tool:web_search_enrich] ── query=%r", query)
-    try:
-        await search_engine.run_one(query)
-        logger.info("[tool:web_search_enrich] enrichment complete for %r", query)
-    except Exception:
-        logger.exception("[tool:web_search_enrich] enrichment failed for %r", query)
 
-    hits = await rag.search(query, top_k=5)
-    names = [h["raw_material_name"] for h in hits]
-    logger.info("[tool:web_search_enrich] discovered %d candidate(s): %s", len(names), names)
-    return {"names": names}
+def _make_compliance_tool(session_id: str):
+    """Build compliance tool as closure so session_id is not exposed to the LLM."""
+    @tool
+    async def check_product_compliance() -> str:
+        """Check compliance and find ranked substitute candidates for all raw materials in the current product."""
+        product_id = _session_product.get(session_id)
+        if product_id is None:
+            return "No product context for this session. Please provide a product_id when starting the chat."
+        bom = await repo.get_bom(product_id)
+        if not bom or not bom.consumed_raw_material_ids:
+            return f"No raw materials found in BOM for product {product_id}."
+        lines = []
+        for rm_id in bom.consumed_raw_material_ids:
+            proposals = await compliance_agent.check_compliance(product_id, rm_id)
+            if proposals:
+                lines.append(f"RM {rm_id}:")
+                for p in proposals:
+                    lines.append(f"  - id: {p.id}, score: {p.score}/100 — {p.reasoning}")
+        if not lines:
+            return f"No substitute proposals found for any raw material in product {product_id}."
+        return f"Compliance results for product {product_id}:\n" + "\n".join(lines)
+
+    return check_product_compliance
 
 
 # ---------------------------------------------------------------------------
@@ -386,11 +405,7 @@ async def ask(
     context_block = await _retrieve_context(message)
     system_content = render("system/agnes")
     if current_product_id is not None:
-        system_content += (
-            f"\n\nCurrent product in context: product_id={current_product_id}"
-            + (f" (sku={product_sku})." if product_sku else ".")
-            + " Use this for any product-related tool calls."
-        )
+        system_content += f"\n\nCurrent product in context: product_id={current_product_id}. Use this for any product-related tool calls."
     if context_block:
         system_content += f"\n\n---\nRetrieved supply chain context:\n{context_block}"
 
