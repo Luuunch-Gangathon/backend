@@ -4,8 +4,31 @@ Single place for all embedding logic. Any agent that needs to store or
 query embeddings imports from here.
 
 Public API:
-  store_embedding(enriched_result)  — upsert spec + embedding for one material
-  get_unembedded_names()            — names in raw_material_map with no embedding yet
+  store_embedding(enriched_result)       — upsert spec + embedding for one material
+  store_name_only_embedding(name)        — fallback when web enrichment unavailable
+  get_unembedded_names()                 — names in raw_material_map with no embedding yet
+
+Expected input shape for store_embedding:
+{
+  "material": {
+    "normalized_name": str,
+    "properties": {
+      "functional_role":   { "value": [str, ...], "confidence": str, ... },
+      "source_origin":     { "value": str,         "confidence": str, ... },
+      "dietary_flags":     { "value": { "vegan": bool|null, "vegetarian": bool|null,
+                                        "halal": bool|null, "kosher": bool|null }, ... },
+      "allergens":         { "value": { "contains": [str], "free_from": [str]|null }, ... },
+      "certifications":    { "value": [str]|null, ... },
+      "regulatory_status": { "value": { "has_recalls": bool, "has_adverse_events": bool,
+                                        "adverse_events_count": int,
+                                        "recalls": [{"reason": str, "classification": str,
+                                                     "date": str}] }, ... },
+      "form_grade":        { "value": { "form": str|null, "grade": str|null }|null, ... },
+      "price":             { "value": null, ... }   -- always null, ignored
+    }
+  },
+  "elapsed_seconds": float
+}
 """
 
 from __future__ import annotations
@@ -29,27 +52,14 @@ async def store_embedding(enriched_result: dict) -> None:
 
     On conflict (same raw_material_name) always overwrites spec and embedding
     so re-running enrichment automatically refreshes stale vectors.
-
-    enriched_result shape:
-    {
-      "normalized_name": str,
-      "properties": {
-        "chemical_identity": { "value": {...}, "confidence": str, ... },
-        "functional_role":   { "value": [...], ... },
-        "source_origin":     { "value": str,   ... },
-        "dietary_flags":     { "value": {...}, ... },
-        "allergens":         { "value": {...}, ... },
-        "certifications":    { "value": [...], ... },
-        "regulatory_status": { "value": {...}, ... },
-        "form_grade":        { "value": {...}, ... },
-      }
-    }
     """
-    name = enriched_result.get("normalized_name", "").strip()
+    material = enriched_result.get("material", enriched_result)
+    name = (material.get("normalized_name") or "").strip()
     if not name:
         raise ValueError("enriched_result must contain a non-empty 'normalized_name'")
 
-    text = _build_embedding_text(enriched_result)
+    props = material.get("properties", {})
+    text = _build_embedding_text(name, props)
     logger.debug("rag: embedding text for %r: %.120s", name, text)
 
     vector = await _embed(text)
@@ -65,7 +75,7 @@ async def store_embedding(enriched_result: dict) -> None:
                     updated_at = now()
             """,
             name,
-            json.dumps(enriched_result.get("properties", {})),
+            json.dumps(props),
             vector,
         )
 
@@ -121,19 +131,17 @@ async def get_unembedded_names() -> list[str]:
 
 # ── private helpers ───────────────────────────────────────────────────────────
 
-def _build_embedding_text(result: dict) -> str:
+def _build_embedding_text(name: str, props: dict) -> str:
     """Flatten spec properties into one string for embedding.
 
-    Only uses fields relevant to functional similarity: name, synonyms,
-    functional role, source origin, dietary flags, allergens, certifications,
-    regulatory status, form and grade.
-    """
-    props = result.get("properties", {})
-    parts: list[str] = [result.get("normalized_name", "")]
+    Fields used (in order): name, functional role, source origin,
+    dietary flags, allergens, certifications, regulatory status, form/grade.
 
-    chem = props.get("chemical_identity", {}).get("value") or {}
-    if chem.get("synonyms"):
-        parts.append("also known as: " + ", ".join(chem["synonyms"]))
+    Fields intentionally excluded:
+      - chemical_identity: not present in enrichment output
+      - price: always null
+    """
+    parts: list[str] = [name]
 
     func_roles = props.get("functional_role", {}).get("value") or []
     if func_roles:
@@ -160,12 +168,16 @@ def _build_embedding_text(result: dict) -> str:
 
     reg = props.get("regulatory_status", {}).get("value") or {}
     reg_notes = []
-    if reg.get("gras"):
-        reg_notes.append("GRAS approved")
-    if reg.get("eu_approved"):
-        reg_notes.append("EU approved")
+    if reg.get("has_recalls"):
+        recalls = reg.get("recalls") or []
+        classes = {r["classification"] for r in recalls if r.get("classification")}
+        severity = ", ".join(sorted(classes)) if classes else "unknown class"
+        reg_notes.append(f"has FDA recalls ({severity})")
+    if reg.get("has_adverse_events"):
+        count = reg.get("adverse_events_count")
+        reg_notes.append(f"has adverse events ({count} reported)" if count else "has adverse events")
     if reg_notes:
-        parts.append(", ".join(reg_notes))
+        parts.append("; ".join(reg_notes))
 
     form = props.get("form_grade", {}).get("value") or {}
     if form.get("form"):
