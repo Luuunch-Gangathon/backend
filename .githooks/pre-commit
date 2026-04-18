@@ -1,0 +1,18 @@
+#!/bin/sh
+
+echo "pre-commit: checking if server is running..."
+
+if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+    echo "pre-commit: server up — running tests"
+    cd "$(git rev-parse --show-toplevel)" && \
+        .venv/bin/pytest tests/ -q
+    if [ $? -ne 0 ]; then
+        echo "pre-commit: tests failed — commit blocked"
+        exit 1
+    fi
+    echo "pre-commit: tests passed"
+else
+    echo "pre-commit: server not running — skipping tests"
+fi
+
+exit 0
