@@ -14,3 +14,6 @@
 
 - [ ] **EFSA Food Additives DB** — Download CSV from EFSA, load at startup. Provides: regulatory_status (EU-approved, permitted uses, E-numbers). ~350 authorized additives.
 
+## Retail Page Handler
+
+- [ ] **retail_page** — Web scraping + LLM extraction from retail/marketplace pages (iHerb, Amazon, etc.). Similar architecture to supplier_website handler. Trust tier: probable. Provides: * (any property).
