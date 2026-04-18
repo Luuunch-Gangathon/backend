@@ -15,6 +15,8 @@ class AgnesSuggestedQuestion(BaseModel):
 class AgnesMessage(BaseModel):
     role: Literal['user', 'assistant']
     content: str
+    reasoning_steps: list[str] | None = None
+    cited_evidence_indices: list[int] | None = None
 
 
 class AgnesAskRequest(BaseModel):
