@@ -17,6 +17,12 @@ from __future__ import annotations
 
 from app.api.search_engine.sources.supplier_website import supplier_website_enrich
 from app.api.search_engine.sources.pubchem import pubchem_enrich
+from app.api.search_engine.sources.open_food_facts import (
+    open_food_facts_enrich as _off_enrich,
+)
+from app.api.search_engine.sources.openfda import (
+    openfda_enrich as _openfda_enrich_real,
+)
 
 
 def _stub(name: str, context: dict) -> list[dict]:
@@ -33,7 +39,7 @@ def foodb_enrich(name: str, context: dict) -> list[dict]:
 
 
 def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
+    return _off_enrich(name, context)
 
 
 def nih_dsld_enrich(name: str, context: dict) -> list[dict]:
@@ -41,7 +47,7 @@ def nih_dsld_enrich(name: str, context: dict) -> list[dict]:
 
 
 def openfda_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
+    return _openfda_enrich_real(name, context)
 
 
 def fda_eafus_enrich(name: str, context: dict) -> list[dict]:
