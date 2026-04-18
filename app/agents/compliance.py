@@ -13,14 +13,13 @@ import json
 import logging
 import os
 
-from openai import AsyncOpenAI
 from pydantic import BaseModel
 
 from app.schemas import RawMaterial, Product
 
 logger = logging.getLogger(__name__)
 
-_client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+_client = None  # lazily initialized; replaced by tests via patch.object(compliance, "_client", mock)
 
 
 # ---------------------------------------------------------------------------
@@ -43,7 +42,7 @@ class _RankingResponse(BaseModel):
 
 async def rank_substitutes(
     raw_material: RawMaterial,
-    substitutes: list[RawMaterial],
+    substitutes: list[tuple[RawMaterial, float]],
     product: Product,
     top_x: int = 5,
 ) -> list[SubstituteScore]:
@@ -51,12 +50,17 @@ async def rank_substitutes(
 
     Args:
         raw_material: The original material being replaced.
-        substitutes: Candidate replacements to evaluate.
+        substitutes: Candidate replacements paired with their pgvector cosine similarity score.
         product: The finished good the material is used in.
         top_x: Maximum number of results to return, sorted by score desc.
     """
     if not substitutes:
         return []
+
+    global _client
+    if _client is None:
+        from openai import AsyncOpenAI
+        _client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
     system_prompt = (
         "You are a supply-chain compliance expert. "
@@ -65,14 +69,21 @@ async def rank_substitutes(
         "perfect drop-in replacement with no compliance risk. Consider: "
         "functional equivalence, regulatory fit (REACH, RoHS, food-grade, etc.), "
         "specification overlap, and supplier reliability. "
+        "A `vector_similarity` field (0..1) indicates pgvector cosine similarity to the original; "
+        "treat it as a prior, not ground truth. "
         "Return only the candidates provided — do not invent new ones."
     )
+
+    sub_payload = [
+        {**s.model_dump(), "vector_similarity": round(score, 4)}
+        for s, score in substitutes
+    ]
 
     user_prompt = (
         f"Original material: {json.dumps(raw_material.model_dump())}\n\n"
         f"Finished good (product): {json.dumps(product.model_dump())}\n\n"
         f"Substitute candidates:\n"
-        f"{json.dumps([s.model_dump() for s in substitutes], indent=2)}\n\n"
+        f"{json.dumps(sub_payload, indent=2)}\n\n"
         f"Return the top {top_x} substitutes ranked by score."
     )
 
@@ -96,7 +107,7 @@ async def rank_substitutes(
     return results
 
 
-async def run(product: Product, raw_material: RawMaterial, substitutes: list[RawMaterial]) -> None:
+async def run(product: Product, raw_material: RawMaterial, substitutes: list[tuple[RawMaterial, float]]) -> None:
     results = await rank_substitutes(raw_material, substitutes, product)
     for r in results:
         logger.info(
