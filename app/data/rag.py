@@ -74,12 +74,11 @@ async def store_embedding(enriched_result: dict) -> None:
     async with db.get_conn() as conn:
         await conn.execute(
             """
-            INSERT INTO substitution_groups (raw_material_name, spec, embedding, updated_at)
-            VALUES ($1, $2, $3, now())
-            ON CONFLICT (raw_material_name) DO UPDATE
-                SET spec       = EXCLUDED.spec,
-                    embedding  = EXCLUDED.embedding,
-                    updated_at = now()
+            UPDATE substitution_groups
+               SET spec       = $2,
+                   embedding  = $3,
+                   updated_at = now()
+             WHERE raw_material_name = $1
             """,
             name,
             json.dumps(props),
