@@ -86,8 +86,70 @@ def convert_to_handler_results(
     return results
 
 
-from crawl4ai import AsyncWebCrawler, LLMConfig
-from crawl4ai.extraction_strategy import LLMExtractionStrategy
+import anthropic
+from crawl4ai import AsyncWebCrawler
+
+
+async def _crawl_page(url: str) -> str | None:
+    """Crawl a URL and return clean markdown. Returns None on failure."""
+    try:
+        logger.info("Crawling URL: %s", url)
+        async with AsyncWebCrawler() as crawler:
+            result = await crawler.arun(url=url)
+        markdown = getattr(result, "markdown", "") or ""
+        logger.info("Page crawled, markdown length: %d chars", len(markdown))
+        return markdown if markdown else None
+    except Exception:
+        logger.warning("Crawl failed for %s", url, exc_info=True)
+        return None
+
+
+def _extract_properties(markdown: str, material_name: str) -> MaterialProperties | None:
+    """Call Anthropic to extract structured properties from page markdown."""
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        logger.warning("ANTHROPIC_API_KEY not set, skipping extraction")
+        return None
+
+    schema_json = json.dumps(MaterialProperties.model_json_schema(), indent=2)
+    prompt = f"""{EXTRACTION_INSTRUCTION.format(material_name=material_name)}
+
+Return a JSON object matching this schema:
+{schema_json}
+
+Page content:
+{markdown[:15000]}"""
+
+    try:
+        logger.info("Sending to Anthropic for extraction (material: %s, prompt length: %d)", material_name, len(prompt))
+        client = anthropic.Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=2000,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        raw_text = response.content[0].text
+        logger.info("Anthropic response: %s", raw_text[:2000])
+
+        # Extract JSON from response (may be wrapped in markdown code blocks)
+        json_str = raw_text
+        if "```json" in json_str:
+            json_str = json_str.split("```json")[1].split("```")[0]
+        elif "```" in json_str:
+            json_str = json_str.split("```")[1].split("```")[0]
+
+        extracted = json.loads(json_str.strip())
+        props = MaterialProperties(**extracted)
+
+        logger.info("Extraction result — correct_material: %s, properties found: %d",
+                     props.is_correct_material,
+                     sum(1 for f in _PROPERTY_FIELDS if getattr(props, f) is not None))
+        return props
+
+    except Exception:
+        logger.warning("LLM extraction failed for material: %s", material_name, exc_info=True)
+        return None
 
 
 async def _crawl_and_extract(
@@ -97,38 +159,15 @@ async def _crawl_and_extract(
 
     Returns (MaterialProperties, raw_markdown) or None on failure.
     """
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        logger.warning("ANTHROPIC_API_KEY not set, skipping supplier website crawl")
+    markdown = await _crawl_page(url)
+    if not markdown:
         return None
 
-    strategy = LLMExtractionStrategy(
-        llm_config=LLMConfig(
-            provider="anthropic/claude-sonnet-4-20250514",
-            api_token=api_key,
-        ),
-        schema=MaterialProperties.model_json_schema(),
-        instruction=EXTRACTION_INSTRUCTION.format(material_name=material_name),
-    )
-
-    try:
-        async with AsyncWebCrawler() as crawler:
-            result = await crawler.arun(url=url, extraction_strategy=strategy)
-
-        raw_markdown = getattr(result, "markdown", "") or ""
-        extracted = json.loads(result.extracted_content)
-
-        # crawl4ai returns a list; take the first item
-        if isinstance(extracted, list) and len(extracted) > 0:
-            props = MaterialProperties(**extracted[0])
-        else:
-            props = MaterialProperties(**extracted)
-
-        return props, raw_markdown
-
-    except Exception:
-        logger.warning("Crawl failed for %s", url, exc_info=True)
+    props = _extract_properties(markdown, material_name)
+    if not props:
         return None
+
+    return props, markdown
 
 
 from app.api.search_engine.sources.search_utils import (
