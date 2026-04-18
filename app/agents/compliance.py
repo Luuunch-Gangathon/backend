@@ -16,6 +16,7 @@ import os
 from pydantic import BaseModel
 
 from app.schemas import RawMaterial, Product
+from app.data import repo
 
 logger = logging.getLogger(__name__)
 
@@ -109,8 +110,14 @@ async def rank_substitutes(
 
 async def run(product: Product, raw_material: RawMaterial, substitutes: list[tuple[RawMaterial, float]]) -> None:
     results = await rank_substitutes(raw_material, substitutes, product)
+    if not results:
+        return
+    await repo.save_substitutions(
+        raw_material.id,
+        [(r.id, r.score, r.reasoning) for r in results],
+    )
     for r in results:
         logger.info(
-            "ComplianceAgent: product=%s rm_id=%d sub_id=%d score=%d — %s",
-            product.sku, raw_material.id, r.id, r.score, r.reasoning,
+            "ComplianceAgent: product=%s rm_id=%d sub_id=%d score=%d",
+            product.sku, raw_material.id, r.id, r.score,
         )

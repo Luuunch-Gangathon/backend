@@ -274,17 +274,43 @@ async def get_proposal(proposal_id: int) -> Optional[Proposal]:
 async def list_substitutions() -> list[Substitution]:
     async with db.get_conn() as conn:
         rows = await conn.fetch(
-            "SELECT id, from_raw_material_id, to_raw_material_id, reason FROM substitutions ORDER BY id"
+            "SELECT id, from_raw_material_id, to_raw_material_id, score, reason FROM substitutions ORDER BY id"
         )
     return [
         Substitution(
             id=r["id"],
             from_raw_material_id=r["from_raw_material_id"],
             to_raw_material_id=r["to_raw_material_id"],
+            score=r["score"],
             reason=r["reason"],
         )
         for r in rows
     ]
+
+
+async def has_substitutions(rm_id: int) -> bool:
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            "SELECT 1 FROM substitutions WHERE from_raw_material_id = $1 LIMIT 1",
+            rm_id,
+        )
+    return row is not None
+
+
+async def save_substitutions(
+    from_rm_id: int,
+    scored: list[tuple[int, int, str]],  # (to_rm_id, score, reason)
+) -> None:
+    if not scored:
+        return
+    async with db.get_conn() as conn:
+        await conn.executemany(
+            """
+            INSERT INTO substitutions (from_raw_material_id, to_raw_material_id, score, reason)
+            VALUES ($1, $2, $3, $4)
+            """,
+            [(from_rm_id, to_id, score, reason) for to_id, score, reason in scored],
+        )
 
 
 # ---------------------------------------------------------------------------
