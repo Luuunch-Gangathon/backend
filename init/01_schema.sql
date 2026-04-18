@@ -228,3 +228,4 @@ CREATE TABLE IF NOT EXISTS agnes_suggestions (
     proposal_id INTEGER NOT NULL REFERENCES proposals(id) ON DELETE CASCADE,
     question    TEXT    NOT NULL
 );
+

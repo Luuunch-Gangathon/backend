@@ -103,17 +103,49 @@ async def get_bom(product_id: int) -> Optional[BOM]:
 async def list_raw_materials() -> list[RawMaterial]:
     async with db.get_conn() as conn:
         rows = await conn.fetch(
-            "SELECT id, sku FROM products WHERE type = 'raw-material' ORDER BY sku"
+            """
+            SELECT p.id, p.sku,
+                   COUNT(DISTINCT rmm.supplier_id)        AS suppliers_count,
+                   COUNT(DISTINCT rmm.finished_product_id) AS used_products_count
+            FROM products p
+            LEFT JOIN raw_material_map rmm ON rmm.raw_material_id = p.id
+            WHERE p.type = 'raw-material'
+            GROUP BY p.id, p.sku
+            ORDER BY p.sku
+            """
         )
-    return [RawMaterial(id=r["id"], sku=r["sku"]) for r in rows]
+    return [
+        RawMaterial(
+            id=r["id"], sku=r["sku"],
+            suppliers_count=r["suppliers_count"],
+            used_products_count=r["used_products_count"],
+        )
+        for r in rows
+    ]
 
 
 async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
-            "SELECT id, sku FROM products WHERE id = $1 AND type = 'raw-material'", rm_id
+            """
+            SELECT p.id, p.sku,
+                   COUNT(DISTINCT rmm.supplier_id)        AS suppliers_count,
+                   COUNT(DISTINCT rmm.finished_product_id) AS used_products_count
+            FROM products p
+            LEFT JOIN raw_material_map rmm ON rmm.raw_material_id = p.id
+            WHERE p.id = $1 AND p.type = 'raw-material'
+            GROUP BY p.id, p.sku
+            """,
+            rm_id,
         )
-    return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
+    return (
+        RawMaterial(
+            id=row["id"], sku=row["sku"],
+            suppliers_count=row["suppliers_count"],
+            used_products_count=row["used_products_count"],
+        )
+        if row else None
+    )
 
 
 _DB_ID_RE = re.compile(r"^rm_db_(\d+)$")

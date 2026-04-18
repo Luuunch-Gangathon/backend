@@ -213,7 +213,9 @@ async def ask(
 
     logger.info("AgnesAgent: session %s — %d messages total", session_id, len(history.messages))
 
+    # TODO: populate tool_calls when keyword-command dispatch is replaced by bind_tools() agent loop (Phase 2 path, see module docstring).
     return AgnesAskResponse(
         reply=AgnesMessage(role="assistant", content=reply_text),
         session_id=session_id,
+        tool_calls=[],
     )

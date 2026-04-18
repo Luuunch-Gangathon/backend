@@ -6,6 +6,7 @@ from .similar_raw_material import SimilarRawMaterial
 from .supplier import Supplier
 from .proposal import Proposal, EvidenceItem, ComplianceRequirement, Tradeoffs, RolloutPlan
 from .substitution import Substitution
+from .tool_call import ToolCall, SearchHit, ComplianceMatch
 from .agnes import AgnesSuggestedQuestion, AgnesMessage, AgnesAskRequest, AgnesAskResponse
 
 __all__ = [
@@ -23,6 +24,9 @@ __all__ = [
     "Tradeoffs",
     "RolloutPlan",
     "Substitution",
+    "ToolCall",
+    "SearchHit",
+    "ComplianceMatch",
     "AgnesSuggestedQuestion",
     "AgnesMessage",
     "AgnesAskRequest",
