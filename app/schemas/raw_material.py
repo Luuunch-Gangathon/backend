@@ -3,5 +3,6 @@ from pydantic import BaseModel
 
 
 class RawMaterial(BaseModel):
-    id: int
-    sku: str
+    name: str
+    supplier_count: int
+    product_count: int

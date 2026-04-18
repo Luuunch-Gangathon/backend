@@ -11,9 +11,9 @@ async def list_raw_materials() -> list[RawMaterial]:
     return await repo.list_raw_materials()
 
 
-@router.get("/{rm_id}", response_model=RawMaterial)
-async def get_raw_material(rm_id: int) -> RawMaterial:
-    result = await repo.get_raw_material(rm_id)
+@router.get("/{name}", response_model=RawMaterial)
+async def get_raw_material(name: str) -> RawMaterial:
+    result = await repo.get_raw_material(name)
     if result is None:
         raise HTTPException(status_code=404, detail="Raw material not found")
     return result

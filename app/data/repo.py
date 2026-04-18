@@ -100,20 +100,40 @@ async def get_bom(product_id: int) -> Optional[BOM]:
 # Raw materials
 # ---------------------------------------------------------------------------
 
+_RAW_MATERIAL_SELECT = """
+    SELECT
+        rmm.raw_material_name                   AS name,
+        COUNT(DISTINCT rmm.supplier_id)         AS supplier_count,
+        COUNT(DISTINCT rmm.finished_product_id) AS product_count
+    FROM raw_material_map rmm
+"""
+
+_RAW_MATERIAL_GROUP = " GROUP BY rmm.raw_material_name"
+
+
+def _parse_raw_material(row) -> RawMaterial:
+    return RawMaterial(
+        name=row["name"],
+        supplier_count=row["supplier_count"],
+        product_count=row["product_count"],
+    )
+
+
 async def list_raw_materials() -> list[RawMaterial]:
     async with db.get_conn() as conn:
         rows = await conn.fetch(
-            "SELECT id, sku FROM products WHERE type = 'raw-material' ORDER BY sku"
+            _RAW_MATERIAL_SELECT + _RAW_MATERIAL_GROUP + " ORDER BY rmm.raw_material_name"
         )
-    return [RawMaterial(id=r["id"], sku=r["sku"]) for r in rows]
+    return [_parse_raw_material(r) for r in rows]
 
 
-async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
+async def get_raw_material(name: str) -> Optional[RawMaterial]:
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
-            "SELECT id, sku FROM products WHERE id = $1 AND type = 'raw-material'", rm_id
+            _RAW_MATERIAL_SELECT + " WHERE rmm.raw_material_name = $1" + _RAW_MATERIAL_GROUP,
+            name,
         )
-    return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
+    return _parse_raw_material(row) if row else None
 
 
 _DB_ID_RE = re.compile(r"^rm_db_(\d+)$")
