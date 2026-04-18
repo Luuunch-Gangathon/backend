@@ -183,8 +183,9 @@ backend/
 
 ```
 Startup (main.py lifespan)
-  → rag.seed_name_only_embeddings()     — baseline vectors for ALL materials (batched, 1–2 OpenAI calls)
-  → pipeline.start_scheduler()          — hourly: SearchEngine.run_all()
+  → rag.seed_name_only_embeddings()   — name-only baseline vectors for ALL materials
+                                         batched into 1–2 OpenAI calls (256 names/call)
+  → pipeline.start_scheduler()        — runs SearchEngine.run_all() hourly
 
 SearchEngine.run_all() / run_one(name)
   → rag.get_unenriched_names()          — materials with embedding but spec IS NULL
@@ -194,19 +195,17 @@ SearchEngine.run_all() / run_one(name)
       inferred:    llm_knowledge (Claude Haiku — no web, from training data)
       speculative: llm_general_fallback (Claude Haiku — best-effort inference)
   → rag.store_embedding(enriched_result)
-      builds embedding text from spec fields (functional role, origin, dietary
-      flags, allergens, certs, GRAS status, recalls, form/grade)
+      builds embedding text from spec (functional role, origin, dietary flags,
+      allergens, certs, GRAS status, recalls, form/grade)
       → OpenAI text-embedding-3-small → stored in substitution_groups
-      ON CONFLICT DO UPDATE — overwrites the name-only baseline with rich vector
+      ON CONFLICT DO UPDATE — overwrites name-only baseline with spec-based vector
 ```
 
 **Two-phase embedding strategy:**
-- Phase 1 (startup): `seed_name_only_embeddings()` gives every material a cheap name-only vector immediately, so similarity search works from first request.
-- Phase 2 (scheduled/on-demand): `run_all()` / `run_one()` upgrades each vector to a spec-based one once enrichment completes. `store_embedding()` always overwrites; `store_name_only_embedding()` never overwrites.
+- Phase 1 (startup): `seed_name_only_embeddings()` gives every material a cheap name-only vector so similarity search works immediately.
+- Phase 2 (scheduled/on-demand): `run_all()` / `run_one()` upgrades to spec-based vectors as enrichment completes. `store_embedding()` always overwrites; `store_name_only_embedding()` never does.
 
-**Without web access**, the `llm_knowledge` handler (Claude Haiku) fires automatically as the inferred-tier fallback — providing functional role, source origin, dietary flags, allergens, GRAS status etc. from LLM training knowledge. Sufficient for testing similarity search quality before web enrichment is implemented.
-
-**Requires** `ANTHROPIC_API_KEY` for LLM handlers. If unset, a `WARNING` is logged and all properties remain null (name-only embedding is kept).
+**Requires** `ANTHROPIC_API_KEY` for LLM handlers. If unset, a `WARNING` is logged and properties stay null (name-only embedding is kept).
 
 Entry points:
 - `run_all()` — scheduled hourly, processes up to 10 materials (testing cap, see `search_engine.py`)
