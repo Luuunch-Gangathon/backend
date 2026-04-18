@@ -105,7 +105,12 @@ def _to_store_format(result: EnrichmentResult, elapsed: float) -> dict:
         "material": {
             "normalized_name": result.normalized_name,
             "properties": {
-                prop: {"value": pr.value, "confidence": pr.confidence}
+                prop: {
+                    "value": pr.value,
+                    "confidence": pr.confidence,
+                    "source_name": pr.source_name,
+                    "source_url": pr.source_url
+                }
                 for prop, pr in result.properties.items()
             },
         },
