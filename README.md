@@ -73,7 +73,8 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 # 3. Env vars
-cp .env.example .env   # default DATABASE_URL works with docker-compose
+cp .env.example .env
+# edit .env — set OPENAI_API_KEY (required for Agnes chat)
 
 # 4. Enable git hook (once per clone)
 git config core.hooksPath .githooks
@@ -181,20 +182,38 @@ Agents live in `app/agents/`. They write to DB directly and are called by `pipel
 | `compliance.py` | Stub | `proposals` (compliance fields) | REACH/RoHS/allergen checks |
 | `search_engine.py` | Stub | enrichment columns | Web scraping + PDF parsing |
 | `auditor.py` | Stub | `proposals` (confidence) | Hallucination detection |
-| `agnes.py` | Stub | — (live response) | Wire Claude API to activate |
+| `agnes.py` | **Live** | — (LangChain + OpenAI) | Session-based chat, domain-scoped |
 
-**To activate an agent:**
+**To activate a background agent:**
 ```python
 # app/agents/pipeline.py — uncomment the relevant line
 await _step("ProposalAgent", proposal.run)
 ```
 
-**To wire Agnes (Claude API):**
-```bash
-pip install anthropic
-# add ANTHROPIC_API_KEY to .env
-# implement app/agents/agnes.py — replace stub with Claude API call
+---
+
+## Agnes Chat
+
+Domain-scoped AI chat via LangChain + OpenAI. Runs on `POST /agnes/ask`.
+
+**Session flow:**
 ```
+1st request:  POST /agnes/ask {message: "...", session_id: null}
+              ← {reply: "...", session_id: "abc-123"}
+
+2nd request:  POST /agnes/ask {message: "...", session_id: "abc-123"}
+              ← {reply: "...", session_id: "abc-123"}
+```
+
+- Frontend stores `session_id`, sends it back each request
+- Server stores history in memory — no DB, no transmission of full history
+- Session cleared on server restart or when frontend discards `session_id`
+
+**Requires:** `OPENAI_API_KEY` in `.env`
+
+**Roadmap:**
+- Phase 2: inject DB context (proposals, raw materials) into prompt
+- Phase 3: tool use — LLM queries DB and calls agents on demand (RAG + agentic)
 
 ---
 
