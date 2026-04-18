@@ -2,7 +2,8 @@ Original material: {{ original | tojson }}
 
 Finished good (product): {{ product | tojson }}
 
-Substitute candidates:
+Substitute candidates (each includes enriched spec data where available):
 {{ substitutes | tojson(indent=2) }}
 
+Ground your reasoning in the spec fields (functional_role, source_origin, dietary_flags, allergens, certifications, regulatory_status, form_grade) when present.
 Return the top {{ top_x }} substitutes ranked by score.

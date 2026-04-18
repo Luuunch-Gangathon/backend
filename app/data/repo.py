@@ -387,6 +387,29 @@ async def save_substitutions(
 # RAG context — used by AgnesAgent to enrich LLM prompt
 # ---------------------------------------------------------------------------
 
+async def get_specs_for_raw_materials(rm_ids: list[int]) -> dict[int, dict]:
+    """Fetch enriched specs from substitution_groups for a list of raw material DB ids.
+
+    Returns a mapping of raw_material_id → spec dict (may be empty if no spec stored).
+    """
+    if not rm_ids:
+        return {}
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT rmm.raw_material_id, sg.spec
+            FROM raw_material_map rmm
+            JOIN substitution_groups sg ON sg.raw_material_name = rmm.raw_material_name
+            WHERE rmm.raw_material_id = ANY($1) AND sg.spec IS NOT NULL
+            """,
+            rm_ids,
+        )
+    result: dict[int, dict] = {}
+    for r in rows:
+        result.setdefault(r["raw_material_id"], r["spec"] or {})
+    return result
+
+
 async def get_material_context(names: list[str]) -> list[dict]:
     """Fetch company + supplier context for a list of raw material names.
 

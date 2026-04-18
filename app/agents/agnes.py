@@ -114,22 +114,21 @@ def _make_compliance_tool(session_id: str):
         else:
             target_ids = bom.consumed_raw_material_ids
 
+        product = await repo.get_product(product_id)
+        product_label = product.sku if product else f"product {product_id}"
         lines = []
         for target_id in target_ids:
             original_rm = await repo.get_raw_material(target_id)
-            original_label = f"{original_rm.sku} (id: {target_id})" if original_rm else f"id: {target_id}"
+            original_label = original_rm.sku if original_rm else f"id: {target_id}"
             proposals = await compliance_agent.check_compliance(product_id, target_id)
             if not proposals:
                 continue
             lines.append(f"Original RM {original_label}:")
             for p in proposals:
-                sub_rm = await repo.get_raw_material(p.id)
-                if sub_rm is None:
-                    continue  # drop hallucinated IDs
-                lines.append(f"  - {sub_rm.sku} (id: {sub_rm.id}), score: {p.score}/100 — {p.reasoning}")
+                lines.append(f"  - {p.sku} (id: {p.id}) — {p.reasoning}")
         if not lines:
-            return f"No substitute proposals found for product {product_id}."
-        return f"Compliance results for product {product_id}:\n" + "\n".join(lines)
+            return f"No substitute proposals found for {product_label}."
+        return f"Compliance results for {product_label}:\n" + "\n".join(lines)
 
     return check_product_compliance
 
@@ -202,7 +201,9 @@ async def ask(
     system_content = render("system/agnes")
     current_product_id = _session_product.get(session_id)
     if current_product_id is not None:
-        system_content += f"\n\nCurrent product in context: product_id={current_product_id}."
+        current_product = await repo.get_product(current_product_id)
+        product_label = current_product.sku if current_product else f"product_id={current_product_id}"
+        system_content += f"\n\nCurrent product in context: {product_label} (id={current_product_id})."
         bom = await repo.get_bom(current_product_id)
         if bom and bom.consumed_raw_material_ids:
             bom_lines = []

@@ -63,16 +63,19 @@ async def check_compliance(
     if not substitutes:
         return []
 
+    all_ids = [raw_material.id] + [s.id for s in substitutes]
+    specs = await repo.get_specs_for_raw_materials(all_ids)
+
     global _client
     if _client is None:
         from openai import AsyncOpenAI
         _client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
     system_prompt = render("system/compliance")
-    sub_payload = [{"id": s.id, "sku": s.sku} for s in substitutes]
+    sub_payload = [{"id": s.id, "sku": s.sku, "spec": specs.get(s.id, {})} for s in substitutes]
     user_prompt = render(
         "user/compliance_rank",
-        original={"id": raw_material.id, "sku": raw_material.sku},
+        original={"id": raw_material.id, "sku": raw_material.sku, "spec": specs.get(raw_material.id, {})},
         product={"id": product.id, "sku": product.sku},
         substitutes=sub_payload,
         top_x=top_x,
@@ -93,12 +96,22 @@ async def check_compliance(
         logger.warning("compliance.check_compliance: model returned no parsed output")
         return []
 
-    results = sorted(parsed.substitutes, key=lambda s: s.score, reverse=True)[:top_x]
+    candidate_by_id = {s.id: s for s in substitutes}
+    validated = []
+    for p in sorted(parsed.substitutes, key=lambda s: s.score, reverse=True):
+        candidate = candidate_by_id.get(p.id)
+        if candidate is None:
+            logger.warning("compliance: LLM returned unknown id=%d — dropping hallucinated proposal", p.id)
+            continue
+        validated.append(SubstituteProposal(id=p.id, sku=candidate.sku, score=p.score, reasoning=p.reasoning))
+        if len(validated) == top_x:
+            break
+
     logger.info(
-        "compliance.check_compliance: product_id=%d rm_id=%d candidates=%d → %d proposals",
-        product_id, raw_material_id, len(substitutes), len(results),
+        "compliance.check_compliance: product_id=%d rm_id=%d candidates=%d → %d proposals (%d hallucinated)",
+        product_id, raw_material_id, len(substitutes), len(validated), len(parsed.substitutes) - len(validated),
     )
-    return results
+    return validated
 
 
 # ---------------------------------------------------------------------------

@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class SubstituteProposal(BaseModel):
     id: int
+    sku: str = ""
     score: int      # 0–100
     reasoning: str
 
