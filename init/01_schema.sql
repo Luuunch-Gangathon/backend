@@ -211,6 +211,7 @@ CREATE TABLE IF NOT EXISTS substitutions (
     id                   SERIAL      PRIMARY KEY,
     from_raw_material_id INTEGER     NOT NULL REFERENCES products(id),
     to_raw_material_id   INTEGER     NOT NULL REFERENCES products(id),
+    score                INTEGER     NOT NULL,
     reason               TEXT        NOT NULL,
     created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );

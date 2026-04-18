@@ -56,6 +56,8 @@ async def _run_compliance() -> None:
             rm = await repo.get_raw_material(rm_id)
             if not rm:
                 continue
+            if await repo.has_substitutions(rm.id):
+                continue
             similar = await repo.find_similar_raw_materials(f"rm_db_{rm.id}")
             if not similar:
                 continue
