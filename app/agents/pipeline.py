@@ -25,9 +25,6 @@ async def run() -> None:
     await _step("SubstitutionAgent", substitution.run)
     await _step("SearchEngine",      search_engine.run)
     await _step("ProposalAgent",     proposal.run)
-
-    await _run_compliance()
-
     await _step("AuditorAgent",      auditor.run)
 
     logger.info("Pipeline: done")

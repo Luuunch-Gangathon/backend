@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import companies, products, raw_materials, suppliers, proposals, substitutions, agnes
+from app.api import companies, products, raw_materials, suppliers, proposals, substitutions, agnes, compliance
 from app.agents import pipeline
 from app.data import db, migration
 
@@ -46,6 +46,7 @@ app.include_router(suppliers.router)
 app.include_router(proposals.router)
 app.include_router(substitutions.router)
 app.include_router(agnes.router)
+app.include_router(compliance.router)
 
 
 @app.get("/health")

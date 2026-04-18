@@ -1,3 +1,4 @@
+from .compliance import SubstituteProposal, ComplianceResult
 from .company import Company
 from .product import Product, BOM
 from .raw_material import RawMaterial
@@ -8,6 +9,8 @@ from .substitution import Substitution
 from .agnes import AgnesSuggestedQuestion, AgnesMessage, AgnesAskRequest, AgnesAskResponse
 
 __all__ = [
+    "SubstituteProposal",
+    "ComplianceResult",
     "Company",
     "Product",
     "BOM",
