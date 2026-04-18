@@ -9,11 +9,14 @@ from unittest.mock import patch
 
 import asyncpg
 import pytest
+import requests
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
     "postgresql://spherecast:spherecast@localhost:5432/spherecast",
 )
+
+BASE_URL = "http://localhost:8000"
 
 
 def emb(x: float, y: float) -> str:
@@ -107,3 +110,19 @@ async def seed():
             await tr.rollback()
         finally:
             await conn.close()
+
+
+@pytest.fixture(scope="session")
+def api():
+    """Plain HTTP session pointing at running server."""
+    s = requests.Session()
+    s.base_url = BASE_URL
+    # Verify server is up
+    r = s.get(f"{BASE_URL}/health")
+    assert r.status_code == 200, f"Server not running at {BASE_URL}"
+    yield s
+    s.close()
+
+
+def get(api, path):
+    return api.get(f"{api.base_url}{path}")
