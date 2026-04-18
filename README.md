@@ -85,7 +85,8 @@ pip install -r requirements.txt
 
 # 3. Env vars
 cp .env.example .env
-# edit .env — set OPENAI_API_KEY (required for Agnes + SearchEngine)
+# edit .env — set OPENAI_API_KEY (embeddings + Agnes chat)
+#             set ANTHROPIC_API_KEY (SearchEngine LLM enrichment)
 
 # 4. Enable git hook (once per clone)
 git config core.hooksPath .githooks
@@ -94,7 +95,7 @@ git config core.hooksPath .githooks
 uvicorn app.main:app --reload --log-level info
 ```
 
-On first boot: SQLite → Postgres migration, then SearchEngine processes all unenriched materials.
+On first boot: SQLite → Postgres migration → name-only embeddings seeded for all materials → SearchEngine enrichment scheduler started.
 
 **Git hook:** runs `pytest tests/` before every commit if server is up. Skips silently if server is down.
 ```bash
@@ -113,6 +114,7 @@ Interactive docs: `http://localhost:8000/docs`
 | GET | `/companies`, `/companies/{id}` | Portfolio companies |
 | GET | `/products`, `/products/{id}`, `/products/{id}/bom` | Finished goods + BOM |
 | GET | `/raw-materials`, `/raw-materials/{id}` | Raw materials |
+| POST | `/raw-materials/{id}/enrich` | Trigger on-demand enrichment for one material |
 | GET | `/suppliers`, `/suppliers/{id}` | Suppliers |
 | GET | `/proposals`, `/proposals/{id}` | Consolidation proposals (TBD) |
 | GET | `/substitutions` | Scored substitution pairs |
@@ -149,9 +151,15 @@ backend/
 │   │   ├── system/agnes.j2, system/compliance.j2
 │   │   └── user/compliance_rank.j2
 │   └── agents/
-│       ├── pipeline.py      # startup: SearchEngine.run_all()
+│       ├── pipeline.py      # startup scheduler: calls search_engine.run_all() hourly
 │       ├── agnes.py         # agentic chat with tools
-│       ├── search_engine.py # enrichment + embeddings
+│       ├── search_engine.py # orchestrates enrichment waterfall → rag.store_embedding()
+│       ├── searchEngine/    # waterfall engine + per-source handlers
+│       │   ├── engine.py    # property-by-property waterfall loop
+│       │   ├── config.py    # active sources + trust tiers
+│       │   ├── handlers.py  # source fn registry
+│       │   ├── models.py    # EnrichmentResult, PropertyResult
+│       │   └── sources/     # supplier_website, llm_knowledge, llm_general_fallback, ...
 │       └── compliance.py    # GPT-4o substitute scoring
 ├── init/01_schema.sql
 ├── data/db.sqlite
@@ -167,24 +175,41 @@ backend/
 
 | Agent | Mode | What it does |
 |-------|------|-------------|
-| `search_engine.py` | Startup + on-demand | Enriches materials → generates embeddings → stores in `substitution_groups` |
+| `search_engine.py` | Startup + on-demand | Runs `searchEngine` waterfall → `rag.store_embedding()` → rich vectors in `substitution_groups` |
 | `compliance.py` | On-demand | Scores substitute candidates 0-100 via GPT-4o structured output |
 | `agnes.py` | Live (POST /agnes/ask) | Keyword-triggered commands + RAG chat. Phase 2: agentic tool use. |
 
 ### SearchEngine flow
 
 ```
-Raw Material name
-  → Web Search (TODO: teammate implements)
-  → New Information (specs, certs, allergens)
-  → Updated Raw Material (stored in substitution_groups.spec)
-  → Generate Embedding (rag.store_embedding())
-  → Available for similarity search (pgvector)
+Startup (main.py lifespan)
+  → rag.seed_name_only_embeddings()   — name-only baseline vectors for ALL materials
+                                         batched into 1–2 OpenAI calls (256 names/call)
+  → pipeline.start_scheduler()        — runs SearchEngine.run_all() hourly
+
+SearchEngine.run_all() / run_one(name)
+  → rag.get_unenriched_names()          — materials with embedding but spec IS NULL
+  → for each name: searchEngine waterfall
+      verified:    supplier_website, ChEBI, FooDB, NIH DSLD, OpenFDA, EFSA
+      probable:    retail pages
+      inferred:    llm_knowledge (Claude Haiku — no web, from training data)
+      speculative: llm_general_fallback (Claude Haiku — best-effort inference)
+  → rag.store_embedding(enriched_result)
+      builds embedding text from spec (functional role, origin, dietary flags,
+      allergens, certs, GRAS status, recalls, form/grade)
+      → OpenAI text-embedding-3-small → stored in substitution_groups
+      ON CONFLICT DO UPDATE — overwrites name-only baseline with spec-based vector
 ```
 
-Two entry points:
-- `run_all()` — startup, processes all unenriched materials
-- `run_one(name)` — on-demand, single material (from Agnes chat or frontend)
+**Two-phase embedding strategy:**
+- Phase 1 (startup): `seed_name_only_embeddings()` gives every material a cheap name-only vector so similarity search works immediately.
+- Phase 2 (scheduled/on-demand): `run_all()` / `run_one()` upgrades to spec-based vectors as enrichment completes. `store_embedding()` always overwrites; `store_name_only_embedding()` never does.
+
+**Requires** `ANTHROPIC_API_KEY` for LLM handlers. If unset, a `WARNING` is logged and properties stay null (name-only embedding is kept).
+
+Entry points:
+- `run_all()` — scheduled hourly, processes up to 10 materials (testing cap, see `search_engine.py`)
+- `run_one(name)` — on-demand, single material; called by `POST /raw-materials/{id}/enrich` and Agnes `search <name>` command
 
 ### Agnes — keyword commands + RAG chat
 
@@ -194,8 +219,8 @@ Two entry points:
 Commands:
 | Command | What it does | Status |
 |---------|-------------|--------|
-| `search <name>` | Enrich single material via SearchEngine | Working (name-only fallback) |
-| `search all` | Enrich all unenriched materials | Working (name-only fallback) |
+| `search <name>` | Enrich single material via SearchEngine waterfall | Working |
+| `search all` | Enrich all unenriched materials | Working |
 | `compliance <rm_id> <product_id>` | Score substitutes via ComplianceAgent | TODO — teammate implements |
 | `bom <product_id>` | Show BOM ingredients | Working |
 | `company <company_id>` | Show company + products | Working |
