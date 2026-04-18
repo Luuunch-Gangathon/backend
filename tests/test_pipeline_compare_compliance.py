@@ -1,10 +1,13 @@
-"""Integration test: pgvector → compliance → substitutions table.
+"""Integration test: pgvector → check_compliance → returned proposals.
 
 Proves the end-to-end path:
-  seed embeddings → check_compliance → DB row
+  seed embeddings → find_similar_raw_materials → check_compliance → list[SubstituteProposal]
 
 OpenAI is monkey-patched; Postgres is real (pgvector).
 All tests use the transactional `seed` fixture — auto-rollback, no cleanup.
+
+Note: check_compliance returns proposals but does not persist to substitutions table.
+DB persistence is handled by callers (e.g. api/compliance.py endpoint).
 """
 from __future__ import annotations
 
@@ -15,7 +18,7 @@ import pytest
 
 from app.agents import compliance
 from app.agents.compliance import _RankingResponse
-from app.schemas.compliance import SubstituteProposal as SubstituteScore
+from app.schemas.compliance import SubstituteProposal
 from app.data import repo
 from tests.conftest import emb
 
@@ -52,7 +55,7 @@ def _make_stub_client(sub_ids: list[int]) -> MagicMock:
     stub_response = MagicMock()
     stub_response.choices[0].message.parsed = _RankingResponse(
         substitutes=[
-            SubstituteScore(id=sid, score=90, reasoning="Good match")
+            SubstituteProposal(id=sid, score=90, reasoning="Good match")
             for sid in sub_ids
         ]
     )
@@ -61,7 +64,7 @@ def _make_stub_client(sub_ids: list[int]) -> MagicMock:
     return mock_client
 
 
-async def test_end_to_end_persists_substitutions(seed) -> None:
+async def test_check_compliance_returns_proposals(seed) -> None:
     await _setup(seed)
 
     mock_client = _make_stub_client([_N1, _N2])
@@ -76,23 +79,8 @@ async def test_end_to_end_persists_substitutions(seed) -> None:
         assert r.id in (_N1, _N2)
 
 
-async def test_skips_rm_that_already_has_substitutions(seed) -> None:
-    await _setup(seed)
-
-    # Pre-insert one substitution row for the source rm.
-    await repo.save_substitutions(_S, [(_N1, 85, "Pre-existing")])
-
-    mock_client = MagicMock()
-    mock_client.beta.chat.completions.parse = AsyncMock(side_effect=AssertionError("LLM called unexpectedly"))
-
-    # check_compliance always runs (no skip logic in current API) — test just verifies
-    # existing row is preserved and LLM may or may not be called depending on similar results.
-    # The skip logic lived in _run_compliance which is removed. Mark as xfail for now.
-    pytest.skip("skip logic moved out of compliance agent — revisit with new pipeline design")
-
-
 async def test_rm_without_similar_is_noop(seed) -> None:
-    """Source rm with no pgvector neighbours above threshold → no write, no LLM."""
+    """Source rm with no pgvector neighbours above threshold → no LLM call, empty result."""
     await seed.company(_CO)
     await seed.product(_FG, "FG-PIPE-TEST", _CO, type_="finished-good")
     await seed.bom(_BOM, _FG)
@@ -108,7 +96,4 @@ async def test_rm_without_similar_is_noop(seed) -> None:
         result = await compliance.check_compliance(_FG, _S)
 
     mock_client.beta.chat.completions.parse.assert_not_called()
-
-    rows = await repo.list_substitutions()
-    assert not any(r.from_raw_material_id == _S for r in rows)
     assert result == []

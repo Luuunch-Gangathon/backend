@@ -1,7 +1,7 @@
-"""Integration test: compare seeder → find_similar_raw_materials → compliance.run.
+"""Integration test: find_similar_raw_materials → check_compliance.
 
-Proves that the data shape produced by the compare pipeline is accepted by
-compliance end-to-end, and that vector_similarity appears in the LLM prompt.
+Proves that the data shape produced by pgvector search is accepted by
+check_compliance end-to-end, and that vector_similarity appears in the LLM prompt.
 OpenAI is monkey-patched; Postgres is real (pgvector).
 """
 from __future__ import annotations
@@ -14,7 +14,7 @@ import pytest
 
 from app.agents import compliance
 from app.agents.compliance import _RankingResponse
-from app.schemas.compliance import SubstituteProposal as SubstituteScore
+from app.schemas.compliance import SubstituteProposal
 from app.data.repo import find_similar_raw_materials, get_product, get_raw_material
 from tests.conftest import emb
 
@@ -44,25 +44,12 @@ async def _setup(seed) -> None:
     await seed.substitution_group("rm-comp-near2", emb(cos2, math.sqrt(1 - cos2**2)))
 
 
-async def test_compliance_run_accepts_similar_pairs(seed) -> None:
+async def test_check_compliance_accepts_similar_pairs(seed) -> None:
     await _setup(seed)
 
     # Real pgvector call — returns SimilarRawMaterial list with similarity_score.
     similar = await find_similar_raw_materials(f"rm_db_{_S}")
     assert len(similar) >= 2, "Expected at least 2 similar materials above 0.75 threshold"
-
-    # Resolve to (RawMaterial, float) pairs — same as pipeline._run_compliance.
-    import re
-    _re = re.compile(r"rm_db_(\d+)$")
-    sub_pairs = []
-    for s in similar:
-        m = _re.match(s.raw_material_id)
-        if m:
-            rm = await get_raw_material(int(m.group(1)))
-            if rm:
-                sub_pairs.append((rm, s.similarity_score))
-
-    assert len(sub_pairs) >= 2
 
     source_rm = await get_raw_material(_S)
     assert source_rm is not None
@@ -73,7 +60,7 @@ async def test_compliance_run_accepts_similar_pairs(seed) -> None:
     # Stub the OpenAI response.
     stub_response = MagicMock()
     stub_response.choices[0].message.parsed = _RankingResponse(
-        substitutes=[SubstituteScore(id=sub_pairs[0][0].id, score=88, reasoning="Good match")]
+        substitutes=[SubstituteProposal(id=similar[0].raw_material_id.split("_")[-1], score=88, reasoning="Good match")]
     )
 
     captured_messages: list = []
