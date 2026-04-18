@@ -10,4 +10,5 @@ class Substitution(BaseModel):
     id: int
     from_raw_material_id: int
     to_raw_material_id: int
+    score: int
     reason: str

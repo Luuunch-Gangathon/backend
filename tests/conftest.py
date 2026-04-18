@@ -84,6 +84,20 @@ async def seed():
                 raw_material_id,
             )
 
+        async def bom(self, bom_id: int, produced_product_id: int) -> None:
+            await conn.execute(
+                "INSERT INTO boms (id, produced_product_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+                bom_id,
+                produced_product_id,
+            )
+
+        async def bom_component(self, bom_id: int, consumed_product_id: int) -> None:
+            await conn.execute(
+                "INSERT INTO bom_components (bom_id, consumed_product_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+                bom_id,
+                consumed_product_id,
+            )
+
         async def substitution_group(
             self, raw_material_name: str, embedding: str
         ) -> None:
