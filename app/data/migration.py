@@ -11,7 +11,7 @@ from pathlib import Path
 
 import asyncpg
 
-SQLITE_PATH = Path(__file__).resolve().parents[3] / "data" / "db.sqlite"
+SQLITE_PATH = Path(__file__).resolve().parents[2] / "data" / "db.sqlite"
 
 
 async def run_if_empty(pool: asyncpg.Pool) -> None:
