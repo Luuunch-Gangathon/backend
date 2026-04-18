@@ -137,6 +137,56 @@ async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
     return _raw_material_from_row(row) if row else None
 
 
+async def list_suppliers_for_raw_material(rm_id: int) -> list[Supplier]:
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT s.id, s.name
+            FROM suppliers s
+            JOIN supplier_products sp ON sp.supplier_id = s.id
+            WHERE sp.product_id = $1
+            ORDER BY s.name
+            """,
+            rm_id,
+        )
+    return [Supplier(id=r["id"], name=r["name"]) for r in rows]
+
+
+async def list_finished_goods_for_raw_material(rm_id: int) -> list[Product]:
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT DISTINCT p.id, p.sku, p.company_id
+            FROM products p
+            JOIN boms b ON b.produced_product_id = p.id
+            JOIN bom_components bc ON bc.bom_id = b.id
+            WHERE bc.consumed_product_id = $1
+              AND p.type = 'finished-good'
+            ORDER BY p.sku
+            """,
+            rm_id,
+        )
+    return [Product(id=r["id"], sku=r["sku"], company_id=r["company_id"]) for r in rows]
+
+
+async def list_companies_for_raw_material(rm_id: int) -> list[Company]:
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT DISTINCT c.id, c.name
+            FROM companies c
+            JOIN products p ON p.company_id = c.id
+            JOIN boms b ON b.produced_product_id = p.id
+            JOIN bom_components bc ON bc.bom_id = b.id
+            WHERE bc.consumed_product_id = $1
+              AND p.type = 'finished-good'
+            ORDER BY c.name
+            """,
+            rm_id,
+        )
+    return [Company(id=r["id"], name=r["name"]) for r in rows]
+
+
 _DB_ID_RE = re.compile(r"^rm_db_(\d+)$")
 
 
