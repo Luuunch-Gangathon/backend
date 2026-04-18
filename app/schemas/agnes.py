@@ -18,7 +18,6 @@ class AgnesMessage(BaseModel):
 
 
 class AgnesAskRequest(BaseModel):
-    proposal_id: int
     message: str
     session_id: str | None = None   # None = start new session
 

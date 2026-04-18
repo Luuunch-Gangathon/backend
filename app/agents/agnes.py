@@ -14,7 +14,7 @@ import logging
 import uuid
 
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
 from app.schemas import AgnesMessage, AgnesAskResponse
@@ -48,7 +48,6 @@ When answering:
 
 
 async def ask(
-    proposal_id: int,
     message: str,
     session_id: str | None,
 ) -> AgnesAskResponse:
