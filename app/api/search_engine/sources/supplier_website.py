@@ -197,11 +197,12 @@ def supplier_website_enrich(name: str, context: dict) -> list[dict]:
     3. Crawl the page and extract properties with LLM
     4. Return on first successful extraction
     """
-    supplier_ids = context.get("supplier_ids", [])
-    if not supplier_ids:
-        return []
-
-    supplier_names = get_supplier_names(supplier_ids)
+    supplier_names = context.get("supplier_names", [])
+    if not supplier_names:
+        supplier_ids = context.get("supplier_ids", [])
+        if not supplier_ids:
+            return []
+        supplier_names = get_supplier_names(supplier_ids)
 
     for supplier_name in supplier_names:
         domain = get_supplier_domain(supplier_name)

@@ -146,12 +146,26 @@ Answer with ONLY a JSON object: {{"is_match": true/false, "reason": "brief expla
 
 
 async def _check_domain_exists(domain: str) -> str | None:
-    """Crawl homepage and return markdown if the domain is reachable."""
+    """Crawl homepage and return markdown if the domain is reachable.
+
+    Does a quick HEAD request first to avoid launching crawl4ai on dead URLs.
+    """
+    import httpx
+
+    url = f"https://{domain}"
+    try:
+        async with httpx.AsyncClient(timeout=2, follow_redirects=True) as client:
+            resp = await client.head(url)
+            if resp.status_code >= 400:
+                return None
+    except Exception:
+        return None
+
     from crawl4ai import AsyncWebCrawler
 
     try:
         async with AsyncWebCrawler() as crawler:
-            result = await crawler.arun(url=f"https://{domain}")
+            result = await crawler.arun(url=url)
         markdown = getattr(result, "markdown", "") or ""
         if len(markdown) > 100:  # filter out empty/error pages
             return markdown

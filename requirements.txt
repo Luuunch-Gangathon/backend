@@ -17,7 +17,7 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.39.0
 crawl4ai
-duckduckgo-search
+ddgs
 openai>=1.68.2,<2.0.0
 apscheduler==3.10.4
 langchain==0.3.25
