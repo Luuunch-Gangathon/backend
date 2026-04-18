@@ -119,6 +119,36 @@ async def get_unembedded_names() -> list[str]:
     return [r["raw_material_name"] for r in rows]
 
 
+async def search(query: str, top_k: int = 5) -> list[dict]:
+    """Semantic search over embedded raw materials.
+
+    Embeds query, finds most similar materials in substitution_groups via
+    pgvector cosine distance. Returns top_k results with name, spec, similarity.
+    Returns empty list if no embeddings exist yet.
+    """
+    vector = await _embed(query)
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT raw_material_name,
+                   spec,
+                   group_name,
+                   confidence,
+                   reasoning,
+                   1 - (embedding <=> $1::vector) AS similarity
+            FROM substitution_groups
+            WHERE embedding IS NOT NULL
+            ORDER BY embedding <=> $1::vector
+            LIMIT $2
+            """,
+            vector,
+            top_k,
+        )
+    results = [dict(r) for r in rows]
+    logger.info("rag: search %r → %d results", query[:60], len(results))
+    return results
+
+
 # ── private helpers ───────────────────────────────────────────────────────────
 
 def _build_embedding_text(result: dict) -> str:

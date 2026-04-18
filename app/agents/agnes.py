@@ -1,15 +1,17 @@
-"""AgnesAgent — domain-scoped chat via LangChain + OpenAI.
+"""AgnesAgent — domain-scoped chat with RAG-backed reasoning.
 
 Session-based history: server stores conversation per session_id.
 Frontend sends session_id each request — no full history transmission.
 Sessions live in memory. Process restart clears all sessions.
 
 Phase 1: simple chat, domain-scoped to supply chain.
-Phase 2: add tools (query DB, run agents).
-Phase 3: full agent orchestration.
+Phase 2 (current): RAG retrieval — embed query, fetch relevant materials
+                   + DB context, inject into LLM prompt.
+Phase 3: full agent orchestration with tool use.
 """
 
 from __future__ import annotations
+import json
 import logging
 import uuid
 
@@ -17,11 +19,12 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
+from app.data import rag, repo
+from app.prompts.loader import render
 from app.schemas import AgnesMessage, AgnesAskResponse
 
 logger = logging.getLogger(__name__)
 
-# In-memory session store: session_id → ChatMessageHistory
 _sessions: dict[str, InMemoryChatMessageHistory] = {}
 _llm: ChatOpenAI | None = None
 
@@ -31,20 +34,6 @@ def _get_llm() -> ChatOpenAI:
     if _llm is None:
         _llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
     return _llm
-
-_SYSTEM_PROMPT = """
-You are Agnes, an AI Supply Chain Manager at Spherecast.
-
-You help procurement teams make smarter sourcing decisions across a portfolio of 61 CPG companies.
-Your domain covers: raw material consolidation, supplier fragmentation, ingredient substitution,
-compliance requirements (allergen, organic, halal, kosher, REACH, RoHS), and cost optimization.
-
-When answering:
-- Be concise and specific
-- Flag uncertainty clearly
-- Cite your reasoning
-- Focus on actionable insights for procurement professionals
-"""
 
 
 async def ask(
@@ -61,8 +50,15 @@ async def ask(
 
     history = _sessions[session_id]
 
-    # Build message list: system + history + new message
-    messages = [SystemMessage(content=_SYSTEM_PROMPT)]
+    # RAG: retrieve relevant materials + DB context
+    context_block = await _retrieve_context(message)
+
+    # Build messages: system (+ RAG context) + history + user message
+    system_content = render("system/agnes")
+    if context_block:
+        system_content += f"\n\n---\nRetrieved supply chain context:\n{context_block}"
+
+    messages = [SystemMessage(content=system_content)]
     messages.extend(history.messages)
     messages.append(HumanMessage(content=message))
 
@@ -79,3 +75,63 @@ async def ask(
         reply=AgnesMessage(role="assistant", content=response.content),
         session_id=session_id,
     )
+
+
+async def _retrieve_context(query: str, top_k: int = 5) -> str:
+    """Embed query, fetch similar materials + DB context, return formatted string.
+
+    Returns empty string if no embeddings exist yet (safe — LLM still answers
+    from domain knowledge and chat history).
+    """
+    try:
+        results = await rag.search(query, top_k=top_k)
+    except Exception:
+        logger.warning("AgnesAgent: RAG search failed — proceeding without context")
+        return ""
+
+    if not results:
+        logger.info("AgnesAgent: no embeddings found — proceeding without RAG context")
+        return ""
+
+    names = [r["raw_material_name"] for r in results]
+    db_rows = await repo.get_material_context(names)
+
+    # Group DB rows by material name
+    by_name: dict[str, list[dict]] = {}
+    for row in db_rows:
+        by_name.setdefault(row["raw_material_name"], []).append(row)
+
+    lines: list[str] = []
+    for result in results:
+        name = result["raw_material_name"]
+        similarity = result.get("similarity") or 0
+        spec = result.get("spec") or {}
+
+        lines.append(f"## {name} (relevance: {similarity:.2f})")
+
+        # Spec summary
+        if spec:
+            if isinstance(spec, str):
+                spec = json.loads(spec)
+            func_roles = spec.get("functional_role", {}).get("value") or []
+            if func_roles:
+                lines.append(f"  Function: {', '.join(func_roles)}")
+            certs = spec.get("certifications", {}).get("value") or []
+            if certs:
+                lines.append(f"  Certifications: {', '.join(certs)}")
+            allergens = spec.get("allergens", {}).get("value") or {}
+            if allergens.get("contains"):
+                lines.append(f"  Allergens: {', '.join(allergens['contains'])}")
+
+        # Companies + suppliers from raw_material_map
+        rows = by_name.get(name, [])
+        companies = sorted({r["company_name"] for r in rows if r["company_name"]})
+        suppliers = sorted({r["supplier_name"] for r in rows if r["supplier_name"]})
+        if companies:
+            lines.append(f"  Companies buying: {', '.join(companies)}")
+        if suppliers:
+            lines.append(f"  Suppliers: {', '.join(suppliers)}")
+
+        lines.append("")
+
+    return "\n".join(lines)
