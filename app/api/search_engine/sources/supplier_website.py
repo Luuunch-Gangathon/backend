@@ -129,3 +129,55 @@ async def _crawl_and_extract(
     except Exception:
         logger.warning("Crawl failed for %s", url, exc_info=True)
         return None
+
+
+from app.api.search_engine.sources.search_utils import (
+    get_supplier_domain,
+    find_product_page,
+)
+from app.api.search_engine.sources.db_utils import get_supplier_names
+
+
+def _run_crawl_and_extract(
+    url: str, material_name: str
+) -> tuple[MaterialProperties, str] | None:
+    """Sync wrapper for _crawl_and_extract."""
+    return asyncio.run(_crawl_and_extract(url, material_name))
+
+
+def supplier_website_enrich(name: str, context: dict) -> list[dict]:
+    """Enrich material properties by crawling supplier product pages.
+
+    For each supplier associated with this material:
+    1. Resolve the supplier's website domain
+    2. Search for the material's product page on that domain
+    3. Crawl the page and extract properties with LLM
+    4. Return on first successful extraction
+    """
+    supplier_ids = context.get("supplier_ids", [])
+    if not supplier_ids:
+        return []
+
+    supplier_names = get_supplier_names(supplier_ids)
+
+    for supplier_name in supplier_names:
+        domain = get_supplier_domain(supplier_name)
+        if domain is None:
+            logger.info("Could not resolve domain for supplier: %s", supplier_name)
+            continue
+
+        product_url = find_product_page(name, domain)
+        if product_url is None:
+            logger.info("No product page found for '%s' on %s", name, domain)
+            continue
+
+        result = _run_crawl_and_extract(product_url, name)
+        if result is None:
+            continue
+
+        props, raw_markdown = result
+        handler_results = convert_to_handler_results(props, product_url, raw_markdown)
+        if handler_results:
+            return handler_results
+
+    return []

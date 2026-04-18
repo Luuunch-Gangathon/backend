@@ -174,3 +174,116 @@ async def test_crawl_and_extract_returns_none_without_api_key():
         result = await _crawl_and_extract("https://example.com", "magnesium stearate")
 
     assert result is None
+
+
+def test_supplier_website_enrich_full_flow():
+    from app.api.search_engine.sources.supplier_website import (
+        supplier_website_enrich,
+        MaterialProperties,
+    )
+
+    fake_props = MaterialProperties(
+        is_correct_material=True,
+        chemical_identity={"cas_number": "557-04-0"},
+        allergens={"contains": [], "free_from": ["soy"]},
+    )
+
+    with patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_names",
+        return_value=["PureBulk"],
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        return_value="purebulk.com",
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.find_product_page",
+        return_value="https://purebulk.com/products/magnesium-stearate",
+    ), patch(
+        "app.api.search_engine.sources.supplier_website._run_crawl_and_extract",
+        return_value=(fake_props, "# Magnesium Stearate page content"),
+    ):
+        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_12"]})
+
+    assert len(results) == 2
+    props_found = {r["property"] for r in results}
+    assert "chemical_identity" in props_found
+    assert "allergens" in props_found
+    assert results[0]["source_url"] == "https://purebulk.com/products/magnesium-stearate"
+
+
+def test_supplier_website_enrich_no_suppliers():
+    from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+
+    results = supplier_website_enrich("magnesium stearate", {"supplier_ids": []})
+    assert results == []
+
+
+def test_supplier_website_enrich_domain_not_found():
+    from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+
+    with patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_names",
+        return_value=["UnknownSupplier"],
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        return_value=None,
+    ):
+        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_99"]})
+
+    assert results == []
+
+
+def test_supplier_website_enrich_no_product_page():
+    from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+
+    with patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_names",
+        return_value=["PureBulk"],
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        return_value="purebulk.com",
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.find_product_page",
+        return_value=None,
+    ):
+        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_12"]})
+
+    assert results == []
+
+
+def test_supplier_website_enrich_stops_at_first_successful_supplier():
+    from app.api.search_engine.sources.supplier_website import (
+        supplier_website_enrich,
+        MaterialProperties,
+    )
+
+    fake_props = MaterialProperties(
+        is_correct_material=True,
+        certifications=["Non-GMO"],
+    )
+
+    find_call_count = 0
+
+    def mock_find(material, domain):
+        nonlocal find_call_count
+        find_call_count += 1
+        if domain == "purebulk.com":
+            return "https://purebulk.com/products/mag"
+        return "https://jostchemical.com/products/mag"
+
+    with patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_names",
+        return_value=["PureBulk", "Jost Chemical"],
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        side_effect=["purebulk.com", "jostchemical.com"],
+    ), patch(
+        "app.api.search_engine.sources.supplier_website.find_product_page",
+        side_effect=mock_find,
+    ), patch(
+        "app.api.search_engine.sources.supplier_website._run_crawl_and_extract",
+        return_value=(fake_props, "page text"),
+    ):
+        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_12", "sup_db_7"]})
+
+    assert len(results) == 1
+    assert find_call_count == 1
