@@ -117,11 +117,15 @@ Here is the homepage content (first 3000 chars):
 Answer with ONLY a JSON object: {{"is_match": true/false, "reason": "brief explanation"}}"""
 
         logger.info("Verifying domain %s for supplier '%s'", domain, supplier_name)
+        model = "claude-haiku-4-5-20251001"
         response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
+            model=model,
             max_tokens=200,
             messages=[{"role": "user", "content": prompt}],
         )
+
+        from app.api.search_engine.sources.cost_tracker import track_usage
+        track_usage(response, model, "domain_verification")
 
         raw_text = response.content[0].text
         logger.info("Domain verification response: %s", raw_text[:300])

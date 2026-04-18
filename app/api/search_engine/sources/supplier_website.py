@@ -123,11 +123,15 @@ Page content:
     try:
         logger.info("Sending to Anthropic for extraction (material: %s, prompt length: %d)", material_name, len(prompt))
         client = anthropic.Anthropic(api_key=api_key)
+        model = "claude-haiku-4-5-20251001"
         response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
+            model=model,
             max_tokens=2000,
             messages=[{"role": "user", "content": prompt}],
         )
+
+        from app.api.search_engine.sources.cost_tracker import track_usage
+        track_usage(response, model, "property_extraction")
 
         raw_text = response.content[0].text
         logger.info("Anthropic response: %s", raw_text[:2000])
