@@ -22,10 +22,8 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     await db.init_pool()
     await migration.run_if_empty(db._pool)
-    await pipeline.run()          # run once immediately on startup
-    pipeline.start_scheduler()    # then every hour
+    await pipeline.run()          # SearchEngine processes all materials once
     yield
-    pipeline.stop_scheduler()
     await db.close_pool()
 
 
