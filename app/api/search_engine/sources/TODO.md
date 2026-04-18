@@ -14,9 +14,9 @@
 
 - [ ] **EFSA Food Additives DB** — Download CSV from EFSA, load at startup. Provides: regulatory_status (EU-approved, permitted uses, E-numbers). ~350 authorized additives.
 
-## Engine — Handler Result Caching (HIGH PRIORITY)
+## Engine — Handler Result Caching (DONE)
 
-- [ ] **Cache handler results within a single enrichment run** — Currently `llm_knowledge` (and any wildcard `*` handler) gets called once per unfilled property. For selenium it was called 6 times, each time returning 6-7 properties but the engine only takes the one it needs and discards the rest. Fix: cache each handler's results within `run_enrichment()` so if `llm_knowledge` already ran, reuse its results for subsequent properties. This would cut LLM costs ~6x.
+- [x] **Cache handler results within a single enrichment run** — Implemented in engine.py via `_handler_cache`.
 
 ## API Fixes
 
@@ -27,3 +27,19 @@
 ## Retail Page Handler
 
 - [ ] **retail_page** — Web scraping + LLM extraction from retail/marketplace pages (iHerb, Amazon, etc.). Similar architecture to supplier_website handler. Trust tier: probable. Provides: * (any property).
+
+## New Source Ideas (from 2026-04-18 test of 10 materials)
+
+Test showed only `openfda` (10/10) and `llm_knowledge` reliably produce data. All other verified sources failed or returned nothing. Key ideas:
+
+- [ ] **USDA FoodData Central API** — Free, no key needed. Covers functional role, allergens, dietary info for thousands of food ingredients. Endpoint: `https://api.nal.usda.gov/fdc/v1/foods/search`. Trust tier: verified.
+
+- [ ] **PubChem API** — Already commented out in config. Provides chemical_identity (CAS, formula, synonyms) and functional_role for well-known compounds. Revisit — was excluded for being slow, but could be valuable for the properties nothing else fills.
+
+- [ ] **Rethink supplier_website product page discovery** — Current DDG `site:` search returns wrong pages (category pages, FAQs, nav menus) in 9/10 cases. The LLM extraction works great when given the right page. Ideas: search DDG for `"{material}" specifications` globally without `site:` restriction, then filter results to known supplier domains; or try the supplier's own site search (`/search?q=...`).
+
+- [ ] **Fix open_food_facts** — 503 on every call during this test. Either the service is temporarily down or we're hitting rate limits. Add retry with backoff, or check if the endpoint URL changed.
+
+- [ ] **Fix nih_dsld** — Empty JSON on every call. API likely changed endpoints. Research current DSLD API docs and update.
+
+- [ ] **chebi and foodb produce nothing** — Investigate whether these handlers are functional or just stubs returning []. If the APIs exist, verify endpoint URLs and response parsing. If they don't have useful data for our materials, remove from the source list.
