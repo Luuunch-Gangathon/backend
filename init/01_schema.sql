@@ -64,23 +64,32 @@ CREATE INDEX IF NOT EXISTS idx_rmm_supplier_id       ON raw_material_map(supplie
 
 -- ─── Derived table: substitution_groups (Step 2) ─────────────────────────────
 --
--- Populated by the agent via LLM reasoning. Groups raw material names that are
--- functionally interchangeable. The embedding column is reserved for semantic
--- similarity search (pgvector) so future queries can find similar raw materials
--- even when spelled differently.
+-- Dual-purpose table: (a) embedding store — one row per raw material with its
+-- enriched spec (JSONB) and pgvector embedding so rag.py can do semantic search;
+-- (b) grouping decisions — group_name/confidence/reasoning set later by
+-- SubstitutionAgent once it clusters the embedded materials.
 
 CREATE TABLE IF NOT EXISTS substitution_groups (
     id                SERIAL      PRIMARY KEY,
     raw_material_name TEXT        NOT NULL UNIQUE,  -- matches raw_material_map.raw_material_name
-    group_name        TEXT        NOT NULL,          -- canonical group, e.g. "vitamin-d3"
-    confidence        TEXT        NOT NULL CHECK (confidence IN ('high', 'medium', 'low')),
+    group_name        TEXT,                          -- canonical group; set by SubstitutionAgent, NULL until then
+    confidence        TEXT        CHECK (confidence IS NULL OR confidence IN ('high', 'medium', 'low')),
     reasoning         TEXT,                          -- LLM explanation
-    embedding         vector(1536),                  -- pgvector embedding of raw_material_name
+    spec              JSONB,                         -- enriched properties used to build embedding text
+    embedding         vector(1536),                  -- pgvector embedding of raw_material_name or full spec
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_sg_raw_material_name ON substitution_groups(raw_material_name);
 CREATE INDEX IF NOT EXISTS idx_sg_group_name        ON substitution_groups(group_name);
+
+-- Idempotent migrations for existing deployments (no-op on fresh DBs):
+ALTER TABLE substitution_groups ADD COLUMN IF NOT EXISTS spec JSONB;
+ALTER TABLE substitution_groups ALTER COLUMN group_name DROP NOT NULL;
+ALTER TABLE substitution_groups ALTER COLUMN confidence DROP NOT NULL;
+ALTER TABLE substitution_groups DROP CONSTRAINT IF EXISTS substitution_groups_confidence_check;
+ALTER TABLE substitution_groups ADD CONSTRAINT substitution_groups_confidence_check
+    CHECK (confidence IS NULL OR confidence IN ('high', 'medium', 'low'));
 
 -- ─── Derived table: recommendations (Step 6) ─────────────────────────────────
 --
