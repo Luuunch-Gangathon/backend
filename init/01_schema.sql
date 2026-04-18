@@ -72,10 +72,11 @@ CREATE INDEX IF NOT EXISTS idx_rmm_supplier_id       ON raw_material_map(supplie
 CREATE TABLE IF NOT EXISTS substitution_groups (
     id                SERIAL      PRIMARY KEY,
     raw_material_name TEXT        NOT NULL UNIQUE,  -- matches raw_material_map.raw_material_name
-    group_name        TEXT        NOT NULL,          -- canonical group, e.g. "vitamin-d3"
-    confidence        TEXT        NOT NULL CHECK (confidence IN ('high', 'medium', 'low')),
+    group_name        TEXT,                          -- canonical group, e.g. "vitamin-d3" (filled by SubstitutionAgent)
+    confidence        TEXT        CHECK (confidence IN ('high', 'medium', 'low')),
     reasoning         TEXT,                          -- LLM explanation
-    embedding         vector(1536),                  -- pgvector embedding of raw_material_name
+    spec              JSONB,                         -- structured enrichment data from SearchEngine
+    embedding         vector(1536),                  -- pgvector embedding built from spec fields
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
