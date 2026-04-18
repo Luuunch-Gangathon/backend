@@ -1,32 +1,27 @@
-"""AgnesAgent — chat with keyword-triggered commands.
+"""AgnesAgent — chat with LLM tool calling.
 
-Phase 1 (current): commands triggered by explicit keywords in message.
-Phase 2 (next): LLM decides which tools to call autonomously.
-  → swap _try_command() for bind_tools() + agent loop.
-  → same functions, just re-add @tool decorators and bind to LLM.
-  → see git history for the agent loop implementation (was here before).
-
+LLM decides which tools to call autonomously based on user intent.
 Session-based history: server stores conversation per session_id.
 Frontend sends session_id each request — no full history transmission.
 
-Commands (user must explicitly write these in chat):
-  "search <material>"         → enrich single material via SearchEngine
-  "search all"                → enrich all unenriched materials
-  "compliance"                → score substitutes for all RMs in product (product_id from session)
-  "bom <product_id>"          → show ingredients for a product
-  "company <company_id>"      → show company info + products
+Tools available to the LLM:
+  search_all_materials     → enrich all unenriched materials via SearchEngine
+  search_material(name)    → enrich single material via SearchEngine
+  check_product_compliance → score substitutes for all RMs in session product
+  show_bom(product_id)     → show ingredients for a product
+  show_company(company_id) → show company info + products
 
-Anything else → normal chat with RAG context.
+Anything without tool calls → normal chat with RAG context.
 """
 
 from __future__ import annotations
 import logging
-import re
 import uuid
 
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
 from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.tools import tool
 
 from app.data import rag, repo
 from app.agents import search_engine, compliance as compliance_agent
@@ -48,39 +43,26 @@ def _get_llm() -> ChatOpenAI:
 
 
 # ---------------------------------------------------------------------------
-# Commands — keyword-triggered, no LLM reasoning
+# Tools — called by the LLM autonomously
 # ---------------------------------------------------------------------------
 
-async def _cmd_search_all() -> str:
+@tool
+async def search_all_materials() -> str:
+    """Enrich all unenriched raw materials with web search data."""
     await search_engine.run_all()
     return "SearchEngine completed for all unenriched materials."
 
 
-async def _cmd_search(name: str) -> str:
+@tool
+async def search_material(name: str) -> str:
+    """Enrich a single raw material by name with web search data."""
     await search_engine.run_one(name)
     return f"Enriched and embedded '{name}'. Data now available for queries."
 
 
-async def _cmd_compliance(session_id: str) -> str:
-    product_id = _session_product.get(session_id)
-    if product_id is None:
-        return "No product context for this session. Please provide a product_id when starting the chat."
-    bom = await repo.get_bom(product_id)
-    if not bom or not bom.consumed_raw_material_ids:
-        return f"No raw materials found in BOM for product {product_id}."
-    lines = []
-    for rm_id in bom.consumed_raw_material_ids:
-        proposals = await compliance_agent.check_compliance(product_id, rm_id)
-        if proposals:
-            lines.append(f"RM {rm_id}:")
-            for p in proposals:
-                lines.append(f"  - id: {p.id}, score: {p.score}/100 — {p.reasoning}")
-    if not lines:
-        return f"No substitute proposals found for any raw material in product {product_id}."
-    return f"Compliance results for product {product_id}:\n" + "\n".join(lines)
-
-
-async def _cmd_bom(product_id: int) -> str:
+@tool
+async def show_bom(product_id: int) -> str:
+    """Show bill of materials (ingredients) for a product."""
     bom = await repo.get_bom(product_id)
     if not bom:
         return f"No BOM found for product {product_id}."
@@ -92,7 +74,9 @@ async def _cmd_bom(product_id: int) -> str:
     return f"BOM for product {product_id} ({len(rm_lines)} ingredients):\n" + "\n".join(rm_lines)
 
 
-async def _cmd_company(company_id: int) -> str:
+@tool
+async def show_company(company_id: int) -> str:
+    """Show company info and its products."""
     company = await repo.get_company(company_id)
     if not company:
         return f"Company {company_id} not found."
@@ -105,29 +89,29 @@ async def _cmd_company(company_id: int) -> str:
     return "\n".join(lines)
 
 
-async def _try_command(message: str, session_id: str) -> str | None:
-    msg = message.strip()
-    msg_lower = msg.lower()
+def _make_compliance_tool(session_id: str):
+    """Build compliance tool as closure so session_id is not exposed to the LLM."""
+    @tool
+    async def check_product_compliance() -> str:
+        """Check compliance and find ranked substitute candidates for all raw materials in the current product."""
+        product_id = _session_product.get(session_id)
+        if product_id is None:
+            return "No product context for this session. Please provide a product_id when starting the chat."
+        bom = await repo.get_bom(product_id)
+        if not bom or not bom.consumed_raw_material_ids:
+            return f"No raw materials found in BOM for product {product_id}."
+        lines = []
+        for rm_id in bom.consumed_raw_material_ids:
+            proposals = await compliance_agent.check_compliance(product_id, rm_id)
+            if proposals:
+                lines.append(f"RM {rm_id}:")
+                for p in proposals:
+                    lines.append(f"  - id: {p.id}, score: {p.score}/100 — {p.reasoning}")
+        if not lines:
+            return f"No substitute proposals found for any raw material in product {product_id}."
+        return f"Compliance results for product {product_id}:\n" + "\n".join(lines)
 
-    if msg_lower == "search all":
-        return await _cmd_search_all()
-
-    m = re.match(r"^search\s+(.+)$", msg_lower)
-    if m:
-        return await _cmd_search(msg[len("search "):].strip())
-
-    if msg_lower == "compliance":
-        return await _cmd_compliance(session_id)
-
-    m = re.match(r"^bom\s+(\d+)$", msg_lower)
-    if m:
-        return await _cmd_bom(int(m.group(1)))
-
-    m = re.match(r"^company\s+(\d+)$", msg_lower)
-    if m:
-        return await _cmd_company(int(m.group(1)))
-
-    return None
+    return check_product_compliance
 
 
 # ---------------------------------------------------------------------------
@@ -135,14 +119,6 @@ async def _try_command(message: str, session_id: str) -> str | None:
 # ---------------------------------------------------------------------------
 
 async def _retrieve_context(query: str, top_k: int = 5) -> str:
-    """Build RAG context block injected into Agnes system prompt.
-
-    1. rag.search()              — embed query, pgvector search → top-k materials
-    2. repo.get_material_context() — fetch companies + suppliers from raw_material_map
-    3. Format into readable text block (companies/suppliers capped at 5 each)
-
-    Returns empty string if no embeddings exist yet (graceful fallback).
-    """
     try:
         results = await rag.search(query, top_k=top_k)
     except Exception:
@@ -165,7 +141,6 @@ async def _retrieve_context(query: str, top_k: int = 5) -> str:
         name = result["raw_material_name"]
         similarity = result.get("similarity") or 0
         lines.append(f"## {name} (relevance: {similarity:.2f})")
-
         rows = by_name.get(name, [])
         companies = sorted({r["company_name"] for r in rows if r["company_name"]})
         suppliers = sorted({r["supplier_name"] for r in rows if r["supplier_name"]})
@@ -191,7 +166,6 @@ async def ask(
     session_id: str | None,
     product_id: int | None = None,
 ) -> AgnesAskResponse:
-    # Create or load session
     if session_id is None or session_id not in _sessions:
         session_id = str(uuid.uuid4())
         _sessions[session_id] = InMemoryChatMessageHistory()
@@ -204,33 +178,36 @@ async def ask(
 
     history = _sessions[session_id]
 
-    # Step 1: check if message is an explicit command
-    command_result = await _try_command(message, session_id)
-    if command_result is not None:
-        logger.info("AgnesAgent: command executed")
-        history.add_user_message(message)
-        history.add_ai_message(command_result)
-        return AgnesAskResponse(
-            reply=AgnesMessage(role="assistant", content=command_result),
-            session_id=session_id,
-        )
-
-    # Step 2: normal chat — RAG context + LLM
-    # TODO Phase 2: replace steps 1+2 with bind_tools() agent loop.
-    # LLM autonomously decides which tools to call. Same functions, no keyword matching.
     context_block = await _retrieve_context(message)
-
     system_content = render("system/agnes")
+    current_product_id = _session_product.get(session_id)
+    if current_product_id is not None:
+        system_content += f"\n\nCurrent product in context: product_id={current_product_id}. Use this for any product-related tool calls."
     if context_block:
         system_content += f"\n\n---\nRetrieved supply chain context:\n{context_block}"
+
+    tools = [search_all_materials, search_material, show_bom, show_company, _make_compliance_tool(session_id)]
+    tool_map = {t.name: t for t in tools}
+    llm_with_tools = _get_llm().bind_tools(tools)
 
     messages = [SystemMessage(content=system_content)]
     messages.extend(history.messages)
     messages.append(HumanMessage(content=message))
 
-    response = await _get_llm().ainvoke(messages)
-    reply_text = response.content
+    # Agent loop: invoke → execute tool calls → invoke again until plain text reply
+    while True:
+        response = await llm_with_tools.ainvoke(messages)
+        messages.append(response)
 
+        if not response.tool_calls:
+            break
+
+        for tc in response.tool_calls:
+            logger.info("AgnesAgent: calling tool %s args=%s", tc["name"], tc["args"])
+            result = await tool_map[tc["name"]].ainvoke(tc["args"])
+            messages.append(ToolMessage(content=str(result), tool_call_id=tc["id"]))
+
+    reply_text = response.content
     history.add_user_message(message)
     history.add_ai_message(reply_text)
 
