@@ -77,3 +77,100 @@ def test_convert_to_handler_results_wrong_material():
 
     results = convert_to_handler_results(props, source_url="https://example.com", raw_markdown="wrong page")
     assert results == []
+
+
+import json
+import pytest
+from unittest.mock import patch, MagicMock, AsyncMock
+
+
+@pytest.mark.asyncio
+async def test_crawl_and_extract_success():
+    from app.api.search_engine.sources.supplier_website import _crawl_and_extract
+
+    fake_extracted = json.dumps([{
+        "is_correct_material": True,
+        "chemical_identity": {"cas_number": "557-04-0"},
+        "functional_role": ["lubricant"],
+        "source_origin": "plant",
+        "dietary_flags": None,
+        "allergens": None,
+        "certifications": ["Non-GMO"],
+        "regulatory_status": None,
+        "form_grade": None,
+        "price": None,
+    }])
+
+    mock_result = MagicMock()
+    mock_result.extracted_content = fake_extracted
+    mock_result.markdown = "# Magnesium Stearate\nCAS: 557-04-0"
+
+    mock_crawler = AsyncMock()
+    mock_crawler.arun.return_value = mock_result
+    mock_crawler.__aenter__ = AsyncMock(return_value=mock_crawler)
+    mock_crawler.__aexit__ = AsyncMock(return_value=False)
+
+    with patch("app.api.search_engine.sources.supplier_website.AsyncWebCrawler", return_value=mock_crawler):
+        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test-key"}):
+            result = await _crawl_and_extract("https://purebulk.com/products/mag", "magnesium stearate")
+
+    assert result is not None
+    props, markdown = result
+    assert props.is_correct_material is True
+    assert props.chemical_identity == {"cas_number": "557-04-0"}
+    assert "Magnesium Stearate" in markdown
+
+
+@pytest.mark.asyncio
+async def test_crawl_and_extract_wrong_material():
+    from app.api.search_engine.sources.supplier_website import _crawl_and_extract
+
+    fake_extracted = json.dumps([{
+        "is_correct_material": False,
+    }])
+
+    mock_result = MagicMock()
+    mock_result.extracted_content = fake_extracted
+    mock_result.markdown = "# Some Other Product"
+
+    mock_crawler = AsyncMock()
+    mock_crawler.arun.return_value = mock_result
+    mock_crawler.__aenter__ = AsyncMock(return_value=mock_crawler)
+    mock_crawler.__aexit__ = AsyncMock(return_value=False)
+
+    with patch("app.api.search_engine.sources.supplier_website.AsyncWebCrawler", return_value=mock_crawler):
+        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test-key"}):
+            result = await _crawl_and_extract("https://example.com/wrong", "magnesium stearate")
+
+    assert result is not None
+    props, markdown = result
+    assert props.is_correct_material is False
+
+
+@pytest.mark.asyncio
+async def test_crawl_and_extract_returns_none_on_error():
+    from app.api.search_engine.sources.supplier_website import _crawl_and_extract
+
+    mock_crawler = AsyncMock()
+    mock_crawler.arun.side_effect = Exception("connection timeout")
+    mock_crawler.__aenter__ = AsyncMock(return_value=mock_crawler)
+    mock_crawler.__aexit__ = AsyncMock(return_value=False)
+
+    with patch("app.api.search_engine.sources.supplier_website.AsyncWebCrawler", return_value=mock_crawler):
+        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test-key"}):
+            result = await _crawl_and_extract("https://example.com", "magnesium stearate")
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_crawl_and_extract_returns_none_without_api_key():
+    from app.api.search_engine.sources.supplier_website import _crawl_and_extract
+
+    with patch.dict("os.environ", {}, clear=True):
+        # Ensure ANTHROPIC_API_KEY is not set
+        import os
+        os.environ.pop("ANTHROPIC_API_KEY", None)
+        result = await _crawl_and_extract("https://example.com", "magnesium stearate")
+
+    assert result is None

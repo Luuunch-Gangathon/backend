@@ -84,3 +84,48 @@ def convert_to_handler_results(
                 }
             )
     return results
+
+
+from crawl4ai import AsyncWebCrawler, LLMConfig
+from crawl4ai.extraction_strategy import LLMExtractionStrategy
+
+
+async def _crawl_and_extract(
+    url: str, material_name: str
+) -> tuple[MaterialProperties, str] | None:
+    """Crawl a URL and extract material properties using LLM.
+
+    Returns (MaterialProperties, raw_markdown) or None on failure.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        logger.warning("ANTHROPIC_API_KEY not set, skipping supplier website crawl")
+        return None
+
+    strategy = LLMExtractionStrategy(
+        llm_config=LLMConfig(
+            provider="anthropic/claude-sonnet-4-20250514",
+            api_token=api_key,
+        ),
+        schema=MaterialProperties.model_json_schema(),
+        instruction=EXTRACTION_INSTRUCTION.format(material_name=material_name),
+    )
+
+    try:
+        async with AsyncWebCrawler() as crawler:
+            result = await crawler.arun(url=url, extraction_strategy=strategy)
+
+        raw_markdown = getattr(result, "markdown", "") or ""
+        extracted = json.loads(result.extracted_content)
+
+        # crawl4ai returns a list; take the first item
+        if isinstance(extracted, list) and len(extracted) > 0:
+            props = MaterialProperties(**extracted[0])
+        else:
+            props = MaterialProperties(**extracted)
+
+        return props, raw_markdown
+
+    except Exception:
+        logger.warning("Crawl failed for %s", url, exc_info=True)
+        return None
