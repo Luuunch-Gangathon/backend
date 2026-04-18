@@ -1,6 +1,6 @@
-# TBD — schema draft, subject to change as AgnesAgent is implemented.
-# POST /agnes/ask currently returns a stub response.
-# Likely additions: streaming support, tool_calls, evidence items in response.
+# Agnes chat schemas.
+# Session-based: server stores history, frontend sends session_id each request.
+# TBD: may add streaming, tool_calls, evidence items in future phases.
 
 from __future__ import annotations
 from typing import Literal
@@ -15,13 +15,15 @@ class AgnesSuggestedQuestion(BaseModel):
 class AgnesMessage(BaseModel):
     role: Literal['user', 'assistant']
     content: str
+    reasoning_steps: list[str] | None = None
+    cited_evidence_indices: list[int] | None = None
 
 
 class AgnesAskRequest(BaseModel):
-    proposal_id: int
     message: str
-    history: list[AgnesMessage] = []
+    session_id: str | None = None   # None = start new session
 
 
 class AgnesAskResponse(BaseModel):
     reply: AgnesMessage
+    session_id: str                  # frontend stores and sends back each request
