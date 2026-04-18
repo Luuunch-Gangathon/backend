@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import companies, products, raw_materials, suppliers
-from app.agents.controller import controller
+from app.agents import controller
 from app.data import db, migration
 
 
