@@ -248,6 +248,10 @@ def _build_embedding_text(name: str, props: dict) -> str:
 
     reg = props.get("regulatory_status", {}).get("value") or {}
     reg_notes = []
+    if reg.get("gras") is True:
+        reg_notes.append("GRAS")
+    elif reg.get("gras") is False:
+        reg_notes.append("not GRAS")
     if reg.get("has_recalls"):
         recalls = reg.get("recalls") or []
         classes = {r["classification"] for r in recalls if r.get("classification")}
