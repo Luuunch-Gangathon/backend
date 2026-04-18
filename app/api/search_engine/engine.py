@@ -36,9 +36,6 @@ def run_enrichment(name: str, context: dict) -> EnrichmentResult:
     filled: dict[str, PropertyResult] = {}
 
     for prop in PROPERTIES:
-        if prop in filled:
-            continue
-
         found = False
         for tier in TRUST_TIERS:
             if found:

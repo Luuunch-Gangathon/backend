@@ -120,6 +120,9 @@ def test_engine_skips_property_already_filled():
     # pubchem (verified) filled chemical_identity, so web_search should not
     # have been called for chemical_identity
     assert result.properties["chemical_identity"].source_name == "pubchem"
+    # web_search provides "*" so it COULD be called for other unfilled properties,
+    # but it must not have overwritten chemical_identity
+    assert result.properties["chemical_identity"].value == {"cas_number": "557-04-0"}
 
 
 def test_engine_unfilled_properties_are_unknown():
