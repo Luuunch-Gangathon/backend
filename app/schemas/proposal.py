@@ -3,22 +3,22 @@
 # Fields may be added/removed once LLM reasoning shape is finalized.
 
 from __future__ import annotations
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
 class EvidenceItem(BaseModel):
     claim: str
     source: str
-    url: str | None = None
-    confidence: Literal['high', 'medium', 'low'] | None = None
-    source_type: Literal['internal', 'supplier', 'regulator', 'industry'] | None = None
+    url: Optional[str] = None
+    confidence: Optional[Literal['high', 'medium', 'low']] = None
+    source_type: Optional[Literal['internal', 'supplier', 'regulator', 'industry']] = None
 
 
 class ComplianceRequirement(BaseModel):
     label: str
     status: Literal['met', 'gap', 'partial']
-    note: str | None = None
+    note: Optional[str] = None
 
 
 class Tradeoffs(BaseModel):
@@ -40,8 +40,8 @@ class Proposal(BaseModel):
     proposed_action: str
     companies_involved: list[int]
     current_suppliers: list[int]
-    proposed_supplier_id: int | None = None
-    proposed_substitute_raw_material_id: int | None = None
+    proposed_supplier_id: Optional[int] = None
+    proposed_substitute_raw_material_id: Optional[int] = None
     fragmentation_score: int
     tradeoffs: Tradeoffs
     conservative: RolloutPlan
