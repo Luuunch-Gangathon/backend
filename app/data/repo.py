@@ -313,6 +313,32 @@ async def save_substitutions(
 
 
 # ---------------------------------------------------------------------------
+# RAG context — used by AgnesAgent to enrich LLM prompt
+# ---------------------------------------------------------------------------
+
+async def get_material_context(names: list[str]) -> list[dict]:
+    """Fetch company + supplier context for a list of raw material names.
+
+    Queries raw_material_map for each name and returns a flat list of dicts:
+    {raw_material_name, company_name, supplier_name, finished_product_sku}
+    Used by AgnesAgent to inject grounded DB context into LLM prompt.
+    """
+    if not names:
+        return []
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT DISTINCT raw_material_name, company_name, supplier_name, finished_product_sku
+            FROM raw_material_map
+            WHERE raw_material_name = ANY($1)
+            ORDER BY raw_material_name, company_name
+            """,
+            names,
+        )
+    return [dict(r) for r in rows]
+
+
+# ---------------------------------------------------------------------------
 # Agnes suggestions
 # ---------------------------------------------------------------------------
 

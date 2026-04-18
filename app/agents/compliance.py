@@ -1,60 +1,66 @@
 """ComplianceAgent
 
-Verifies compliance requirements for each proposal, and ranks substitute
-raw materials by suitability score using GPT-4o structured output.
-
-Writes to:
-  - proposals (compliance_requirements column)
+Given a product id and raw material id:
+  1. Runs pgvector similarity search to find candidate substitutes.
+  2. Ranks them via GPT-4o structured output.
+  3. Returns a scored list of proposals.
 """
 
 from __future__ import annotations
 
-import json
 import logging
 import os
+import re
 
 from pydantic import BaseModel
 
-from app.schemas import RawMaterial, Product
+from app.prompts.loader import render
 from app.data import repo
+from app.schemas import SubstituteProposal
 
 logger = logging.getLogger(__name__)
 
 _client = None  # lazily initialized; replaced by tests via patch.object(compliance, "_client", mock)
 
-
-# ---------------------------------------------------------------------------
-# Return type
-# ---------------------------------------------------------------------------
-
-class SubstituteScore(BaseModel):
-    id: int
-    score: int      # 0–100
-    reasoning: str
+_DB_ID_RE = re.compile(r"^rm_db_(\d+)$")
 
 
 class _RankingResponse(BaseModel):
-    substitutes: list[SubstituteScore]
+    substitutes: list[SubstituteProposal]
 
 
 # ---------------------------------------------------------------------------
-# Public functions
+# Public entry point
 # ---------------------------------------------------------------------------
 
-async def rank_substitutes(
-    raw_material: RawMaterial,
-    substitutes: list[tuple[RawMaterial, float]],
-    product: Product,
-    top_x: int = 5,
-) -> list[SubstituteScore]:
-    """Return the top-X substitutes scored 0–100 with reasoning.
+async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5) -> list[SubstituteProposal]:
+    """Similarity-search then LLM-rank substitutes for a raw material in a product.
 
-    Args:
-        raw_material: The original material being replaced.
-        substitutes: Candidate replacements paired with their pgvector cosine similarity score.
-        product: The finished good the material is used in.
-        top_x: Maximum number of results to return, sorted by score desc.
+    Returns up to top_x SubstituteProposal items sorted by score descending.
+    Returns [] if the product/material is not found or no similar materials exist.
     """
+    product, raw_material = await _fetch_inputs(product_id, raw_material_id)
+    if product is None or raw_material is None:
+        logger.warning(
+            "compliance.check_compliance: product_id=%d or raw_material_id=%d not found",
+            product_id, raw_material_id,
+        )
+        return []
+
+    similar = await repo.find_similar_raw_materials(f"rm_db_{raw_material_id}")
+    if not similar:
+        logger.info("compliance.run: no similar materials found for rm_id=%d", raw_material_id)
+        return []
+
+    substitutes: list[tuple] = []
+    for item in similar:
+        m = _DB_ID_RE.match(item.raw_material_id)
+        if not m:
+            continue
+        rm = await repo.get_raw_material(int(m.group(1)))
+        if rm is not None:
+            substitutes.append((rm, item.similarity_score))
+
     if not substitutes:
         return []
 
@@ -63,29 +69,17 @@ async def rank_substitutes(
         from openai import AsyncOpenAI
         _client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-    system_prompt = (
-        "You are a supply-chain compliance expert. "
-        "Evaluate each substitute raw material against the original and the "
-        "finished-good context. Score each candidate 0–100 where 100 means a "
-        "perfect drop-in replacement with no compliance risk. Consider: "
-        "functional equivalence, regulatory fit (REACH, RoHS, food-grade, etc.), "
-        "specification overlap, and supplier reliability. "
-        "A `vector_similarity` field (0..1) indicates pgvector cosine similarity to the original; "
-        "treat it as a prior, not ground truth. "
-        "Return only the candidates provided — do not invent new ones."
-    )
-
+    system_prompt = render("system/compliance")
     sub_payload = [
         {**s.model_dump(), "vector_similarity": round(score, 4)}
         for s, score in substitutes
     ]
-
-    user_prompt = (
-        f"Original material: {json.dumps(raw_material.model_dump())}\n\n"
-        f"Finished good (product): {json.dumps(product.model_dump())}\n\n"
-        f"Substitute candidates:\n"
-        f"{json.dumps(sub_payload, indent=2)}\n\n"
-        f"Return the top {top_x} substitutes ranked by score."
+    user_prompt = render(
+        "user/compliance_rank",
+        original=raw_material.model_dump(),
+        product=product.model_dump(),
+        substitutes=sub_payload,
+        top_x=top_x,
     )
 
     response = await _client.beta.chat.completions.parse(
@@ -100,24 +94,22 @@ async def rank_substitutes(
 
     parsed = response.choices[0].message.parsed
     if parsed is None:
-        logger.warning("rank_substitutes: model returned no parsed output")
+        logger.warning("compliance.check_compliance: model returned no parsed output")
         return []
 
     results = sorted(parsed.substitutes, key=lambda s: s.score, reverse=True)[:top_x]
-    logger.debug("rank_substitutes: returning %d results", len(results))
+    logger.info(
+        "compliance.check_compliance: product_id=%d rm_id=%d → %d proposals",
+        product_id, raw_material_id, len(results),
+    )
     return results
 
 
-async def run(product: Product, raw_material: RawMaterial, substitutes: list[tuple[RawMaterial, float]]) -> None:
-    results = await rank_substitutes(raw_material, substitutes, product)
-    if not results:
-        return
-    await repo.save_substitutions(
-        raw_material.id,
-        [(r.id, r.score, r.reasoning) for r in results],
-    )
-    for r in results:
-        logger.info(
-            "ComplianceAgent: product=%s rm_id=%d sub_id=%d score=%d",
-            product.sku, raw_material.id, r.id, r.score,
-        )
+# ---------------------------------------------------------------------------
+# Private helpers
+# ---------------------------------------------------------------------------
+
+async def _fetch_inputs(product_id: int, raw_material_id: int):
+    product = await repo.get_product(product_id)
+    raw_material = await repo.get_raw_material(raw_material_id)
+    return product, raw_material

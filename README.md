@@ -1,62 +1,73 @@
 # Spherecast Supply Chain Co-Pilot — Backend
 
-FastAPI backend for wAgent. Reads supply chain data from Postgres, runs background agent pipeline to generate consolidation proposals, and serves everything via REST API.
+FastAPI backend for wAgent. Reads supply chain data from Postgres, enriches via SearchEngine on startup, and serves an AI chat (Agnes) with keyword-triggered commands for searching materials, checking compliance, and querying the database.
 
 ---
 
 ## Architecture
 
 ```
-REQUEST
-   │
-   ▼
-┌──────────────────────────────────┐
-│  API ROUTERS  (app/api/)         │  ← thin HTTP layer, read-only
-│  companies / products /          │
-│  raw-materials / suppliers /     │
-│  proposals / substitutions /     │
-│  agnes (POST /ask is exception)  │
-└──────────────┬───────────────────┘
-               │ calls
-               ▼
-┌──────────────────────────────────┐
-│  REPO  (app/data/repo.py)        │  ← SQL only, no logic, int IDs
-└──────────────┬───────────────────┘
-               │ reads
-               ▼
-┌─────────────────────────────────────────────────────┐
-│  POSTGRESQL                                          │
-│                                                     │
-│  [raw tables — migrated from SQLite on first boot]  │
-│  companies  products  boms  bom_components          │
-│  suppliers  supplier_products                       │
-│                                                     │
-│  [derived tables — agents write, routers read]      │
-│  raw_material_map     proposals                     │
-│  substitution_groups  substitutions                 │
-│  recommendations      agnes_suggestions             │
-└───────────────────────▲─────────────────────────────┘
-                        │ writes directly (bypass repo)
-┌───────────────────────┴─────────────────────────────┐
-│  AGENTS  (app/agents/)    background pipeline        │
-│                                                     │
-│  pipeline.py orchestrates on startup:               │
-│    SubstitutionAgent  → substitution_groups         │
-│    SearchEngine       → enrichment data (stub)      │
-│    ProposalAgent      → proposals + suggestions     │
-│    ComplianceAgent    → compliance fields (stub)    │
-│    AuditorAgent       → confidence scoring (stub)   │
-│                                                     │
-│  AgnesAgent → live LLM, only called by POST /ask    │
-└─────────────────────────────────────────────────────┘
+FRONTEND
+    │
+    ▼
+┌──────────────────────────────────────────────────────┐
+│  API ROUTERS  (app/api/)          read-only          │
+│                                                      │
+│  GET  /companies, /products, /raw-materials,         │
+│       /suppliers, /proposals, /substitutions         │
+│       → repo.py → DB                                 │
+│                                                      │
+│  POST /agnes/ask  → AgnesAgent                        │
+│                     Phase 1: keyword-triggered cmds   │
+│                     Phase 2: LLM decides (TODO)       │
+│                                                      │
+│                     Commands:                         │
+│                     "search <name>"   → enrich 1      │
+│                     "search all"      → enrich all    │
+│                     "compliance X Y"  → score (TODO)  │
+│                     "bom <id>"        → show BOM      │
+│                     "company <id>"    → show company   │
+│                     anything else     → chat + RAG    │
+└──────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────┐
+│  POSTGRESQL                                           │
+│                                                      │
+│  [raw tables — from SQLite migration]                │
+│  companies  products  boms  bom_components           │
+│  suppliers  supplier_products                        │
+│                                                      │
+│  [derived tables]                                    │
+│  raw_material_map       ← pre-joined flat view       │
+│  substitution_groups    ← embeddings + specs          │
+│  substitutions          ← scored pairs from compliance│
+│  proposals              ← TBD                        │
+│  agnes_suggestions      ← TBD                        │
+└──────────────────────────▲───────────────────────────┘
+                           │ writes
+┌──────────────────────────┴───────────────────────────┐
+│  AGENTS                                               │
+│                                                      │
+│  STARTUP (pipeline.py):                              │
+│    SearchEngine.run_all()                            │
+│      → for each unenriched material:                 │
+│        web search → new info → updated raw material  │
+│        → generate embedding → store in               │
+│          substitution_groups                          │
+│                                                      │
+│  ON-DEMAND:                                          │
+│    SearchEngine.run_one(name)  ← from chat/frontend  │
+│    ComplianceAgent.rank()      ← from chat/frontend  │
+└──────────────────────────────────────────────────────┘
 ```
 
 **Core rules:**
-- Routers call `repo.py` only. Never touch agents or write DB.
-- Repo is SQL-only. No business logic. Returns Pydantic models.
-- Agents call `db.py` directly for writes. Skip repo. Own their tables.
-- IDs are plain integers matching Postgres `PRIMARY KEY`. No string prefixes.
-- `POST /agnes/ask` is the only endpoint that runs a live agent.
+- Routers call `repo.py` only. Never write DB.
+- Agents write to DB directly via `db.py`.
+- IDs are plain integers matching Postgres `PRIMARY KEY`.
+- `POST /agnes/ask` is the only endpoint that runs agents (via keyword commands).
+- SearchEngine runs once on startup for all materials. Can also be called on-demand for one material.
+- ComplianceAgent is on-demand only — called from Agnes chat or frontend.
 
 ---
 
@@ -74,7 +85,7 @@ pip install -r requirements.txt
 
 # 3. Env vars
 cp .env.example .env
-# edit .env — set OPENAI_API_KEY (required for Agnes chat)
+# edit .env — set OPENAI_API_KEY (required for Agnes + SearchEngine)
 
 # 4. Enable git hook (once per clone)
 git config core.hooksPath .githooks
@@ -83,17 +94,14 @@ git config core.hooksPath .githooks
 uvicorn app.main:app --reload --log-level info
 ```
 
-On first boot: SQLite → Postgres migration runs automatically, then pipeline runs (all agents currently stubbed — no-op).
+On first boot: SQLite → Postgres migration, then SearchEngine processes all unenriched materials.
 
-**Git hook:** runs `pytest tests/` before every commit if server is up. Skips silently if server is down. Test the hook without committing:
+**Git hook:** runs `pytest tests/` before every commit if server is up. Skips silently if server is down.
 ```bash
-sh .githooks/pre-commit
+sh .githooks/pre-commit   # test without committing
 ```
 
 Interactive docs: `http://localhost:8000/docs`
-OpenAPI schema: `http://localhost:8000/openapi.json`
-
-Frontend generates TypeScript types from `/openapi.json` via `yarn gen:types`.
 
 ---
 
@@ -101,21 +109,15 @@ Frontend generates TypeScript types from `/openapi.json` via `yarn gen:types`.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/health` | Liveness probe → `{"status": "ok"}` |
-| GET | `/companies` | All 61 portfolio companies |
-| GET | `/companies/{id}` | Single company |
-| GET | `/products` | All finished goods (`?company_id=` filter available) |
-| GET | `/products/{id}` | Single product |
-| GET | `/products/{id}/bom` | Bill of materials (list of raw-material IDs) |
-| GET | `/raw-materials` | All 876 raw materials |
-| GET | `/raw-materials/{id}` | Single raw material |
-| GET | `/suppliers` | All 40 suppliers |
-| GET | `/suppliers/{id}` | Single supplier |
-| GET | `/proposals` | AI-generated proposals, sorted by `fragmentation_score` desc |
-| GET | `/proposals/{id}` | Single proposal with evidence trail + tradeoffs |
-| GET | `/substitutions` | Known raw-material substitution pairs |
-| GET | `/agnes/suggestions?proposal_id=` | Pre-seeded questions for a proposal |
-| POST | `/agnes/ask` | Ask Agnes a free-form question about a proposal |
+| GET | `/health` | Liveness probe |
+| GET | `/companies`, `/companies/{id}` | Portfolio companies |
+| GET | `/products`, `/products/{id}`, `/products/{id}/bom` | Finished goods + BOM |
+| GET | `/raw-materials`, `/raw-materials/{id}` | Raw materials |
+| GET | `/suppliers`, `/suppliers/{id}` | Suppliers |
+| GET | `/proposals`, `/proposals/{id}` | Consolidation proposals (TBD) |
+| GET | `/substitutions` | Scored substitution pairs |
+| GET | `/agnes/suggestions?proposal_id=` | Pre-seeded chat questions (TBD) |
+| POST | `/agnes/ask` | AI chat — keyword commands + RAG-backed LLM |
 
 ---
 
@@ -124,8 +126,8 @@ Frontend generates TypeScript types from `/openapi.json` via `yarn gen:types`.
 ```
 backend/
 ├── app/
-│   ├── main.py              # FastAPI app — lifespan, CORS, router wiring
-│   ├── api/                 # HTTP routers — one file per domain, read-only
+│   ├── main.py
+│   ├── api/                 # routers — one file per domain
 │   │   ├── companies.py
 │   │   ├── products.py
 │   │   ├── raw_materials.py
@@ -134,37 +136,27 @@ backend/
 │   │   ├── substitutions.py
 │   │   └── agnes.py
 │   ├── data/
-│   │   ├── db.py            # asyncpg connection pool (do not modify)
-│   │   ├── repo.py          # all SQL reads — add new queries here
-│   │   └── migration.py     # SQLite → Postgres migration (runs on first boot)
-│   ├── schemas/             # Pydantic models — source of truth for wire format
-│   │   ├── company.py
-│   │   ├── product.py       # Product, BOM
-│   │   ├── raw_material.py
-│   │   ├── supplier.py
-│   │   ├── proposal.py      # Proposal, EvidenceItem, ComplianceRequirement, Tradeoffs
-│   │   ├── substitution.py
-│   │   └── agnes.py         # AgnesAskRequest/Response, AgnesMessage
+│   │   ├── db.py            # asyncpg pool
+│   │   ├── repo.py          # all SQL reads
+│   │   ├── rag.py           # embedding storage + semantic search
+│   │   └── migration.py     # SQLite → Postgres
+│   ├── schemas/
+│   │   ├── company.py, product.py, raw_material.py, supplier.py
+│   │   ├── proposal.py, substitution.py, agnes.py
+│   │   └── similar_raw_material.py
+│   ├── prompts/             # Jinja2 templates
+│   │   ├── loader.py        # render("system/agnes")
+│   │   ├── system/agnes.j2, system/compliance.j2
+│   │   └── user/compliance_rank.j2
 │   └── agents/
-│       ├── pipeline.py      # orchestrator — uncomment lines to activate agents
-│       ├── agnes.py         # live LLM agent — wire Claude API here
-│       ├── substitution.py  # DB heuristic — writes substitution_groups + substitutions
-│       ├── proposal.py      # rule-based stub — upgrade to LLM
-│       ├── compliance.py    # stub
-│       ├── search_engine.py # stub — web scraping goes here
-│       └── auditor.py       # stub — hallucination checking goes here
-├── init/
-│   └── 01_schema.sql        # full Postgres schema with derived tables + pgvector
-├── data/
-│   └── db.sqlite            # source data, migrated to Postgres on boot
-├── tests/                   # integration tests (server must be running)
-│   ├── conftest.py          # requests session fixture
-│   ├── test_health.py
-│   ├── test_companies.py
-│   ├── test_products.py
-│   ├── test_raw_materials.py
-│   └── test_suppliers.py
-├── docker-compose.yml       # pgvector/pgvector:pg16
+│       ├── pipeline.py      # startup: SearchEngine.run_all()
+│       ├── agnes.py         # agentic chat with tools
+│       ├── search_engine.py # enrichment + embeddings
+│       └── compliance.py    # GPT-4o substitute scoring
+├── init/01_schema.sql
+├── data/db.sqlite
+├── tests/
+├── docker-compose.yml
 ├── requirements.txt
 └── .env.example
 ```
@@ -173,97 +165,90 @@ backend/
 
 ## Agents
 
-Agents live in `app/agents/`. They write to DB directly and are called by `pipeline.py` on startup (or on demand).
+| Agent | Mode | What it does |
+|-------|------|-------------|
+| `search_engine.py` | Startup + on-demand | Enriches materials → generates embeddings → stores in `substitution_groups` |
+| `compliance.py` | On-demand | Scores substitute candidates 0-100 via GPT-4o structured output |
+| `agnes.py` | Live (POST /agnes/ask) | Keyword-triggered commands + RAG chat. Phase 2: agentic tool use. |
 
-| Agent | Status | Writes to | Notes |
-|-------|--------|-----------|-------|
-| `substitution.py` | Working | `substitution_groups`, `substitutions` | DB heuristic: same canonical name = substitutable |
-| `proposal.py` | Stub | `proposals`, `agnes_suggestions` | Replace with LLM reasoning |
-| `compliance.py` | Stub | `proposals` (compliance fields) | REACH/RoHS/allergen checks |
-| `search_engine.py` | Stub | enrichment columns | Web scraping + PDF parsing |
-| `auditor.py` | Stub | `proposals` (confidence) | Hallucination detection |
-| `agnes.py` | **Live** | — (LangChain + OpenAI) | Session-based chat, domain-scoped |
+### SearchEngine flow
 
-**To activate a background agent:**
-```python
-# app/agents/pipeline.py — uncomment the relevant line
-await _step("ProposalAgent", proposal.run)
+```
+Raw Material name
+  → Web Search (TODO: teammate implements)
+  → New Information (specs, certs, allergens)
+  → Updated Raw Material (stored in substitution_groups.spec)
+  → Generate Embedding (rag.store_embedding())
+  → Available for similarity search (pgvector)
 ```
 
----
+Two entry points:
+- `run_all()` — startup, processes all unenriched materials
+- `run_one(name)` — on-demand, single material (from Agnes chat or frontend)
 
-## Agnes Chat
+### Agnes — keyword commands + RAG chat
 
-Domain-scoped AI chat via LangChain + OpenAI. Runs on `POST /agnes/ask`.
+**Phase 1 (current):** user types explicit commands. No LLM reasoning over tool selection.
+**Phase 2 (next):** swap keyword matching for LangChain `bind_tools()` — LLM decides which tools to call.
+
+Commands:
+| Command | What it does | Status |
+|---------|-------------|--------|
+| `search <name>` | Enrich single material via SearchEngine | Working (name-only fallback) |
+| `search all` | Enrich all unenriched materials | Working (name-only fallback) |
+| `compliance <rm_id> <product_id>` | Score substitutes via ComplianceAgent | TODO — teammate implements |
+| `bom <product_id>` | Show BOM ingredients | Working |
+| `company <company_id>` | Show company + products | Working |
+| anything else | RAG-backed LLM chat | Working |
+
+Example:
+```
+user: "search whey-protein-isolate"     → enriches + embeds that material
+user: "bom 90"                          → shows ingredients for product 90
+user: "tell me about lecithin"          → RAG search + LLM answers with DB context
+```
 
 **Session flow:**
 ```
-1st request:  POST /agnes/ask {message: "...", session_id: null}
-              ← {reply: "...", session_id: "abc-123"}
-
-2nd request:  POST /agnes/ask {message: "...", session_id: "abc-123"}
-              ← {reply: "...", session_id: "abc-123"}
+POST /agnes/ask {message, session_id: null}  → new session
+POST /agnes/ask {message, session_id: "..."}  → resume session
 ```
 
-- Frontend stores `session_id`, sends it back each request
-- Server stores history in memory — no DB, no transmission of full history
-- Session cleared on server restart or when frontend discards `session_id`
+Server stores history in memory. Session cleared on restart.
 
-**Requires:** `OPENAI_API_KEY` in `.env`
+---
 
-**Roadmap:**
-- Phase 2: inject DB context (proposals, raw materials) into prompt
-- Phase 3: tool use — LLM queries DB and calls agents on demand (RAG + agentic)
+## Prompts
+
+Jinja2 templates in `app/prompts/`. Edit without touching Python.
+
+```python
+from app.prompts.loader import render
+prompt = render("system/agnes")                    # static
+prompt = render("user/compliance_rank", **kwargs)  # with variables
+```
 
 ---
 
 ## Tests
 
-Sync integration tests using `requests`. No async, no mocking — tests hit the real server.
-
 ```bash
-# Terminal 1 — server must be running
+# server must be running
 uvicorn app.main:app --reload
-
-# Terminal 2
 pytest tests/ -v
 ```
 
-Tests cover only stable endpoints (companies, products, raw-materials, suppliers). Agnes/proposals/substitutions excluded — those shapes are still being finalized.
-
-**21 tests covering:**
-- HTTP status codes (200, 404)
-- Exact counts from DB (61 companies, 149 products, 876 raw materials, 40 suppliers)
-- Exact known values (company 1 = "21st Century", supplier 1 = "ADM", etc.)
-- Schema shapes (correct field names and types)
-- Query param filtering (`?company_id=`)
-
-**Adding a test:**
-```python
-# tests/test_<domain>.py
-from tests.conftest import get
-
-def test_something(api):
-    r = get(api, "/companies/1")
-    assert r.status_code == 200
-    assert r.json()["name"] == "21st Century"
-```
+21 integration tests on stable endpoints. Agnes/proposals/substitutions excluded.
 
 ---
 
 ## Database
 
-Full schema in `init/01_schema.sql`. Uses pgvector extension for future semantic similarity search.
+Schema: `init/01_schema.sql`. pgvector extension enabled.
 
-**Derived tables** (agents write, routers read):
-- `raw_material_map` — flattened BOM view per company+ingredient+supplier. Rebuilt by `refresh_raw_material_map()` SQL function.
-- `substitution_groups` — functional equivalence groups with pgvector embedding slot
-- `proposals` — consolidation recommendations with evidence, tradeoffs, rollout plans
-- `substitutions` — raw substitution pairs (from_rm → to_rm + reason)
-- `agnes_suggestions` — pre-seeded chat questions per proposal
+Key tables:
+- `raw_material_map` — pre-joined BOM view. Rebuilt by `refresh_raw_material_map()`.
+- `substitution_groups` — specs + pgvector embeddings. Written by SearchEngine.
+- `substitutions` — scored from→to pairs. Written by ComplianceAgent.
 
-**Reset DB and re-run migration:**
-```bash
-docker-compose down -v && docker-compose up -d
-uvicorn app.main:app --reload
-```
+Reset: `docker-compose down -v && docker-compose up -d`

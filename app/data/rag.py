@@ -44,7 +44,14 @@ from app.data import db
 logger = logging.getLogger(__name__)
 
 _EMBEDDING_MODEL = "text-embedding-3-small"
-_openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+_openai: AsyncOpenAI | None = None
+
+
+def _get_openai() -> AsyncOpenAI:
+    global _openai
+    if _openai is None:
+        _openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    return _openai
 
 
 async def store_embedding(enriched_result: dict) -> None:
@@ -108,6 +115,49 @@ async def store_name_only_embedding(name: str) -> None:
     logger.info("rag: stored name-only embedding for %r", name)
 
 
+_EMBED_BATCH_SIZE = 256  # OpenAI limit is 2048 inputs; 256 is safe for long texts
+
+
+async def seed_name_only_embeddings() -> int:
+    """Embed any raw material names that have no embedding yet.
+
+    Called once on startup so vector search works immediately, before the
+    search engine has enriched anything. Uses ON CONFLICT DO NOTHING so richer
+    spec-based vectors written later by store_embedding are never overwritten.
+
+    Batches all names into as few OpenAI calls as possible (max 256 per call).
+    Returns the number of names that were newly embedded.
+    """
+    names = await get_unembedded_names()
+    if not names:
+        logger.info("rag: all materials already have embeddings, nothing to seed")
+        return 0
+
+    logger.info("rag: seeding name-only embeddings for %d materials (batched)", len(names))
+
+    for batch_start in range(0, len(names), _EMBED_BATCH_SIZE):
+        batch = names[batch_start: batch_start + _EMBED_BATCH_SIZE]
+        try:
+            response = await _get_openai().embeddings.create(model=_EMBEDDING_MODEL, input=batch)
+            vectors = [item.embedding for item in response.data]
+        except Exception:
+            logger.exception("rag: embedding batch %d failed, skipping", batch_start)
+            continue
+
+        async with db.get_conn() as conn:
+            await conn.executemany(
+                """
+                INSERT INTO substitution_groups (raw_material_name, embedding, updated_at)
+                VALUES ($1, $2, now())
+                ON CONFLICT (raw_material_name) DO NOTHING
+                """,
+                list(zip(batch, vectors)),
+            )
+
+    logger.info("rag: seeding complete")
+    return len(names)
+
+
 async def get_unembedded_names() -> list[str]:
     """Return distinct raw_material_names that exist in raw_material_map
     but have no embedding in substitution_groups yet.
@@ -127,6 +177,36 @@ async def get_unembedded_names() -> list[str]:
             """
         )
     return [r["raw_material_name"] for r in rows]
+
+
+async def search(query: str, top_k: int = 5) -> list[dict]:
+    """Semantic search over embedded raw materials.
+
+    Embeds query, finds most similar materials in substitution_groups via
+    pgvector cosine distance. Returns top_k results with name, spec, similarity.
+    Returns empty list if no embeddings exist yet.
+    """
+    vector = await _embed(query)
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT raw_material_name,
+                   spec,
+                   group_name,
+                   confidence,
+                   reasoning,
+                   1 - (embedding <=> $1::vector) AS similarity
+            FROM substitution_groups
+            WHERE embedding IS NOT NULL
+            ORDER BY embedding <=> $1::vector
+            LIMIT $2
+            """,
+            vector,
+            top_k,
+        )
+    results = [dict(r) for r in rows]
+    logger.info("rag: search %r → %d results", query[:60], len(results))
+    return results
 
 
 # ── private helpers ───────────────────────────────────────────────────────────
@@ -168,6 +248,10 @@ def _build_embedding_text(name: str, props: dict) -> str:
 
     reg = props.get("regulatory_status", {}).get("value") or {}
     reg_notes = []
+    if reg.get("gras") is True:
+        reg_notes.append("GRAS")
+    elif reg.get("gras") is False:
+        reg_notes.append("not GRAS")
     if reg.get("has_recalls"):
         recalls = reg.get("recalls") or []
         classes = {r["classification"] for r in recalls if r.get("classification")}
@@ -189,5 +273,5 @@ def _build_embedding_text(name: str, props: dict) -> str:
 
 
 async def _embed(text: str) -> list[float]:
-    response = await _openai.embeddings.create(model=_EMBEDDING_MODEL, input=text)
+    response = await _get_openai().embeddings.create(model=_EMBEDDING_MODEL, input=text)
     return response.data[0].embedding
