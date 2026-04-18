@@ -1,48 +1,42 @@
-"""Repository layer: DB-first with fixture fallback.
+"""Repository layer: async PostgreSQL queries with fixture fallback.
 
-Template pattern for domain queries. Each public function here corresponds to
-one read path used by a router. If a SQLite DB is present at
-`data/db.sqlite`, merge rows from there with the hand-authored fixtures.
-DB-derived rows are namespaced (e.g. `ing_db_<n>`) so they never collide
-with fixture IDs.
+Each public function here corresponds to one read path used by a router.
+Fixtures still work as before — useful for tests and local dev without a DB.
+DB rows are namespaced (e.g. `rm_db_<n>`) so they never collide with fixture IDs.
 """
-
 from __future__ import annotations
 
-import sqlite3
 from typing import Optional
 
-from app.schemas import Ingredient
+from app.schemas import RawMaterial
 
 from . import db, fixtures
 
 
-def _db_ingredients() -> list[Ingredient]:
-    if not db.is_available():
-        return []
+async def _db_raw_materials() -> list[RawMaterial]:
     try:
-        with db.get_conn() as conn:
-            rows = conn.execute(
-                "SELECT Id, SKU, CompanyId FROM Product WHERE Type = 'raw-material'"
-            ).fetchall()
-    except sqlite3.Error:
+        async with db.get_conn() as conn:
+            rows = await conn.fetch(
+                "SELECT id, sku, company_id FROM products WHERE type = 'raw-material'"
+            )
+    except Exception:
         return []
     return [
-        Ingredient(
-            id=f"ing_db_{row['Id']}",
-            name=row["SKU"],
+        RawMaterial(
+            id=f"rm_db_{row['id']}",
+            name=row["sku"],
             canonical_name=None,
-            company_id=f"co_db_{row['CompanyId']}",
-            sku=row["SKU"],
+            company_id=f"co_db_{row['company_id']}",
+            sku=row["sku"],
         )
         for row in rows
     ]
 
 
-def list_ingredients(
+async def list_raw_materials(
     name: Optional[str] = None, company_id: Optional[str] = None
-) -> list[Ingredient]:
-    merged = list(fixtures.INGREDIENTS) + _db_ingredients()
+) -> list[RawMaterial]:
+    merged = list(fixtures.RAW_MATERIALS) + await _db_raw_materials()
     if name:
         needle = name.lower()
         merged = [

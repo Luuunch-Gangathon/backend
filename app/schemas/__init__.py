@@ -1,3 +1,3 @@
-from .ingredient import Ingredient
+from .raw_material import RawMaterial
 
-__all__ = ["Ingredient"]
+__all__ = ["RawMaterial"]
