@@ -2,10 +2,13 @@
 
 Routers import only this module. No router touches agents or repo directly.
 
-Responsibilities:
-  - initialize(): runs at startup, triggers SearchEngine enrichment for all raw materials
-  - get_company / get_product / get_raw_material / get_supplier: serve UI requests
-    by reading from DB and delegating to agents as needed
+Startup:
+  initialize() runs once on app boot — triggers SearchEngine enrichment
+  for every raw material. Fire-and-forget per item.
+
+Request path:
+  get_raw_material() reads enriched data from DB, then asks SubstitutionAgent
+  for candidates before returning.
 """
 
 from __future__ import annotations
@@ -42,12 +45,7 @@ class Controller:
     # ------------------------------------------------------------------
 
     async def initialize(self) -> None:
-        """Called once on app startup.
-
-        Fetches all raw materials and triggers SearchEngine enrichment for each.
-        Fire-and-forget per item — enrichment writes directly to DB.
-        """
-        raw_materials = repo.list_raw_materials()
+        raw_materials = await repo.list_raw_materials()
         logger.info("Controller.initialize: enriching %d raw materials", len(raw_materials))
         for rm in raw_materials:
             try:
@@ -59,55 +57,52 @@ class Controller:
     # Companies
     # ------------------------------------------------------------------
 
-    def list_companies(self) -> list[Company]:
-        return repo.list_companies()
+    async def list_companies(self) -> list[Company]:
+        return await repo.list_companies()
 
-    def get_company(self, company_id: str) -> Optional[CompanyDetail]:
-        return repo.get_company(company_id)
+    async def get_company(self, company_id: str) -> Optional[CompanyDetail]:
+        return await repo.get_company(company_id)
 
-    def list_products_by_company(self, company_id: str) -> list[FinishedGood]:
-        return repo.list_products_by_company(company_id)
+    async def list_products_by_company(self, company_id: str) -> list[FinishedGood]:
+        return await repo.list_products_by_company(company_id)
 
     # ------------------------------------------------------------------
     # Products (finished goods)
     # ------------------------------------------------------------------
 
-    def get_product(self, product_id: str) -> Optional[FinishedGoodDetail]:
-        return repo.get_product(product_id)
+    async def get_product(self, product_id: str) -> Optional[FinishedGoodDetail]:
+        return await repo.get_product(product_id)
 
     # ------------------------------------------------------------------
     # Raw materials
     # ------------------------------------------------------------------
 
-    def list_raw_materials(
+    async def list_raw_materials(
         self,
         name: Optional[str] = None,
         company_id: Optional[str] = None,
     ) -> list[RawMaterial]:
-        return repo.list_raw_materials(name=name, company_id=company_id)
+        return await repo.list_raw_materials(name=name, company_id=company_id)
 
-    def get_raw_material(self, rm_id: str) -> Optional[RawMaterialDetail]:
-        detail = repo.get_raw_material(rm_id)
+    async def get_raw_material(self, rm_id: str) -> Optional[RawMaterialDetail]:
+        detail = await repo.get_raw_material(rm_id)
         if detail is None:
             return None
-
-        # Augment with substitution candidates from SubstitutionAgent
-        substitute_ids = self.substitution_agent.get_substitutes(
+        detail.substitute_ids = await self.substitution_agent.get_substitutes(
             rm_id=rm_id,
             canonical_name=detail.canonical_name,
         )
-        detail.substitute_ids = substitute_ids
         return detail
 
     # ------------------------------------------------------------------
     # Suppliers
     # ------------------------------------------------------------------
 
-    def list_suppliers(self) -> list[Supplier]:
-        return repo.list_suppliers()
+    async def list_suppliers(self) -> list[Supplier]:
+        return await repo.list_suppliers()
 
-    def get_supplier(self, supplier_id: str) -> Optional[SupplierDetail]:
-        return repo.get_supplier(supplier_id)
+    async def get_supplier(self, supplier_id: str) -> Optional[SupplierDetail]:
+        return await repo.get_supplier(supplier_id)
 
 
 # Singleton — import this everywhere

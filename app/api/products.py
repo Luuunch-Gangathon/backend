@@ -9,8 +9,8 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 
 @router.get("/{product_id}", response_model=FinishedGoodDetail)
-def get_product(product_id: str) -> FinishedGoodDetail:
-    result = controller.get_product(product_id)
+async def get_product(product_id: str) -> FinishedGoodDetail:
+    result = await controller.get_product(product_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return result
