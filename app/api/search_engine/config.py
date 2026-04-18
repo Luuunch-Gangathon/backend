@@ -7,7 +7,7 @@ and SOURCES here. The engine and handlers do not need modification.
 from __future__ import annotations
 
 PROPERTIES: list[str] = [
-    "chemical_identity",
+    # "chemical_identity",  # temporarily excluded — PubChem lookup is slow and not needed for substitution MVP
     "functional_role",
     "source_origin",
     "dietary_flags",
@@ -26,11 +26,11 @@ SOURCES: list[dict] = [
         "trust_tier": "verified",
         "provides": ["*"],
     },
-    {
-        "name": "pubchem",
-        "trust_tier": "verified",
-        "provides": ["chemical_identity"],
-    },
+    # {
+    #     "name": "pubchem",
+    #     "trust_tier": "verified",
+    #     "provides": ["chemical_identity"],
+    # },
     {
         "name": "chebi",
         "trust_tier": "verified",
