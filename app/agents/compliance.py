@@ -96,7 +96,10 @@ async def rank_substitutes(
     return results
 
 
-async def run() -> None:
-    logger.info("ComplianceAgent: started")
-    # TODO: wire rank_substitutes into the proposal pipeline
-    logger.info("ComplianceAgent: done")
+async def run(product: Product, raw_material: RawMaterial, substitutes: list[RawMaterial]) -> None:
+    results = await rank_substitutes(raw_material, substitutes, product)
+    for r in results:
+        logger.info(
+            "ComplianceAgent: product=%s rm_id=%d sub_id=%d score=%d — %s",
+            product.sku, raw_material.id, r.id, r.score, r.reasoning,
+        )
