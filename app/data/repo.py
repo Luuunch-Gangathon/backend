@@ -2,18 +2,18 @@
 
 Each public function here corresponds to one read path used by a router.
 Fixtures still work as before — useful for tests and local dev without a DB.
-DB rows are namespaced (e.g. `ing_db_<n>`) so they never collide with fixture IDs.
+DB rows are namespaced (e.g. `rm_db_<n>`) so they never collide with fixture IDs.
 """
 from __future__ import annotations
 
 from typing import Optional
 
-from app.schemas import Ingredient
+from app.schemas import RawMaterial
 
 from . import db, fixtures
 
 
-async def _db_ingredients() -> list[Ingredient]:
+async def _db_raw_materials() -> list[RawMaterial]:
     try:
         async with db.get_conn() as conn:
             rows = await conn.fetch(
@@ -22,8 +22,8 @@ async def _db_ingredients() -> list[Ingredient]:
     except Exception:
         return []
     return [
-        Ingredient(
-            id=f"ing_db_{row['id']}",
+        RawMaterial(
+            id=f"rm_db_{row['id']}",
             name=row["sku"],
             canonical_name=None,
             company_id=f"co_db_{row['company_id']}",
@@ -33,10 +33,10 @@ async def _db_ingredients() -> list[Ingredient]:
     ]
 
 
-async def list_ingredients(
+async def list_raw_materials(
     name: Optional[str] = None, company_id: Optional[str] = None
-) -> list[Ingredient]:
-    merged = list(fixtures.INGREDIENTS) + await _db_ingredients()
+) -> list[RawMaterial]:
+    merged = list(fixtures.RAW_MATERIALS) + await _db_raw_materials()
     if name:
         needle = name.lower()
         merged = [

@@ -32,7 +32,7 @@ async def run_if_empty(pool: asyncpg.Pool) -> None:
 
 
 async def run(pool: asyncpg.Pool) -> None:
-    """Truncate all raw tables and repopulate from SQLite. Rebuilds ingredient_map."""
+    """Truncate all raw tables and repopulate from SQLite. Rebuilds raw_material_map."""
     sqlite = sqlite3.connect(SQLITE_PATH)
     sqlite.row_factory = sqlite3.Row
     try:
@@ -40,7 +40,7 @@ async def run(pool: asyncpg.Pool) -> None:
             async with conn.transaction():
                 await conn.execute("""
                     TRUNCATE
-                        ingredient_map,
+                        raw_material_map,
                         supplier_products,
                         bom_components,
                         boms,
@@ -84,9 +84,9 @@ async def run(pool: asyncpg.Pool) -> None:
                             columns=[("SupplierId", "supplier_id"),
                                      ("ProductId", "product_id")])
 
-                await conn.execute("SELECT refresh_ingredient_map()")
-                count = await conn.fetchval("SELECT COUNT(*) FROM ingredient_map")
-                print(f"  ingredient_map built — {count} rows")
+                await conn.execute("SELECT refresh_raw_material_map()")
+                count = await conn.fetchval("SELECT COUNT(*) FROM raw_material_map")
+                print(f"  raw_material_map built — {count} rows")
     finally:
         sqlite.close()
 

@@ -38,15 +38,15 @@ CREATE TABLE IF NOT EXISTS supplier_products (
     PRIMARY KEY (supplier_id, product_id)
 );
 
--- ─── Derived table: ingredient_map (Step 1) ───────────────────────────────────
+-- ─── Derived table: raw_material_map (Step 1) ────────────────────────────────
 --
--- Flattened view of who buys which raw ingredient in which finished product
+-- Flattened view of who buys which raw material in which finished product
 -- and who currently supplies it. One row per (raw_material, supplier) pair
--- that appears in a BOM. Rebuilt by refresh_ingredient_map().
+-- that appears in a BOM. Rebuilt by refresh_raw_material_map().
 
-CREATE TABLE IF NOT EXISTS ingredient_map (
+CREATE TABLE IF NOT EXISTS raw_material_map (
     id                   SERIAL      PRIMARY KEY,
-    ingredient_name      TEXT        NOT NULL,  -- e.g. "vitamin-d3-cholecalciferol"
+    raw_material_name    TEXT        NOT NULL,  -- e.g. "vitamin-d3-cholecalciferol"
     company_id           INTEGER     REFERENCES companies(id),
     company_name         TEXT        NOT NULL,
     finished_product_id  INTEGER     REFERENCES products(id),
@@ -58,39 +58,39 @@ CREATE TABLE IF NOT EXISTS ingredient_map (
     updated_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_im_ingredient_name ON ingredient_map(ingredient_name);
-CREATE INDEX IF NOT EXISTS idx_im_company_id      ON ingredient_map(company_id);
-CREATE INDEX IF NOT EXISTS idx_im_supplier_id     ON ingredient_map(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_rmm_raw_material_name ON raw_material_map(raw_material_name);
+CREATE INDEX IF NOT EXISTS idx_rmm_company_id        ON raw_material_map(company_id);
+CREATE INDEX IF NOT EXISTS idx_rmm_supplier_id       ON raw_material_map(supplier_id);
 
 -- ─── Derived table: substitution_groups (Step 2) ─────────────────────────────
 --
--- Populated by the agent via LLM reasoning. Groups ingredient names that are
+-- Populated by the agent via LLM reasoning. Groups raw material names that are
 -- functionally interchangeable. The embedding column is reserved for semantic
--- similarity search (pgvector) so future queries can find similar ingredients
+-- similarity search (pgvector) so future queries can find similar raw materials
 -- even when spelled differently.
 
 CREATE TABLE IF NOT EXISTS substitution_groups (
-    id              SERIAL      PRIMARY KEY,
-    ingredient_name TEXT        NOT NULL UNIQUE,  -- matches ingredient_map.ingredient_name
-    group_name      TEXT        NOT NULL,          -- canonical group, e.g. "vitamin-d3"
-    confidence      TEXT        NOT NULL CHECK (confidence IN ('high', 'medium', 'low')),
-    reasoning       TEXT,                          -- LLM explanation
-    embedding       vector(1536),                  -- pgvector embedding of ingredient_name
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+    id                SERIAL      PRIMARY KEY,
+    raw_material_name TEXT        NOT NULL UNIQUE,  -- matches raw_material_map.raw_material_name
+    group_name        TEXT        NOT NULL,          -- canonical group, e.g. "vitamin-d3"
+    confidence        TEXT        NOT NULL CHECK (confidence IN ('high', 'medium', 'low')),
+    reasoning         TEXT,                          -- LLM explanation
+    embedding         vector(1536),                  -- pgvector embedding of raw_material_name
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_sg_ingredient_name ON substitution_groups(ingredient_name);
-CREATE INDEX IF NOT EXISTS idx_sg_group_name      ON substitution_groups(group_name);
+CREATE INDEX IF NOT EXISTS idx_sg_raw_material_name ON substitution_groups(raw_material_name);
+CREATE INDEX IF NOT EXISTS idx_sg_group_name        ON substitution_groups(group_name);
 
 -- ─── Derived table: recommendations (Step 6) ─────────────────────────────────
 --
--- Written by the agent after reasoning over ingredient_map + substitution_groups
+-- Written by the agent after reasoning over raw_material_map + substitution_groups
 -- + external web evidence. status tracks whether a recommendation is still valid
 -- as the underlying data changes.
 
 CREATE TABLE IF NOT EXISTS recommendations (
     id                        SERIAL      PRIMARY KEY,
-    ingredient_group          TEXT        NOT NULL,
+    raw_material_group        TEXT        NOT NULL,
     recommended_supplier_id   INTEGER     REFERENCES suppliers(id),
     recommended_supplier_name TEXT,
     companies_affected        TEXT[]      NOT NULL DEFAULT '{}',
@@ -104,22 +104,22 @@ CREATE TABLE IF NOT EXISTS recommendations (
     updated_at                TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_rec_ingredient_group ON recommendations(ingredient_group);
-CREATE INDEX IF NOT EXISTS idx_rec_status           ON recommendations(status);
+CREATE INDEX IF NOT EXISTS idx_rec_raw_material_group ON recommendations(raw_material_group);
+CREATE INDEX IF NOT EXISTS idx_rec_status             ON recommendations(status);
 
--- ─── Refresh function for ingredient_map ─────────────────────────────────────
+-- ─── Refresh function for raw_material_map ───────────────────────────────────
 --
 -- Call this whenever the raw tables change (new products, new suppliers, etc.).
--- Rebuilds ingredient_map from scratch using a regex to extract the ingredient
--- name from the raw-material SKU format: RM-C{N}-{ingredient-name}-{8hexchars}
+-- Rebuilds raw_material_map from scratch using a regex to extract the raw material
+-- name from the SKU format: RM-C{N}-{raw-material-name}-{8hexchars}
 
-CREATE OR REPLACE FUNCTION refresh_ingredient_map() RETURNS void
+CREATE OR REPLACE FUNCTION refresh_raw_material_map() RETURNS void
 LANGUAGE plpgsql AS $$
 BEGIN
-    TRUNCATE ingredient_map RESTART IDENTITY;
+    TRUNCATE raw_material_map RESTART IDENTITY;
 
-    INSERT INTO ingredient_map (
-        ingredient_name,
+    INSERT INTO raw_material_map (
+        raw_material_name,
         company_id,
         company_name,
         finished_product_id,
@@ -135,7 +135,7 @@ BEGIN
         regexp_replace(
             regexp_replace(p_rm.sku, '^RM-C[0-9]+-', ''),
             '-[a-f0-9]{8}$', ''
-        )                   AS ingredient_name,
+        )                   AS raw_material_name,
         c.id                AS company_id,
         c.name              AS company_name,
         p_fg.id             AS finished_product_id,

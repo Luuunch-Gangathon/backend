@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
-from app.api import ingredients
+from app.api import raw_materials
 from app.data import db, migration
 
 
@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(ingredients.router)
+app.include_router(raw_materials.router)
 
 
 @app.get("/health")
