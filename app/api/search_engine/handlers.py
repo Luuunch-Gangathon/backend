@@ -15,14 +15,12 @@ implementations one by one. The engine and config do not change.
 
 from __future__ import annotations
 
+from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+
 
 def _stub(name: str, context: dict) -> list[dict]:
     """Placeholder handler — returns no results."""
     return []
-
-
-def supplier_website_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
 
 
 def pubchem_enrich(name: str, context: dict) -> list[dict]:

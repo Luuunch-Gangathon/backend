@@ -287,3 +287,12 @@ def test_supplier_website_enrich_stops_at_first_successful_supplier():
 
     assert len(results) == 1
     assert find_call_count == 1
+
+
+def test_handler_is_registered():
+    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.api.search_engine.sources.supplier_website import (
+        supplier_website_enrich as real_impl,
+    )
+
+    assert SOURCE_HANDLERS["supplier_website"] is real_impl
