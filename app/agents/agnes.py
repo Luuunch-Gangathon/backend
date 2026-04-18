@@ -17,9 +17,10 @@ Anything without tool calls → normal chat with RAG context.
 from __future__ import annotations
 import logging
 import uuid
+from typing import AsyncIterator
 
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
+from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage, AIMessageChunk
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.tools import tool
 
@@ -181,11 +182,11 @@ async def _retrieve_context(query: str, top_k: int = 5) -> str:
 # Main entry point
 # ---------------------------------------------------------------------------
 
-async def ask(
+async def _prepare_conversation(
     message: str,
     session_id: str | None,
-    product_id: int | None = None,
-) -> AgnesAskResponse:
+    product_id: int | None,
+) -> tuple[str, InMemoryChatMessageHistory, list, dict, object]:
     if session_id is None or session_id not in _sessions:
         session_id = str(uuid.uuid4())
         _sessions[session_id] = InMemoryChatMessageHistory()
@@ -226,6 +227,18 @@ async def ask(
     messages.extend(history.messages)
     messages.append(HumanMessage(content=message))
 
+    return session_id, history, messages, tool_map, llm_with_tools
+
+
+async def ask(
+    message: str,
+    session_id: str | None,
+    product_id: int | None = None,
+) -> AgnesAskResponse:
+    session_id, history, messages, tool_map, llm_with_tools = await _prepare_conversation(
+        message, session_id, product_id
+    )
+
     # Agent loop: invoke → execute tool calls → invoke again until plain text reply
     while True:
         response = await llm_with_tools.ainvoke(messages)
@@ -249,3 +262,60 @@ async def ask(
         reply=AgnesMessage(role="assistant", content=reply_text),
         session_id=session_id,
     )
+
+
+async def ask_stream(
+    message: str,
+    session_id: str | None,
+    product_id: int | None = None,
+) -> AsyncIterator[dict]:
+    """Stream a reply as a series of events.
+
+    Event shapes:
+      {"type": "session", "session_id": str}  — emitted first
+      {"type": "tool_start", "name": str}     — before a tool runs
+      {"type": "tool_end",   "name": str}     — after a tool returns
+      {"type": "token", "text": str}          — a chunk of assistant text
+      {"type": "done"}                        — terminal
+      {"type": "error", "message": str}       — on failure
+    """
+    session_id, history, messages, tool_map, llm_with_tools = await _prepare_conversation(
+        message, session_id, product_id
+    )
+    yield {"type": "session", "session_id": session_id}
+
+    final_text_parts: list[str] = []
+
+    while True:
+        # Stream the LLM response; accumulate chunks to detect tool_calls.
+        accumulated: AIMessageChunk | None = None
+        async for chunk in llm_with_tools.astream(messages):
+            accumulated = chunk if accumulated is None else accumulated + chunk
+            text = chunk.content if isinstance(chunk.content, str) else ""
+            if text:
+                final_text_parts.append(text)
+                yield {"type": "token", "text": text}
+
+        if accumulated is None:
+            break
+        messages.append(accumulated)
+
+        if not accumulated.tool_calls:
+            break
+
+        # Text streamed before tool calls isn't part of the final answer — drop it.
+        final_text_parts.clear()
+
+        for tc in accumulated.tool_calls:
+            logger.info("AgnesAgent: calling tool %s args=%s", tc["name"], tc["args"])
+            yield {"type": "tool_start", "name": tc["name"]}
+            result = await tool_map[tc["name"]].ainvoke(tc["args"])
+            yield {"type": "tool_end", "name": tc["name"]}
+            messages.append(ToolMessage(content=str(result), tool_call_id=tc["id"]))
+
+    reply_text = "".join(final_text_parts)
+    history.add_user_message(message)
+    history.add_ai_message(reply_text)
+
+    logger.info("AgnesAgent: session %s — %d messages total (stream)", session_id, len(history.messages))
+    yield {"type": "done"}
