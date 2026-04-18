@@ -1,7 +1,7 @@
 from .compliance import SubstituteProposal, ComplianceResult
 from .company import Company
 from .product import Product, BOM
-from .raw_material import RawMaterial
+from .raw_material import RawMaterial, SubstituteCandidate
 from .similar_raw_material import SimilarRawMaterial
 from .supplier import Supplier
 from .proposal import Proposal, EvidenceItem, ComplianceRequirement, Tradeoffs, RolloutPlan
@@ -15,6 +15,7 @@ __all__ = [
     "Product",
     "BOM",
     "RawMaterial",
+    "SubstituteCandidate",
     "SimilarRawMaterial",
     "Supplier",
     "Proposal",

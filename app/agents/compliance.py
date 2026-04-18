@@ -1,7 +1,8 @@
 """ComplianceAgent
 
 Given a product id and raw material id:
-  1. Runs pgvector similarity search to find candidate substitutes.
+  1. Runs pgvector similarity search to find candidate substitutes
+     (skipped if the caller supplies `candidate_ids`).
   2. Ranks them via GPT-4o structured output.
   3. Returns a scored list of proposals.
 """
@@ -11,6 +12,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -33,11 +35,21 @@ class _RankingResponse(BaseModel):
 # Public entry point
 # ---------------------------------------------------------------------------
 
-async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5) -> list[SubstituteProposal]:
-    """Similarity-search then LLM-rank substitutes for a raw material in a product.
+async def check_compliance(
+    product_id: int,
+    raw_material_id: int,
+    top_x: int = 5,
+    candidate_ids: Optional[list[int]] = None,
+) -> list[SubstituteProposal]:
+    """LLM-rank substitute candidates for a raw material in a product.
+
+    Candidate selection:
+      - `candidate_ids=None` (default): pgvector similarity search finds candidates.
+      - `candidate_ids=[...]`: caller supplies the exact candidates to score;
+        the similarity search is skipped.
 
     Returns up to top_x SubstituteProposal items sorted by score descending.
-    Returns [] if the product/material is not found or no similar materials exist.
+    Returns [] if product/material are missing, or no candidates could be resolved.
     """
     product, raw_material = await _fetch_inputs(product_id, raw_material_id)
     if product is None or raw_material is None:
@@ -47,20 +59,7 @@ async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5
         )
         return []
 
-    similar = await repo.find_similar_raw_materials(f"rm_db_{raw_material_id}")
-    if not similar:
-        logger.info("compliance.run: no similar materials found for rm_id=%d", raw_material_id)
-        return []
-
-    substitutes: list[tuple] = []
-    for item in similar:
-        m = _DB_ID_RE.match(item.raw_material_id)
-        if not m:
-            continue
-        rm = await repo.get_raw_material(int(m.group(1)))
-        if rm is not None:
-            substitutes.append((rm, item.similarity_score))
-
+    substitutes = await _resolve_candidates(raw_material_id, candidate_ids)
     if not substitutes:
         return []
 
@@ -70,14 +69,11 @@ async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5
         _client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
     system_prompt = render("system/compliance")
-    sub_payload = [
-        {**s.model_dump(), "vector_similarity": round(score, 4)}
-        for s, score in substitutes
-    ]
+    sub_payload = [{"id": s.id, "sku": s.sku} for s in substitutes]
     user_prompt = render(
         "user/compliance_rank",
-        original=raw_material.model_dump(),
-        product=product.model_dump(),
+        original={"id": raw_material.id, "sku": raw_material.sku},
+        product={"id": product.id, "sku": product.sku},
         substitutes=sub_payload,
         top_x=top_x,
     )
@@ -99,8 +95,8 @@ async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5
 
     results = sorted(parsed.substitutes, key=lambda s: s.score, reverse=True)[:top_x]
     logger.info(
-        "compliance.check_compliance: product_id=%d rm_id=%d → %d proposals",
-        product_id, raw_material_id, len(results),
+        "compliance.check_compliance: product_id=%d rm_id=%d candidates=%d → %d proposals",
+        product_id, raw_material_id, len(substitutes), len(results),
     )
     return results
 
@@ -113,3 +109,33 @@ async def _fetch_inputs(product_id: int, raw_material_id: int):
     product = await repo.get_product(product_id)
     raw_material = await repo.get_raw_material(raw_material_id)
     return product, raw_material
+
+
+async def _resolve_candidates(raw_material_id: int, candidate_ids: Optional[list[int]]):
+    """Return the list of RawMaterial candidates to be scored.
+
+    If `candidate_ids` is provided, resolve each one directly (skip pgvector).
+    Otherwise, run the similarity search for the original and resolve its neighbors.
+    """
+    if candidate_ids is not None:
+        resolved = []
+        for cid in candidate_ids:
+            rm = await repo.get_raw_material(cid)
+            if rm is not None:
+                resolved.append(rm)
+        return resolved
+
+    similar = await repo.find_similar_raw_materials(f"rm_db_{raw_material_id}")
+    if not similar:
+        logger.info("compliance: no similar materials found for rm_id=%d", raw_material_id)
+        return []
+
+    resolved = []
+    for item in similar:
+        m = _DB_ID_RE.match(item.raw_material_id)
+        if not m:
+            continue
+        rm = await repo.get_raw_material(int(m.group(1)))
+        if rm is not None:
+            resolved.append(rm)
+    return resolved
