@@ -29,7 +29,7 @@ from app.schemas import (
 
 from . import db
 
-SIMILARITY_THRESHOLD: float = 0.3  # cosine similarity cutoff (-1..1)
+SIMILARITY_THRESHOLD: float = 0.7  # cosine similarity cutoff (-1..1)
 
 
 # ---------------------------------------------------------------------------

@@ -12,3 +12,7 @@ class SubstituteProposal(BaseModel):
 class ComplianceResult(BaseModel):
     raw_material_id: int
     proposal: Optional[SubstituteProposal] = None
+
+
+class SubstituteScoreRequest(BaseModel):
+    candidate_ids: list[int]

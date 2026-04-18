@@ -7,10 +7,39 @@ from fastapi import APIRouter, HTTPException
 
 from app.data import repo
 from app.agents import compliance as compliance_agent
-from app.schemas import ComplianceResult, SubstituteProposal
+from app.schemas import ComplianceResult, SubstituteProposal, SubstituteScoreRequest
 
 router = APIRouter(prefix="/compliance", tags=["compliance"])
 logger = logging.getLogger(__name__)
+
+
+@router.post(
+    "/{product_id}/{original_rm_id}/candidates",
+    response_model=list[SubstituteProposal],
+)
+async def score_substitute_candidates(
+    product_id: int,
+    original_rm_id: int,
+    body: SubstituteScoreRequest,
+) -> list[SubstituteProposal]:
+    """Compliance-score a batch of candidate substitutes in a single LLM call.
+
+    Scoring all candidates together lets the model rank them relative to each
+    other, which yields more-differentiated scores than scoring each alone.
+    """
+    if await repo.get_product(product_id) is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    if await repo.get_raw_material(original_rm_id) is None:
+        raise HTTPException(status_code=404, detail="Original raw material not found")
+    if not body.candidate_ids:
+        return []
+
+    return await compliance_agent.check_compliance(
+        product_id,
+        original_rm_id,
+        top_x=len(body.candidate_ids),
+        candidate_ids=body.candidate_ids,
+    )
 
 
 @router.get(
