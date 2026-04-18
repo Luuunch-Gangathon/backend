@@ -1,15 +1,25 @@
-from .company import Company, CompanyDetail
-from .product import FinishedGood, FinishedGoodDetail
-from .raw_material import RawMaterial, RawMaterialDetail
-from .supplier import Supplier, SupplierDetail
+from .company import Company
+from .product import Product, BOM
+from .raw_material import RawMaterial
+from .supplier import Supplier
+from .proposal import Proposal, EvidenceItem, ComplianceRequirement, Tradeoffs, RolloutPlan
+from .substitution import Substitution
+from .agnes import AgnesSuggestedQuestion, AgnesMessage, AgnesAskRequest, AgnesAskResponse
 
 __all__ = [
     "Company",
-    "CompanyDetail",
-    "FinishedGood",
-    "FinishedGoodDetail",
+    "Product",
+    "BOM",
     "RawMaterial",
-    "RawMaterialDetail",
     "Supplier",
-    "SupplierDetail",
+    "Proposal",
+    "EvidenceItem",
+    "ComplianceRequirement",
+    "Tradeoffs",
+    "RolloutPlan",
+    "Substitution",
+    "AgnesSuggestedQuestion",
+    "AgnesMessage",
+    "AgnesAskRequest",
+    "AgnesAskResponse",
 ]

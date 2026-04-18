@@ -155,3 +155,66 @@ BEGIN
     WHERE p_rm.type = 'raw-material';
 END;
 $$;
+
+-- ─── proposals ───────────────────────────────────────────────────────────────
+--
+-- Written by ProposalAgent. One row per consolidation opportunity.
+-- Stores the full AI-generated recommendation: headline, evidence, tradeoffs,
+-- conservative vs aggressive rollout plans, compliance requirements.
+-- Read by GET /proposals and GET /proposals/{id}.
+-- TBD: shape may change as ProposalAgent LLM reasoning is implemented.
+
+CREATE TABLE IF NOT EXISTS proposals (
+    id                              SERIAL      PRIMARY KEY,
+    kind                            TEXT        NOT NULL CHECK (kind IN ('optimization', 'substitution')),
+    headline                        TEXT        NOT NULL,
+    summary                         TEXT        NOT NULL,
+    raw_material_name               TEXT        NOT NULL,
+    proposed_action                 TEXT        NOT NULL,
+    companies_involved              INTEGER[]   NOT NULL DEFAULT '{}',
+    current_supplier_ids            INTEGER[]   NOT NULL DEFAULT '{}',
+    proposed_supplier_id            INTEGER     REFERENCES suppliers(id),
+    proposed_substitute_rm_name     TEXT,
+    fragmentation_score             INTEGER     NOT NULL DEFAULT 0,
+    tradeoffs_gained                TEXT[]      NOT NULL DEFAULT '{}',
+    tradeoffs_at_risk               TEXT[]      NOT NULL DEFAULT '{}',
+    conservative_skus               TEXT[]      NOT NULL DEFAULT '{}',
+    conservative_timeline           TEXT,
+    aggressive_skus                 TEXT[]      NOT NULL DEFAULT '{}',
+    aggressive_timeline             TEXT,
+    evidence                        JSONB       NOT NULL DEFAULT '[]',
+    estimated_impact                TEXT,
+    compliance_requirements         JSONB       NOT NULL DEFAULT '[]',
+    created_at                      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at                      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_proposals_fragmentation ON proposals(fragmentation_score DESC);
+
+-- ─── substitutions ────────────────────────────────────────────────────────────
+--
+-- Written by SubstitutionAgent. Each row = one raw material that can replace another.
+-- from_raw_material_id → to_raw_material_id with a plain-text reason.
+-- Read by GET /substitutions.
+-- TBD: may add confidence score and evidence_urls columns.
+
+CREATE TABLE IF NOT EXISTS substitutions (
+    id                   SERIAL      PRIMARY KEY,
+    from_raw_material_id INTEGER     NOT NULL REFERENCES products(id),
+    to_raw_material_id   INTEGER     NOT NULL REFERENCES products(id),
+    reason               TEXT        NOT NULL,
+    created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ─── agnes_suggestions ───────────────────────────────────────────────────────
+--
+-- Written by ProposalAgent alongside each proposal. Pre-seeded questions
+-- shown as chips in the Agnes chat UI to help users start a conversation.
+-- Scoped per proposal (CASCADE deletes when proposal is deleted).
+-- Read by GET /agnes/suggestions?proposal_id=.
+
+CREATE TABLE IF NOT EXISTS agnes_suggestions (
+    id          SERIAL  PRIMARY KEY,
+    proposal_id INTEGER NOT NULL REFERENCES proposals(id) ON DELETE CASCADE,
+    question    TEXT    NOT NULL
+);
