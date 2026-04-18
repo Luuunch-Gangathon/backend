@@ -15,6 +15,8 @@ from app.api import companies, products, raw_materials, suppliers, proposals, su
 from app.agents import pipeline
 from app.data import db, migration
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
