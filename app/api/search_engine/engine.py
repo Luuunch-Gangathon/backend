@@ -6,11 +6,14 @@ tries them in trust-tier order, and takes the first value found.
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 
 from app.api.search_engine.config import PROPERTIES, SOURCES, TRUST_TIERS
 from app.api.search_engine.handlers import SOURCE_HANDLERS
 from app.api.search_engine.models import EnrichmentResult, PropertyResult
+
+logger = logging.getLogger(__name__)
 
 
 def _sources_for_property(prop: str, tier: str) -> list[dict]:
@@ -35,7 +38,8 @@ def run_enrichment(name: str, context: dict) -> EnrichmentResult:
     """
     filled: dict[str, PropertyResult] = {}
 
-    for prop in PROPERTIES:
+    for i, prop in enumerate(PROPERTIES, 1):
+        logger.info("  [%d/%d] Property: %s", i, len(PROPERTIES), prop)
         found = False
         for tier in TRUST_TIERS:
             if found:
@@ -44,6 +48,7 @@ def run_enrichment(name: str, context: dict) -> EnrichmentResult:
                 handler = SOURCE_HANDLERS.get(source["name"])
                 if handler is None:
                     continue
+                logger.info("    Trying: %s (%s)", source["name"], tier)
                 results = handler(name, context)
                 for item in results:
                     if item["property"] == prop:
@@ -55,6 +60,7 @@ def run_enrichment(name: str, context: dict) -> EnrichmentResult:
                             raw_excerpt=item.get("raw_excerpt"),
                         )
                         found = True
+                        logger.info("    ✓ Filled by %s (%s)", source["name"], tier)
                         break
                 if found:
                     break
@@ -67,6 +73,7 @@ def run_enrichment(name: str, context: dict) -> EnrichmentResult:
                 source_url=None,
                 raw_excerpt=None,
             )
+            logger.info("    ✗ No source found")
 
     completeness = sum(
         1 for p in filled.values() if p.confidence != "unknown"
