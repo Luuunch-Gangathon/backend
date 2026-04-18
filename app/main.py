@@ -22,10 +22,9 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     await db.init_pool()
     await migration.run_if_empty(db._pool)
-    await rag.seed_name_only_embeddings()   # baseline vectors before search engine runs
-    pipeline.start_scheduler()    # then every hour
+    await rag.seed_name_only_embeddings()   # baseline vectors (fast, name-only)
+    await pipeline.run()                    # SearchEngine enriches + re-embeds
     yield
-    pipeline.stop_scheduler()
     await db.close_pool()
 
 
