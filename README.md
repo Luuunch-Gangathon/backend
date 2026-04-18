@@ -25,7 +25,7 @@ OpenAPI schema: http://localhost:8000/openapi.json
 
 ## What's here
 
-Only one template endpoint (`GET /ingredients`) is implemented. It demonstrates
+One template endpoint (`GET /raw-materials`) is implemented. It demonstrates
 the full layering pattern — schema, fixture, repo, router — that every new
 endpoint should follow. See `CLAUDE.md` for the recipe.
 
@@ -33,15 +33,16 @@ endpoint should follow. See `CLAUDE.md` for the recipe.
 app/
   main.py               — FastAPI app, CORS, router wiring, /health
   schemas/
-    ingredient.py       — Pydantic model (template)
+    raw_material.py     — Pydantic model (template)
   api/
-    ingredients.py      — router (template)
+    raw_materials.py    — router (template)
   data/
-    db.py               — SQLite connection helper (optional DB-backed rows)
+    db.py               — PostgreSQL async connection pool
     fixtures.py         — JSON fixtures loaded into Pydantic
     repo.py             — domain queries (template)
+    migration.py        — auto-migrates SQLite → PostgreSQL on first startup
 tests/fixtures/
-  ingredients.json      — seed data
+  raw_materials.json    — seed data
 ```
 
 ## Frontend TypeScript types
