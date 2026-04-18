@@ -9,7 +9,6 @@ Use this as the reference pattern for every new endpoint:
   5. The frontend picks the new endpoint up automatically via
      `npm run gen:types` against `/openapi.json`.
 """
-
 from __future__ import annotations
 
 from typing import Optional
@@ -23,8 +22,8 @@ router = APIRouter(tags=["ingredients"])
 
 
 @router.get("/ingredients", response_model=list[Ingredient])
-def list_ingredients(
+async def list_ingredients(
     name: Optional[str] = None,
     company_id: Optional[str] = None,
 ) -> list[Ingredient]:
-    return repo.list_ingredients(name=name, company_id=company_id)
+    return await repo.list_ingredients(name=name, company_id=company_id)
