@@ -53,13 +53,14 @@ async def seed():
                 name,
             )
 
-        async def product(self, id: int, sku: str, company_id: int) -> None:
+        async def product(self, id: int, sku: str, company_id: int, type_: str = "raw-material") -> None:
             await conn.execute(
                 "INSERT INTO products (id, sku, company_id, type) "
-                "VALUES ($1, $2, $3, 'raw-material') ON CONFLICT DO NOTHING",
+                "VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING",
                 id,
                 sku,
                 company_id,
+                type_,
             )
 
         async def raw_material_map(

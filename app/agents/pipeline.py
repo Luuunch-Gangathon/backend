@@ -59,16 +59,16 @@ async def _run_compliance() -> None:
             similar = await repo.find_similar_raw_materials(f"rm_db_{rm.id}")
             if not similar:
                 continue
-            sub_rms: list[RawMaterial] = []
+            sub_pairs: list[tuple[RawMaterial, float]] = []
             for s in similar:
                 m = re.match(r"rm_db_(\d+)$", s.raw_material_id)
                 if not m:
                     continue
                 sub_rm = await repo.get_raw_material(int(m.group(1)))
                 if sub_rm:
-                    sub_rms.append(sub_rm)
-            if sub_rms:
-                await _step("ComplianceAgent", lambda p=product, r=rm, s=sub_rms: compliance.run(p, r, s))
+                    sub_pairs.append((sub_rm, s.similarity_score))
+            if sub_pairs:
+                await _step("ComplianceAgent", lambda p=product, r=rm, s=sub_pairs: compliance.run(p, r, s))
 
 
 async def _step(name: str, fn) -> None:
