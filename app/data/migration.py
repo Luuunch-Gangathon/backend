@@ -1,7 +1,7 @@
 """Automatic SQLite → PostgreSQL migration.
 
 Runs transparently on app startup (via lifespan in main.py).
-Skipped when the database already contains data.
+Skipped when the database already contains database.
 Can be force-run manually via `python scripts/migrate_sqlite.py`.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import asyncpg
 
-SQLITE_PATH = Path(__file__).resolve().parents[2] / "data" / "db.sqlite"
+SQLITE_PATH = Path(__file__).resolve().parents[2] / "database" / "db.sqlite"
 
 
 async def run_if_empty(pool: asyncpg.Pool) -> None:

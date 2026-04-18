@@ -92,23 +92,43 @@ async def show_company(company_id: int) -> str:
 def _make_compliance_tool(session_id: str):
     """Build compliance tool as closure so session_id is not exposed to the LLM."""
     @tool
-    async def check_product_compliance() -> str:
-        """Check compliance and find ranked substitute candidates for all raw materials in the current product."""
+    async def check_product_compliance(rm_id: int | None = None) -> str:
+        """Find ranked substitute candidates for raw materials in the current product.
+
+        If rm_id is provided, check only that specific raw material.
+        If rm_id is None, check all raw materials in the product's BOM.
+        Use the BOM listed in the system prompt to match user's natural language
+        (e.g. "citric acid") to the correct rm_id.
+        """
         product_id = _session_product.get(session_id)
         if product_id is None:
             return "No product context for this session. Please provide a product_id when starting the chat."
         bom = await repo.get_bom(product_id)
         if not bom or not bom.consumed_raw_material_ids:
             return f"No raw materials found in BOM for product {product_id}."
+
+        if rm_id is not None:
+            if rm_id not in bom.consumed_raw_material_ids:
+                return f"Raw material id {rm_id} is not in BOM for product {product_id}."
+            target_ids = [rm_id]
+        else:
+            target_ids = bom.consumed_raw_material_ids
+
         lines = []
-        for rm_id in bom.consumed_raw_material_ids:
-            proposals = await compliance_agent.check_compliance(product_id, rm_id)
-            if proposals:
-                lines.append(f"RM {rm_id}:")
-                for p in proposals:
-                    lines.append(f"  - id: {p.id}, score: {p.score}/100 — {p.reasoning}")
+        for target_id in target_ids:
+            original_rm = await repo.get_raw_material(target_id)
+            original_label = f"{original_rm.sku} (id: {target_id})" if original_rm else f"id: {target_id}"
+            proposals = await compliance_agent.check_compliance(product_id, target_id)
+            if not proposals:
+                continue
+            lines.append(f"Original RM {original_label}:")
+            for p in proposals:
+                sub_rm = await repo.get_raw_material(p.id)
+                if sub_rm is None:
+                    continue  # drop hallucinated IDs
+                lines.append(f"  - {sub_rm.sku} (id: {sub_rm.id}), score: {p.score}/100 — {p.reasoning}")
         if not lines:
-            return f"No substitute proposals found for any raw material in product {product_id}."
+            return f"No substitute proposals found for product {product_id}."
         return f"Compliance results for product {product_id}:\n" + "\n".join(lines)
 
     return check_product_compliance
@@ -182,7 +202,19 @@ async def ask(
     system_content = render("system/agnes")
     current_product_id = _session_product.get(session_id)
     if current_product_id is not None:
-        system_content += f"\n\nCurrent product in context: product_id={current_product_id}. Use this for any product-related tool calls."
+        system_content += f"\n\nCurrent product in context: product_id={current_product_id}."
+        bom = await repo.get_bom(current_product_id)
+        if bom and bom.consumed_raw_material_ids:
+            bom_lines = []
+            for rm_id in bom.consumed_raw_material_ids:
+                rm = await repo.get_raw_material(rm_id)
+                if rm:
+                    bom_lines.append(f"  - id {rm.id}: {rm.sku}")
+            if bom_lines:
+                system_content += (
+                    "\nRaw materials in this product's BOM (use these ids when calling compliance tools):\n"
+                    + "\n".join(bom_lines)
+                )
     if context_block:
         system_content += f"\n\n---\nRetrieved supply chain context:\n{context_block}"
 
