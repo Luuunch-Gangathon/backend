@@ -75,11 +75,19 @@ pip install -r requirements.txt
 # 3. Env vars
 cp .env.example .env   # default DATABASE_URL works with docker-compose
 
-# 4. Run
-uvicorn app.main:app --reload
+# 4. Enable git hook (once per clone)
+git config core.hooksPath .githooks
+
+# 5. Run
+uvicorn app.main:app --reload --log-level info
 ```
 
 On first boot: SQLite → Postgres migration runs automatically, then pipeline runs (all agents currently stubbed — no-op).
+
+**Git hook:** runs `pytest tests/` before every commit if server is up. Skips silently if server is down. Test the hook without committing:
+```bash
+sh .githooks/pre-commit
+```
 
 Interactive docs: `http://localhost:8000/docs`
 OpenAPI schema: `http://localhost:8000/openapi.json`
