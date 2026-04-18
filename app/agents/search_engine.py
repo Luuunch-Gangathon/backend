@@ -77,6 +77,8 @@ async def _enrich_and_embed(name: str) -> None:
     run_enrichment is synchronous (blocking HTTP + LLM calls), so it runs in a
     thread executor to avoid blocking the async event loop.
     """
+    from app.data import db
+
     t0 = time.monotonic()
     context = {
         "material_id": name,
@@ -84,6 +86,34 @@ async def _enrich_and_embed(name: str) -> None:
         "company_id": "unknown",
         "supplier_ids": [],
     }
+
+    # Resolve supplier names so supplier_website handler can find product pages
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            """
+            SELECT raw_material_id, raw_material_sku, company_id
+            FROM raw_material_map
+            WHERE raw_material_name = $1
+            LIMIT 1
+            """,
+            name,
+        )
+        if row:
+            context["material_id"] = f"ing_db_{row['raw_material_id']}"
+            context["raw_sku"] = row["raw_material_sku"]
+            context["company_id"] = f"co_db_{row['company_id']}"
+
+        supplier_rows = await conn.fetch(
+            """
+            SELECT DISTINCT s.name
+            FROM raw_material_map rm
+            JOIN suppliers s ON s.id = rm.supplier_id
+            WHERE rm.raw_material_name = $1 AND rm.supplier_id IS NOT NULL
+            """,
+            name,
+        )
+        if supplier_rows:
+            context["supplier_names"] = [r["name"] for r in supplier_rows]
 
     loop = asyncio.get_event_loop()
     result: EnrichmentResult = await loop.run_in_executor(

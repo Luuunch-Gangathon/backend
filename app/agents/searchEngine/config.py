@@ -18,51 +18,52 @@ SOURCES: list[dict] = [
         "trust_tier": "verified",
         "provides": ["*"],
     },
+    # NOTE: for demo purposes
     # {
     #     "name": "pubchem",
     #     "trust_tier": "verified",
     #     "provides": ["chemical_identity"],
     # },
-    {
-        "name": "chebi",
-        "trust_tier": "verified",
-        "provides": ["functional_role"],
-    },
-    {
-        "name": "foodb",
-        "trust_tier": "verified",
-        "provides": ["source_origin"],
-    },
-    {
-        "name": "open_food_facts",
-        "trust_tier": "verified",
-        "provides": ["allergens", "dietary_flags", "certifications"],
-    },
-    {
-        "name": "nih_dsld",
-        "trust_tier": "verified",
-        "provides": ["dietary_flags", "certifications"],
-    },
-    {
-        "name": "openfda",
-        "trust_tier": "verified",
-        "provides": ["regulatory_status"],
-    },
-    {
-        "name": "fda_eafus",
-        "trust_tier": "verified",
-        "provides": ["regulatory_status"],
-    },
-    {
-        "name": "efsa",
-        "trust_tier": "verified",
-        "provides": ["regulatory_status"],
-    },
-    {
-        "name": "retail_page",
-        "trust_tier": "probable",
-        "provides": ["*"],
-    },
+    # {
+    #     "name": "chebi",
+    #     "trust_tier": "verified",
+    #     "provides": ["functional_role"],
+    # },
+    # {
+    #     "name": "foodb",
+    #     "trust_tier": "verified",
+    #     "provides": ["source_origin"],
+    # },
+    # {
+    #     "name": "open_food_facts",
+    #     "trust_tier": "verified",
+    #     "provides": ["allergens", "dietary_flags", "certifications"],
+    # },
+    # {
+    #     "name": "nih_dsld",
+    #     "trust_tier": "verified",
+    #     "provides": ["dietary_flags", "certifications"],
+    # },
+    # {
+    #     "name": "openfda",
+    #     "trust_tier": "verified",
+    #     "provides": ["regulatory_status"],
+    # },
+    # {
+    #     "name": "fda_eafus",
+    #     "trust_tier": "verified",
+    #     "provides": ["regulatory_status"],
+    # },
+    # {
+    #     "name": "efsa",
+    #     "trust_tier": "verified",
+    #     "provides": ["regulatory_status"],
+    # },
+    # {
+    #     "name": "retail_page",
+    #     "trust_tier": "probable",
+    #     "provides": ["*"],
+    # },
     # {
     #     "name": "web_search",  # temporarily excluded — needs fine-tuning (picks irrelevant pages, truncated content)
     #     "trust_tier": "inferred",
