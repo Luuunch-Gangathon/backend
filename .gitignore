@@ -7,9 +7,30 @@
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+*.egg-info/
 
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Environment
 .env
+
+# Claude
 .claude/
 llm_costs.json
+
+# JetBrains IDEs (PyCharm, IntelliJ, etc.)
+.idea/
+
+# VS Code
+.vscode/
+
+# Docker
+docker-compose.override.yml

@@ -2,15 +2,14 @@
 
 FastAPI service implementing the contract in `../frontend/knowledge/api-contract.md`.
 
-The repo ships with a **single template endpoint** (`GET /ingredients`) that demonstrates the full layering: schema → fixture → repo → router → main. Every new endpoint should follow the same shape.
+Every new endpoint follows this layering: schema → repo → router → main.
 
 ## Template pattern
 
 1. **Schema** — `app/schemas/<domain>.py` defines a Pydantic `BaseModel`. Add the class to `app/schemas/__init__.py` so it's importable as `from app.schemas import <Name>`.
-2. **Fixture** — drop JSON under `tests/fixtures/<domain>.json`, loaded into a Pydantic list in `app/data/fixtures.py`.
-3. **Repo** — `app/data/repo.py` exposes a plain function (e.g. `list_ingredients(...)`) that merges fixtures with optional DB rows. DB rows are namespaced with `_db` (e.g. `ing_db_<n>`) so they never collide with fixture IDs.
-4. **Router** — `app/api/<domain>.py` declares an `APIRouter` with `response_model=` on every route (required so the schema lands in `/openapi.json`).
-5. **Wire** — `app.include_router(...)` in `app/main.py`.
+2. **Repo** — `app/data/repo.py` exposes a plain function (e.g. `list_raw_materials(...)`) that reads from Postgres via SQL queries.
+3. **Router** — `app/api/<domain>.py` declares an `APIRouter` with `response_model=` on every route (required so the schema lands in `/openapi.json`).
+4. **Wire** — `app.include_router(...)` in `app/main.py`.
 
 Then the frontend runs `yarn gen:types` against `/openapi.json` and consumes the new type immediately.
 
@@ -26,7 +25,7 @@ yarn gen:types   # reads http://localhost:8000/openapi.json
 
 ## Conventions to preserve
 - CORS allows `http://localhost:3000` only (`app/main.py`).
-- IDs are strings: `ing_*`, `co_*`. Never raw ints on the wire.
+- IDs are plain Postgres integer PKs — emitted as `int` on the wire.
 - `response_model=` is not optional — it's how schemas reach OpenAPI.
 - For fields whose JSON key is a Python reserved word (e.g. `pass`), use
   `Field(alias="pass")` + `response_model_by_alias=True` on the route.
