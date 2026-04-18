@@ -42,26 +42,43 @@ async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5
     product, raw_material = await _fetch_inputs(product_id, raw_material_id)
     if product is None or raw_material is None:
         logger.warning(
-            "compliance.check_compliance: product_id=%d or raw_material_id=%d not found",
+            "[compliance] product_id=%d or raw_material_id=%d not found in DB",
             product_id, raw_material_id,
         )
         return []
 
+    logger.info(
+        "[compliance] ── START check_compliance ──────────────────────────────"
+    )
+    logger.info(
+        "[compliance] input   product=%s (id=%d)  raw_material=%s (id=%d)",
+        product.sku, product_id, raw_material.sku, raw_material_id,
+    )
+
     similar = await repo.find_similar_raw_materials(f"rm_db_{raw_material_id}")
     if not similar:
-        logger.info("compliance.run: no similar materials found for rm_id=%d", raw_material_id)
+        logger.info("[compliance] pgvector search returned 0 candidates — returning []")
         return []
 
+    logger.info("[compliance] pgvector returned %d candidate(s):", len(similar))
     substitutes: list[tuple] = []
     for item in similar:
         m = _DB_ID_RE.match(item.raw_material_id)
         if not m:
+            logger.debug("[compliance]   skip non-DB id %s", item.raw_material_id)
             continue
         rm = await repo.get_raw_material(int(m.group(1)))
         if rm is not None:
+            logger.info(
+                "[compliance]   candidate  id=%-5d  sku=%-40s  vector_similarity=%.4f",
+                rm.id, rm.sku, item.similarity_score,
+            )
             substitutes.append((rm, item.similarity_score))
+        else:
+            logger.debug("[compliance]   skip rm_id=%s — not found in products", item.raw_material_id)
 
     if not substitutes:
+        logger.info("[compliance] no DB-backed candidates after filter — returning []")
         return []
 
     global _client
@@ -82,6 +99,16 @@ async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5
         top_x=top_x,
     )
 
+    logger.info(
+        "[compliance] sending %d candidates to gpt-4o for compliance scoring (top_x=%d)",
+        len(sub_payload), top_x,
+    )
+    for sp in sub_payload:
+        logger.info(
+            "[compliance]   → sku=%-40s  vector_similarity=%.4f",
+            sp.get("sku", sp.get("id")), sp["vector_similarity"],
+        )
+
     response = await _client.beta.chat.completions.parse(
         model="gpt-4o",
         messages=[
@@ -94,14 +121,24 @@ async def check_compliance(product_id: int, raw_material_id: int, top_x: int = 5
 
     parsed = response.choices[0].message.parsed
     if parsed is None:
-        logger.warning("compliance.check_compliance: model returned no parsed output")
+        logger.warning("[compliance] gpt-4o returned no parsed output")
         return []
 
+    logger.info("[compliance] gpt-4o raw scores (before sort/trim):")
+    for s in parsed.substitutes:
+        logger.info(
+            "[compliance]   id=%-5d  score=%3d/100  reasoning=%s",
+            s.id, s.score, s.reasoning[:120],
+        )
+
     results = sorted(parsed.substitutes, key=lambda s: s.score, reverse=True)[:top_x]
-    logger.info(
-        "compliance.check_compliance: product_id=%d rm_id=%d → %d proposals",
-        product_id, raw_material_id, len(results),
-    )
+    logger.info("[compliance] final ranking (top %d, score DESC):", len(results))
+    for rank, s in enumerate(results, 1):
+        logger.info(
+            "[compliance]   #%d  id=%-5d  score=%3d/100  reasoning=%s",
+            rank, s.id, s.score, s.reasoning[:120],
+        )
+    logger.info("[compliance] ── END check_compliance ────────────────────────────────")
     return results
 
 

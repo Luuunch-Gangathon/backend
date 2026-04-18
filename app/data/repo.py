@@ -6,8 +6,11 @@ All IDs are plain integers matching Postgres PRIMARY KEY.
 from __future__ import annotations
 
 import json
+import logging
 import re
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 from app.schemas import (
     Company,
@@ -162,8 +165,18 @@ async def find_similar_raw_materials(
     """
     m = _DB_ID_RE.match(raw_material_id)
     if not m:
+        logger.debug("[repo] find_similar: invalid id format %r — returning []", raw_material_id)
         return []
     db_id = int(m.group(1))
+
+    logger.info(
+        "[repo] find_similar_raw_materials  source_id=rm_db_%d  threshold=%.2f",
+        db_id, SIMILARITY_THRESHOLD,
+    )
+    logger.info(
+        "[repo]   query: pgvector cosine similarity (1 - embedding <=> source_embedding) >= %.2f",
+        SIMILARITY_THRESHOLD,
+    )
 
     try:
         async with db.get_conn() as conn:
@@ -178,6 +191,7 @@ async def find_similar_raw_materials(
                     LIMIT 1
                 )
                 SELECT rmm.raw_material_id,
+                       sg.raw_material_name,
                        1 - (sg.embedding <=> (SELECT embedding FROM source)) AS score
                 FROM   substitution_groups sg
                 JOIN   raw_material_map    rmm ON rmm.raw_material_name = sg.raw_material_name
@@ -189,15 +203,28 @@ async def find_similar_raw_materials(
                 SIMILARITY_THRESHOLD,
             )
     except Exception:
+        logger.exception("[repo] find_similar_raw_materials: query failed for id=%d", db_id)
         return []
 
-    return [
+    results = [
         SimilarRawMaterial(
             raw_material_id=f"rm_db_{row['raw_material_id']}",
             similarity_score=float(row["score"]),
         )
         for row in rows
     ]
+
+    if results:
+        logger.info("[repo]   found %d similar material(s) above threshold:", len(results))
+        for r, row in zip(results, rows):
+            logger.info(
+                "[repo]     rm_db_%-5d  %-45s  cosine_sim=%.4f",
+                row["raw_material_id"], row["raw_material_name"], r.similarity_score,
+            )
+    else:
+        logger.info("[repo]   no materials found above threshold=%.2f", SIMILARITY_THRESHOLD)
+
+    return results
 
 
 # ---------------------------------------------------------------------------

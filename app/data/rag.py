@@ -179,6 +179,8 @@ async def search(query: str, top_k: int = 5) -> list[dict]:
     pgvector cosine distance. Returns top_k results with name, spec, similarity.
     Returns empty list if no embeddings exist yet.
     """
+    logger.info("[rag] search  query=%r  top_k=%d", query[:80], top_k)
+    logger.info("[rag]   embedding query with %s", _EMBEDDING_MODEL)
     vector = await _embed(query)
     async with db.get_conn() as conn:
         rows = await conn.fetch(
@@ -198,7 +200,17 @@ async def search(query: str, top_k: int = 5) -> list[dict]:
             top_k,
         )
     results = [dict(r) for r in rows]
-    logger.info("rag: search %r → %d results", query[:60], len(results))
+    if results:
+        logger.info("[rag]   %d hit(s) (cosine similarity, DESC):", len(results))
+        for r in results:
+            spec_keys = list(r["spec"].keys()) if isinstance(r.get("spec"), dict) else []
+            logger.info(
+                "[rag]     %-45s  sim=%.4f  spec_fields=%s",
+                r["raw_material_name"], r["similarity"],
+                spec_keys if spec_keys else "(none — name-only embedding)",
+            )
+    else:
+        logger.info("[rag]   0 hits — no embeddings in substitution_groups yet?")
     return results
 
 
