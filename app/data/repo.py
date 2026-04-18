@@ -1,56 +1,29 @@
-"""Repository layer — async PostgreSQL reads via asyncpg.
+"""Repository layer — all DB reads. No business logic. No agent calls.
 
-DB ID scheme on the wire:
-  Company      → co_db_{companies.id}
-  FinishedGood → fg_db_{products.id}
-  RawMaterial  → ing_db_{products.id}
-  Supplier     → sup_db_{suppliers.id}
-
-Table names match the Postgres schema (lowercase, plural).
-raw_material_map is a pre-computed derived table — use it for
-canonical-name lookups instead of joining multiple tables.
+All IDs are plain integers matching Postgres PRIMARY KEY.
 """
 
 from __future__ import annotations
 
+import json
 from typing import Optional
 
 from app.schemas import (
     Company,
-    CompanyDetail,
-    FinishedGood,
-    FinishedGoodDetail,
+    Product,
+    BOM,
     RawMaterial,
-    RawMaterialDetail,
     Supplier,
-    SupplierDetail,
+    Proposal,
+    EvidenceItem,
+    ComplianceRequirement,
+    Tradeoffs,
+    RolloutPlan,
+    Substitution,
+    AgnesSuggestedQuestion,
 )
 
 from . import db
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _canonical(sku: str) -> str:
-    """RM-C38-whey-protein-isolate-f910e5ae  →  whey-protein-isolate"""
-    parts = sku.split("-")
-    return "-".join(parts[2:-1])
-
-
-def _human_name(sku: str) -> str:
-    return " ".join(p.capitalize() for p in _canonical(sku).split("-"))
-
-
-def _parse_int(prefixed: str, prefix: str) -> Optional[int]:
-    """'ing_db_42' + 'ing_db_' → 42"""
-    if prefixed.startswith(prefix):
-        try:
-            return int(prefixed[len(prefix):])
-        except ValueError:
-            pass
-    return None
 
 
 # ---------------------------------------------------------------------------
@@ -60,77 +33,62 @@ def _parse_int(prefixed: str, prefix: str) -> Optional[int]:
 async def list_companies() -> list[Company]:
     async with db.get_conn() as conn:
         rows = await conn.fetch("SELECT id, name FROM companies ORDER BY name")
-    return [Company(id=f"co_db_{r['id']}", name=r["name"]) for r in rows]
+    return [Company(id=r["id"], name=r["name"]) for r in rows]
 
 
-async def list_products_by_company(company_id: str) -> list[FinishedGood]:
-    db_id = _parse_int(company_id, "co_db_")
-    if db_id is None:
-        return []
+async def get_company(company_id: int) -> Optional[Company]:
     async with db.get_conn() as conn:
-        rows = await conn.fetch(
-            """
-            SELECT id, sku, company_id FROM products
-            WHERE company_id = $1 AND type = 'finished-good'
-            ORDER BY sku
-            """,
-            db_id,
-        )
-    return [
-        FinishedGood(id=f"fg_db_{r['id']}", sku=r["sku"], company_id=f"co_db_{r['company_id']}")
-        for r in rows
-    ]
-
-
-async def get_company(company_id: str) -> Optional[CompanyDetail]:
-    db_id = _parse_int(company_id, "co_db_")
-    if db_id is None:
-        return None
-    async with db.get_conn() as conn:
-        row = await conn.fetchrow("SELECT id, name FROM companies WHERE id = $1", db_id)
-        if row is None:
-            return None
-        products = await conn.fetch(
-            "SELECT id FROM products WHERE company_id = $1 AND type = 'finished-good'",
-            db_id,
-        )
-    return CompanyDetail(
-        id=f"co_db_{row['id']}",
-        name=row["name"],
-        product_ids=[f"fg_db_{p['id']}" for p in products],
-    )
+        row = await conn.fetchrow("SELECT id, name FROM companies WHERE id = $1", company_id)
+    return Company(id=row["id"], name=row["name"]) if row else None
 
 
 # ---------------------------------------------------------------------------
 # Products (finished goods)
 # ---------------------------------------------------------------------------
 
-async def get_product(product_id: str) -> Optional[FinishedGoodDetail]:
-    db_id = _parse_int(product_id, "fg_db_")
-    if db_id is None:
-        return None
+async def list_products(company_id: Optional[int] = None) -> list[Product]:
+    async with db.get_conn() as conn:
+        if company_id is not None:
+            rows = await conn.fetch(
+                "SELECT id, sku, company_id FROM products WHERE type = 'finished-good' AND company_id = $1 ORDER BY sku",
+                company_id,
+            )
+        else:
+            rows = await conn.fetch(
+                "SELECT id, sku, company_id FROM products WHERE type = 'finished-good' ORDER BY sku"
+            )
+    return [Product(id=r["id"], sku=r["sku"], company_id=r["company_id"]) for r in rows]
+
+
+async def get_product(product_id: int) -> Optional[Product]:
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
             "SELECT id, sku, company_id FROM products WHERE id = $1 AND type = 'finished-good'",
-            db_id,
+            product_id,
         )
-        if row is None:
+    return Product(id=row["id"], sku=row["sku"], company_id=row["company_id"]) if row else None
+
+
+async def get_bom(product_id: int) -> Optional[BOM]:
+    async with db.get_conn() as conn:
+        bom_row = await conn.fetchrow(
+            "SELECT id FROM boms WHERE produced_product_id = $1", product_id
+        )
+        if bom_row is None:
             return None
-        bom_rows = await conn.fetch(
+        rm_rows = await conn.fetch(
             """
             SELECT p.id
-            FROM boms b
-            JOIN bom_components bc ON bc.bom_id = b.id
+            FROM bom_components bc
             JOIN products p ON p.id = bc.consumed_product_id
-            WHERE b.produced_product_id = $1
+            WHERE bc.bom_id = $1
             """,
-            db_id,
+            bom_row["id"],
         )
-    return FinishedGoodDetail(
-        id=f"fg_db_{row['id']}",
-        sku=row["sku"],
-        company_id=f"co_db_{row['company_id']}",
-        bom=[f"ing_db_{r['id']}" for r in bom_rows],
+    return BOM(
+        id=bom_row["id"],
+        produced_product_id=product_id,
+        consumed_raw_material_ids=[r["id"] for r in rm_rows],
     )
 
 
@@ -138,110 +96,20 @@ async def get_product(product_id: str) -> Optional[FinishedGoodDetail]:
 # Raw materials
 # ---------------------------------------------------------------------------
 
-async def list_raw_materials(
-    name: Optional[str] = None,
-    company_id: Optional[str] = None,
-) -> list[RawMaterial]:
+async def list_raw_materials() -> list[RawMaterial]:
     async with db.get_conn() as conn:
         rows = await conn.fetch(
-            """
-            SELECT p.id, p.sku, p.company_id,
-                   STRING_AGG(sp.supplier_id::text, ',') AS supplier_ids
-            FROM products p
-            LEFT JOIN supplier_products sp ON sp.product_id = p.id
-            WHERE p.type = 'raw-material'
-            GROUP BY p.id
-            ORDER BY p.sku
-            """
+            "SELECT id, sku FROM products WHERE type = 'raw-material' ORDER BY sku"
         )
-
-    results = []
-    for row in rows:
-        canonical = _canonical(row["sku"])
-        if name and name.lower() not in canonical.lower():
-            continue
-        cid = f"co_db_{row['company_id']}"
-        if company_id and company_id != cid:
-            continue
-        sup_ids = (
-            [f"sup_db_{s}" for s in row["supplier_ids"].split(",")]
-            if row["supplier_ids"]
-            else []
-        )
-        results.append(
-            RawMaterial(
-                id=f"ing_db_{row['id']}",
-                sku=row["sku"],
-                name=_human_name(row["sku"]),
-                canonical_name=canonical,
-                company_id=cid,
-                supplier_ids=sup_ids,
-            )
-        )
-    return results
+    return [RawMaterial(id=r["id"], sku=r["sku"]) for r in rows]
 
 
-async def get_raw_material(rm_id: str) -> Optional[RawMaterialDetail]:
-    db_id = _parse_int(rm_id, "ing_db_")
-    if db_id is None:
-        return None
+async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
-            "SELECT id, sku, company_id FROM products WHERE id = $1 AND type = 'raw-material'",
-            db_id,
+            "SELECT id, sku FROM products WHERE id = $1 AND type = 'raw-material'", rm_id
         )
-        if row is None:
-            return None
-        sup_rows = await conn.fetch(
-            "SELECT supplier_id FROM supplier_products WHERE product_id = $1",
-            db_id,
-        )
-        product_rows = await conn.fetch(
-            """
-            SELECT DISTINCT b.produced_product_id
-            FROM bom_components bc
-            JOIN boms b ON b.id = bc.bom_id
-            WHERE bc.consumed_product_id = $1
-            """,
-            db_id,
-        )
-    canonical = _canonical(row["sku"])
-    return RawMaterialDetail(
-        id=f"ing_db_{row['id']}",
-        sku=row["sku"],
-        name=_human_name(row["sku"]),
-        canonical_name=canonical,
-        company_id=f"co_db_{row['company_id']}",
-        supplier_ids=[f"sup_db_{r['supplier_id']}" for r in sup_rows],
-        used_in_product_ids=[f"fg_db_{r['produced_product_id']}" for r in product_rows],
-        substitute_ids=[],   # filled by SubstitutionAgent via controller
-        enriched=None,       # filled by SearchEngine
-    )
-
-
-# ---------------------------------------------------------------------------
-# Substitution helper — uses raw_material_map derived table
-# ---------------------------------------------------------------------------
-
-async def get_same_canonical(canonical_name: str, exclude_id: str) -> list[str]:
-    """Return IDs of raw materials sharing the same canonical ingredient name.
-
-    Queries raw_material_map (pre-computed) for efficiency.
-    Used by SubstitutionAgent to find substitution candidates.
-    """
-    exclude_db_id = _parse_int(exclude_id, "ing_db_")
-    async with db.get_conn() as conn:
-        rows = await conn.fetch(
-            """
-            SELECT DISTINCT raw_material_id
-            FROM raw_material_map
-            WHERE raw_material_name = $1
-              AND raw_material_id != $2
-            """,
-            canonical_name,
-            exclude_db_id,
-        )
-    return [f"ing_db_{r['raw_material_id']}" for r in rows]
+    return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
 
 
 # ---------------------------------------------------------------------------
@@ -251,23 +119,131 @@ async def get_same_canonical(canonical_name: str, exclude_id: str) -> list[str]:
 async def list_suppliers() -> list[Supplier]:
     async with db.get_conn() as conn:
         rows = await conn.fetch("SELECT id, name FROM suppliers ORDER BY name")
-    return [Supplier(id=f"sup_db_{r['id']}", name=r["name"]) for r in rows]
+    return [Supplier(id=r["id"], name=r["name"]) for r in rows]
 
 
-async def get_supplier(supplier_id: str) -> Optional[SupplierDetail]:
-    db_id = _parse_int(supplier_id, "sup_db_")
-    if db_id is None:
-        return None
+async def get_supplier(supplier_id: int) -> Optional[Supplier]:
     async with db.get_conn() as conn:
-        row = await conn.fetchrow("SELECT id, name FROM suppliers WHERE id = $1", db_id)
-        if row is None:
-            return None
-        rm_rows = await conn.fetch(
-            "SELECT product_id FROM supplier_products WHERE supplier_id = $1",
-            db_id,
-        )
-    return SupplierDetail(
-        id=f"sup_db_{row['id']}",
-        name=row["name"],
-        raw_material_ids=[f"ing_db_{r['product_id']}" for r in rm_rows],
+        row = await conn.fetchrow("SELECT id, name FROM suppliers WHERE id = $1", supplier_id)
+    return Supplier(id=row["id"], name=row["name"]) if row else None
+
+
+# ---------------------------------------------------------------------------
+# Proposals
+# ---------------------------------------------------------------------------
+
+def _parse_proposal(row) -> Proposal:
+    evidence_raw = row["evidence"] if row["evidence"] else []
+    if isinstance(evidence_raw, str):
+        evidence_raw = json.loads(evidence_raw)
+
+    compliance_raw = row["compliance_requirements"] if row["compliance_requirements"] else []
+    if isinstance(compliance_raw, str):
+        compliance_raw = json.loads(compliance_raw)
+
+    return Proposal(
+        id=row["id"],
+        kind=row["kind"],
+        headline=row["headline"],
+        summary=row["summary"],
+        raw_material_id=row["raw_material_id"],
+        proposed_action=row["proposed_action"],
+        companies_involved=list(row["companies_involved"] or []),
+        current_suppliers=list(row["current_supplier_ids"] or []),
+        proposed_supplier_id=row["proposed_supplier_id"],
+        proposed_substitute_raw_material_id=row["proposed_substitute_rm_id"],
+        fragmentation_score=row["fragmentation_score"],
+        tradeoffs=Tradeoffs(
+            gained=list(row["tradeoffs_gained"] or []),
+            atRisk=list(row["tradeoffs_at_risk"] or []),
+        ),
+        conservative=RolloutPlan(
+            affected_skus=list(row["conservative_skus"] or []),
+            timeline=row["conservative_timeline"] or "",
+        ),
+        aggressive=RolloutPlan(
+            affected_skus=list(row["aggressive_skus"] or []),
+            timeline=row["aggressive_timeline"] or "",
+        ),
+        evidence=[EvidenceItem(**e) for e in evidence_raw],
+        estimated_impact=row["estimated_impact"] or "",
+        compliance_requirements=[ComplianceRequirement(**c) for c in compliance_raw],
     )
+
+
+async def list_proposals() -> list[Proposal]:
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT p.id, p.kind, p.headline, p.summary,
+                   p.proposed_action, p.companies_involved, p.current_supplier_ids,
+                   p.proposed_supplier_id, p.proposed_substitute_rm_name,
+                   p.fragmentation_score, p.tradeoffs_gained, p.tradeoffs_at_risk,
+                   p.conservative_skus, p.conservative_timeline,
+                   p.aggressive_skus, p.aggressive_timeline,
+                   p.evidence, p.estimated_impact, p.compliance_requirements,
+                   pr.id AS raw_material_id,
+                   pr2.id AS proposed_substitute_rm_id
+            FROM proposals p
+            LEFT JOIN products pr  ON pr.sku  LIKE '%' || p.raw_material_name || '%' AND pr.type = 'raw-material'
+            LEFT JOIN products pr2 ON pr2.sku LIKE '%' || COALESCE(p.proposed_substitute_rm_name, '') || '%' AND pr2.type = 'raw-material'
+            ORDER BY p.fragmentation_score DESC
+            """
+        )
+    return [_parse_proposal(r) for r in rows]
+
+
+async def get_proposal(proposal_id: int) -> Optional[Proposal]:
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            """
+            SELECT p.id, p.kind, p.headline, p.summary,
+                   p.proposed_action, p.companies_involved, p.current_supplier_ids,
+                   p.proposed_supplier_id, p.proposed_substitute_rm_name,
+                   p.fragmentation_score, p.tradeoffs_gained, p.tradeoffs_at_risk,
+                   p.conservative_skus, p.conservative_timeline,
+                   p.aggressive_skus, p.aggressive_timeline,
+                   p.evidence, p.estimated_impact, p.compliance_requirements,
+                   pr.id AS raw_material_id,
+                   pr2.id AS proposed_substitute_rm_id
+            FROM proposals p
+            LEFT JOIN products pr  ON pr.sku  LIKE '%' || p.raw_material_name || '%' AND pr.type = 'raw-material'
+            LEFT JOIN products pr2 ON pr2.sku LIKE '%' || COALESCE(p.proposed_substitute_rm_name, '') || '%' AND pr2.type = 'raw-material'
+            WHERE p.id = $1
+            """,
+            proposal_id,
+        )
+    return _parse_proposal(row) if row else None
+
+
+# ---------------------------------------------------------------------------
+# Substitutions
+# ---------------------------------------------------------------------------
+
+async def list_substitutions() -> list[Substitution]:
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            "SELECT id, from_raw_material_id, to_raw_material_id, reason FROM substitutions ORDER BY id"
+        )
+    return [
+        Substitution(
+            id=r["id"],
+            from_raw_material_id=r["from_raw_material_id"],
+            to_raw_material_id=r["to_raw_material_id"],
+            reason=r["reason"],
+        )
+        for r in rows
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Agnes suggestions
+# ---------------------------------------------------------------------------
+
+async def list_agnes_suggestions(proposal_id: int) -> list[AgnesSuggestedQuestion]:
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            "SELECT id, question FROM agnes_suggestions WHERE proposal_id = $1 ORDER BY id",
+            proposal_id,
+        )
+    return [AgnesSuggestedQuestion(id=r["id"], question=r["question"]) for r in rows]

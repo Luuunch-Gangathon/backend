@@ -1,20 +1,14 @@
 from __future__ import annotations
+from pydantic import BaseModel
 
-from pydantic import BaseModel, ConfigDict
 
-
-class FinishedGood(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str          # fg_db_{Product.Id}
+class Product(BaseModel):
+    id: int
     sku: str
-    company_id: str
+    company_id: int
 
 
-class FinishedGoodDetail(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    sku: str
-    company_id: str
-    bom: list[str]   # raw-material IDs (ing_db_{Id})
+class BOM(BaseModel):
+    id: int
+    produced_product_id: int
+    consumed_raw_material_ids: list[int]
