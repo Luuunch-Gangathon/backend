@@ -78,15 +78,21 @@ async def ask(
 
 
 async def _retrieve_context(query: str, top_k: int = 5) -> str:
-    """Embed query, fetch similar materials + DB context, return formatted string.
+    """Build RAG context block injected into Agnes system prompt.
 
-    Returns empty string if no embeddings exist yet (safe — LLM still answers
-    from domain knowledge and chat history).
+    Steps:
+    1. rag.search()              — embed query, pgvector search → top-k materials
+    2. repo.get_material_context() — fetch companies + suppliers from raw_material_map
+    3. Format into readable text block (companies/suppliers capped at 5 each)
+
+    Returned string is injected into system prompt before LLM call.
+    User never sees it — LLM uses it to ground answers in real DB data.
+    Returns empty string if no embeddings exist yet (graceful fallback).
     """
     try:
         results = await rag.search(query, top_k=top_k)
     except Exception:
-        logger.warning("AgnesAgent: RAG search failed — proceeding without context")
+        logger.warning("AgnesAgent: RAG search failed — proceeding without context", exc_info=True)
         return ""
 
     if not results:
@@ -112,7 +118,13 @@ async def _retrieve_context(query: str, top_k: int = 5) -> str:
         # Spec summary
         if spec:
             if isinstance(spec, str):
-                spec = json.loads(spec)
+                try:
+                    spec = json.loads(spec)
+                except (json.JSONDecodeError, TypeError):
+                    logger.warning("AgnesAgent: invalid spec JSON for %s — skipping spec", name)
+                    spec = {}
+            if not isinstance(spec, dict):
+                spec = {}
             func_roles = spec.get("functional_role", {}).get("value") or []
             if func_roles:
                 lines.append(f"  Function: {', '.join(func_roles)}")
@@ -123,14 +135,21 @@ async def _retrieve_context(query: str, top_k: int = 5) -> str:
             if allergens.get("contains"):
                 lines.append(f"  Allergens: {', '.join(allergens['contains'])}")
 
-        # Companies + suppliers from raw_material_map
+        # Companies + suppliers from raw_material_map (capped to avoid token bloat)
         rows = by_name.get(name, [])
         companies = sorted({r["company_name"] for r in rows if r["company_name"]})
         suppliers = sorted({r["supplier_name"] for r in rows if r["supplier_name"]})
+        _MAX = 5
         if companies:
-            lines.append(f"  Companies buying: {', '.join(companies)}")
+            overflow = len(companies) - _MAX
+            shown = companies[:_MAX]
+            suffix = f" (+{overflow} more)" if overflow > 0 else ""
+            lines.append(f"  Companies buying: {', '.join(shown)}{suffix}")
         if suppliers:
-            lines.append(f"  Suppliers: {', '.join(suppliers)}")
+            overflow = len(suppliers) - _MAX
+            shown = suppliers[:_MAX]
+            suffix = f" (+{overflow} more)" if overflow > 0 else ""
+            lines.append(f"  Suppliers: {', '.join(shown)}{suffix}")
 
         lines.append("")
 

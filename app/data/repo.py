@@ -320,7 +320,7 @@ async def get_material_context(names: list[str]) -> list[dict]:
     """Fetch company + supplier context for a list of raw material names.
 
     Queries raw_material_map for each name and returns a flat list of dicts:
-    {name, company_name, supplier_name, finished_product_sku}
+    {raw_material_name, company_name, supplier_name, finished_product_sku}
     Used by AgnesAgent to inject grounded DB context into LLM prompt.
     """
     if not names:

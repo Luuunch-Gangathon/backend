@@ -218,7 +218,23 @@ Domain-scoped AI chat via LangChain + OpenAI. Runs on `POST /agnes/ask`.
 
 **Requires:** `OPENAI_API_KEY` in `.env`
 
-**RAG:** Agnes embeds each user message and searches `substitution_groups` (pgvector) for relevant materials. Retrieves companies + suppliers from `raw_material_map` and injects as context. Falls back gracefully if no embeddings exist.
+**RAG flow (invisible to user — happens inside every request):**
+```
+user message "tell me about whey protein"
+  → rag.search()        embed message, pgvector search → top-5 similar materials
+  → repo.get_material_context()  fetch companies + suppliers from raw_material_map
+  → format into context block (capped at 5 companies/suppliers per material)
+  → inject into system prompt sent to LLM (user never sees this)
+  → LLM answers using actual DB data instead of hallucinating
+```
+
+Falls back gracefully if `substitution_groups` has no embeddings yet — LLM answers from domain knowledge only.
+
+**Key functions:**
+- `rag.search(query, top_k)` — embeds query, returns top-k materials by pgvector cosine similarity
+- `repo.get_material_context(names)` — fetches `{raw_material_name, company_name, supplier_name, finished_product_sku}` from `raw_material_map`
+- `rag.store_embedding(enriched_result)` — called by SearchEngine to populate embeddings
+- `rag.get_unembedded_names()` — returns material names not yet embedded (used by SearchEngine)
 
 **Prompts:** All Agnes prompts live in `app/prompts/system/agnes.j2` — edit without touching Python.
 
