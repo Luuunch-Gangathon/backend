@@ -9,6 +9,8 @@ import json
 import re
 from typing import Optional
 
+import asyncpg
+
 from app.schemas import (
     Company,
     Product,
@@ -100,20 +102,39 @@ async def get_bom(product_id: int) -> Optional[BOM]:
 # Raw materials
 # ---------------------------------------------------------------------------
 
+_RAW_MATERIAL_SELECT = """
+    SELECT p.id, p.sku,
+           (SELECT COUNT(DISTINCT sp.supplier_id)
+              FROM supplier_products sp
+             WHERE sp.product_id = p.id)           AS suppliers_count,
+           (SELECT COUNT(DISTINCT b.produced_product_id)
+              FROM bom_components bc
+              JOIN boms b ON b.id = bc.bom_id
+             WHERE bc.consumed_product_id = p.id)  AS used_products_count
+    FROM products p
+    WHERE p.type = 'raw-material'
+"""
+
+
+def _raw_material_from_row(row: asyncpg.Record) -> RawMaterial:
+    return RawMaterial(
+        id=row["id"],
+        sku=row["sku"],
+        suppliers_count=int(row["suppliers_count"] or 0),
+        used_products_count=int(row["used_products_count"] or 0),
+    )
+
+
 async def list_raw_materials() -> list[RawMaterial]:
     async with db.get_conn() as conn:
-        rows = await conn.fetch(
-            "SELECT id, sku FROM products WHERE type = 'raw-material' ORDER BY sku"
-        )
-    return [RawMaterial(id=r["id"], sku=r["sku"]) for r in rows]
+        rows = await conn.fetch(_RAW_MATERIAL_SELECT + " ORDER BY p.sku")
+    return [_raw_material_from_row(r) for r in rows]
 
 
 async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
     async with db.get_conn() as conn:
-        row = await conn.fetchrow(
-            "SELECT id, sku FROM products WHERE id = $1 AND type = 'raw-material'", rm_id
-        )
-    return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
+        row = await conn.fetchrow(_RAW_MATERIAL_SELECT + " AND p.id = $1", rm_id)
+    return _raw_material_from_row(row) if row else None
 
 
 _DB_ID_RE = re.compile(r"^rm_db_(\d+)$")
