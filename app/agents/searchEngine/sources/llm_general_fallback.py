@@ -68,7 +68,7 @@ def llm_general_fallback_enrich(name: str, context: dict) -> list[dict]:
     """
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
-        logger.debug("ANTHROPIC_API_KEY not set — skipping llm_general_fallback")
+        logger.warning("ANTHROPIC_API_KEY not set — skipping llm_general_fallback")
         return []
 
     from app.agents.searchEngine.config import PROPERTIES as ALL_PROPERTIES

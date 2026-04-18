@@ -162,8 +162,7 @@ async def get_unembedded_names() -> list[str]:
     """Return distinct raw_material_names that exist in raw_material_map
     but have no embedding in substitution_groups yet.
 
-    SearchEngine calls this to know what still needs enrichment.
-    Also catches any new materials added after the last pipeline run.
+    Used by seed_name_only_embeddings() on startup to find the initial batch.
     """
     async with db.get_conn() as conn:
         rows = await conn.fetch(
@@ -173,6 +172,28 @@ async def get_unembedded_names() -> list[str]:
             LEFT JOIN substitution_groups sg
                    ON sg.raw_material_name = rmm.raw_material_name
             WHERE sg.embedding IS NULL
+            ORDER BY rmm.raw_material_name
+            """
+        )
+    return [r["raw_material_name"] for r in rows]
+
+
+async def get_unenriched_names() -> list[str]:
+    """Return names that have a name-only embedding but no spec from web enrichment.
+
+    SearchEngine calls this to find materials that still need web enrichment.
+    After startup seeding all names have an embedding (spec IS NULL); after
+    search engine runs each gets a full spec via store_embedding().
+    """
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT DISTINCT rmm.raw_material_name
+            FROM raw_material_map rmm
+            JOIN substitution_groups sg
+              ON sg.raw_material_name = rmm.raw_material_name
+            WHERE sg.embedding IS NOT NULL
+              AND sg.spec IS NULL
             ORDER BY rmm.raw_material_name
             """
         )

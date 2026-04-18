@@ -1,6 +1,7 @@
 from __future__ import annotations
 from fastapi import APIRouter, HTTPException
-from app.data import repo
+from app.data import repo, db
+from app.agents import search_engine
 from app.schemas import RawMaterial, Supplier, Product, Company
 
 router = APIRouter(prefix="/raw-materials", tags=["raw-materials"])
@@ -32,3 +33,24 @@ async def get_raw_material(rm_id: int) -> RawMaterial:
     if result is None:
         raise HTTPException(status_code=404, detail="Raw material not found")
     return result
+
+
+@router.post("/{rm_id}/enrich", status_code=200)
+async def enrich_raw_material(rm_id: int) -> dict:
+    """Trigger on-demand enrichment for a single raw material.
+
+    Looks up the normalized name from raw_material_map, runs the full
+    searchEngine waterfall (web sources → LLM fallback), and stores the
+    resulting spec + embedding in substitution_groups.
+    """
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            "SELECT raw_material_name FROM raw_material_map WHERE raw_material_id = $1 LIMIT 1",
+            rm_id,
+        )
+    if row is None:
+        raise HTTPException(status_code=404, detail="Raw material not found in material map")
+
+    name = row["raw_material_name"]
+    await search_engine.run_one(name)
+    return {"status": "ok", "name": name}

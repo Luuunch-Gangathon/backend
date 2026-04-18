@@ -1,34 +1,56 @@
 """SearchEngine
 
-Enriches raw materials with external data (web search), generates embeddings,
-and finds similar materials via pgvector.
+Enriches raw materials with specs, then upgrades their embeddings.
 
 Two entry points:
-  run_all()          — startup: process all unenriched materials
-  run_one(rm_name)   — on-demand: process single material (from chat or frontend)
+  run_all()          — scheduled: enrich all materials that still have no spec
+  run_one(rm_name)   — on-demand: enrich a single material (from chat or frontend)
 
-Flow per material (from activity diagram):
-  Raw Material → Web Search → New Information → Updated Raw Material
-  → Generate Embedding → Store in substitution_groups → Similarities Search
+Flow per material:
+  Raw Material Name → searchEngine waterfall (web sources → LLM knowledge fallback)
+  → rag.store_embedding()  (upserts spec + rich vector, overwrites name-only baseline)
+
+Name-only baseline embeddings are seeded on startup by rag.seed_name_only_embeddings()
+before this engine runs. store_embedding() overwrites them with richer vectors once
+enrichment results are available.
+
+The underlying searchEngine tries sources in trust-tier order:
+  verified (supplier websites, ChEBI, FooDB, NIH, FDA, EFSA)
+  → probable (retail pages)
+  → inferred (LLM knowledge, web search)
+  → speculative (LLM general fallback)
+
+Without web access, LLM knowledge (Claude Haiku) fires automatically as the inferred
+tier, giving usable spec data for embedding quality testing.
 
 Writes to:
   - substitution_groups (spec + embedding columns via rag.store_embedding)
 """
 
 from __future__ import annotations
+
+import asyncio
 import logging
+import time
+from functools import partial
+
+from app.agents.searchEngine.engine import run_enrichment
+from app.agents.searchEngine.models import EnrichmentResult
 from app.data import rag
 
 logger = logging.getLogger(__name__)
 
 
 async def run_all() -> None:
-    """Process all raw materials that don't have embeddings yet.
+    """Enrich all raw materials that have a name-only embedding but no spec yet.
 
-    Called by pipeline on startup. Skips materials already embedded.
+    Called by the hourly pipeline scheduler. Materials added after the last run
+    are caught automatically since seed_name_only_embeddings() runs on startup.
     """
-    names = await rag.get_unembedded_names()
-    logger.info("SearchEngine: %d materials to process", len(names))
+    names = await rag.get_unenriched_names()
+    logger.info("SearchEngine: enriching %d materials (capped at 10 for testing)", len(names))
+    if not names:
+        return
 
     ok, fail = 0, 0
     for name in names:
@@ -50,19 +72,42 @@ async def run_one(raw_material_name: str) -> None:
 
 
 async def _enrich_and_embed(name: str) -> None:
-    """Core enrichment flow for one raw material.
+    """Run the enrichment waterfall for one material, then store a rich embedding.
 
-    Steps:
-    1. Web search — fetch specs, certs, allergens from external sources
-    2. Build enriched result dict
-    3. Store embedding via rag.store_embedding()
-
-    TODO: teammate implements actual web search logic.
-    Currently: falls back to name-only embedding.
+    run_enrichment is synchronous (blocking HTTP + LLM calls), so it runs in a
+    thread executor to avoid blocking the async event loop.
     """
-    # TODO: implement web search + enrichment
-    # enriched_result = await _web_search(name)
-    # await rag.store_embedding(enriched_result)
+    t0 = time.monotonic()
+    context = {
+        "material_id": name,
+        "raw_sku": name,
+        "company_id": "unknown",
+        "supplier_ids": [],
+    }
 
-    # Fallback: embed just the name until web search is implemented
-    await rag.store_name_only_embedding(name)
+    loop = asyncio.get_event_loop()
+    result: EnrichmentResult = await loop.run_in_executor(
+        None, partial(run_enrichment, name, context)
+    )
+    elapsed = time.monotonic() - t0
+
+    enriched_result = _to_store_format(result, elapsed)
+    await rag.store_embedding(enriched_result)
+    logger.info(
+        "SearchEngine: stored embedding for %r (completeness %d/%d, %.1fs)",
+        name, result.completeness, result.total_properties, elapsed,
+    )
+
+
+def _to_store_format(result: EnrichmentResult, elapsed: float) -> dict:
+    """Convert EnrichmentResult to the shape rag.store_embedding() expects."""
+    return {
+        "material": {
+            "normalized_name": result.normalized_name,
+            "properties": {
+                prop: {"value": pr.value, "confidence": pr.confidence}
+                for prop, pr in result.properties.items()
+            },
+        },
+        "elapsed_seconds": elapsed,
+    }
