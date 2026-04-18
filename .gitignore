@@ -22,6 +22,10 @@ dist/
 # Environment
 .env
 
+# Claude
+.claude/
+llm_costs.json
+
 # JetBrains IDEs (PyCharm, IntelliJ, etc.)
 .idea/
 
@@ -29,7 +33,4 @@ dist/
 .vscode/
 
 # Docker
-docker-compose.override.yml
-
-# Docker local overrides
 docker-compose.override.yml
