@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import companies, products, raw_materials, suppliers, proposals, substitutions, agnes, compliance
 from app.agents import pipeline
-from app.data import db, migration
+from app.data import db, migration, rag
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +22,9 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     await db.init_pool()
     await migration.run_if_empty(db._pool)
-    await pipeline.run()          # run once immediately on startup
-    pipeline.start_scheduler()    # then every hour
+    await rag.seed_name_only_embeddings()   # baseline vectors (fast, name-only)
+    await pipeline.run()                    # SearchEngine enriches + re-embeds
     yield
-    pipeline.stop_scheduler()
     await db.close_pool()
 
 
