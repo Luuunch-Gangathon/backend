@@ -9,12 +9,12 @@ Writes to:
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 
 from pydantic import BaseModel
 
+from app.prompts.loader import render
 from app.schemas import RawMaterial, Product
 from app.data import repo
 
@@ -63,29 +63,19 @@ async def rank_substitutes(
         from openai import AsyncOpenAI
         _client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-    system_prompt = (
-        "You are a supply-chain compliance expert. "
-        "Evaluate each substitute raw material against the original and the "
-        "finished-good context. Score each candidate 0–100 where 100 means a "
-        "perfect drop-in replacement with no compliance risk. Consider: "
-        "functional equivalence, regulatory fit (REACH, RoHS, food-grade, etc.), "
-        "specification overlap, and supplier reliability. "
-        "A `vector_similarity` field (0..1) indicates pgvector cosine similarity to the original; "
-        "treat it as a prior, not ground truth. "
-        "Return only the candidates provided — do not invent new ones."
-    )
+    system_prompt = render("system/compliance")
 
     sub_payload = [
         {**s.model_dump(), "vector_similarity": round(score, 4)}
         for s, score in substitutes
     ]
 
-    user_prompt = (
-        f"Original material: {json.dumps(raw_material.model_dump())}\n\n"
-        f"Finished good (product): {json.dumps(product.model_dump())}\n\n"
-        f"Substitute candidates:\n"
-        f"{json.dumps(sub_payload, indent=2)}\n\n"
-        f"Return the top {top_x} substitutes ranked by score."
+    user_prompt = render(
+        "user/compliance_rank",
+        original=raw_material.model_dump(),
+        product=product.model_dump(),
+        substitutes=sub_payload,
+        top_x=top_x,
     )
 
     response = await _client.beta.chat.completions.parse(

@@ -1,0 +1,8 @@
+Original material: {{ original | tojson }}
+
+Finished good (product): {{ product | tojson }}
+
+Substitute candidates:
+{{ substitutes | tojson(indent=2) }}
+
+Return the top {{ top_x }} substitutes ranked by score.

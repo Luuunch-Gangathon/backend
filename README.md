@@ -145,13 +145,20 @@ backend/
 │   │   ├── proposal.py      # Proposal, EvidenceItem, ComplianceRequirement, Tradeoffs
 │   │   ├── substitution.py
 │   │   └── agnes.py         # AgnesAskRequest/Response, AgnesMessage
+│   ├── prompts/             # Jinja2 prompt templates — edit without touching Python
+│   │   ├── loader.py        # render("system/agnes"), render("user/compliance_rank", ...)
+│   │   ├── system/
+│   │   │   ├── agnes.j2     # Agnes chat system prompt
+│   │   │   └── compliance.j2# Compliance scoring system prompt
+│   │   └── user/
+│   │       └── compliance_rank.j2  # Compliance ranking user prompt (with variables)
 │   └── agents/
 │       ├── pipeline.py      # orchestrator — uncomment lines to activate agents
-│       ├── agnes.py         # live LLM agent — wire Claude API here
-│       ├── substitution.py  # DB heuristic — writes substitution_groups + substitutions
-│       ├── proposal.py      # rule-based stub — upgrade to LLM
-│       ├── compliance.py    # stub
-│       ├── search_engine.py # stub — web scraping goes here
+│       ├── agnes.py         # live LLM agent + RAG retrieval
+│       ├── substitution.py  # stub — writes substitution_groups + substitutions
+│       ├── proposal.py      # stub — writes proposals + agnes_suggestions
+│       ├── compliance.py    # working — ranks substitutes via GPT-4o structured output
+│       ├── search_engine.py # stub — web scraping + embedding goes here
 │       └── auditor.py       # stub — hallucination checking goes here
 ├── init/
 │   └── 01_schema.sql        # full Postgres schema with derived tables + pgvector
@@ -177,12 +184,12 @@ Agents live in `app/agents/`. They write to DB directly and are called by `pipel
 
 | Agent | Status | Writes to | Notes |
 |-------|--------|-----------|-------|
-| `substitution.py` | Working | `substitution_groups`, `substitutions` | DB heuristic: same canonical name = substitutable |
-| `proposal.py` | Stub | `proposals`, `agnes_suggestions` | Replace with LLM reasoning |
-| `compliance.py` | Stub | `proposals` (compliance fields) | REACH/RoHS/allergen checks |
-| `search_engine.py` | Stub | enrichment columns | Web scraping + PDF parsing |
-| `auditor.py` | Stub | `proposals` (confidence) | Hallucination detection |
-| `agnes.py` | **Live** | — (LangChain + OpenAI) | Session-based chat, domain-scoped |
+| `agnes.py` | **Live** | — | LangChain + OpenAI, session history, RAG retrieval |
+| `compliance.py` | **Live** | — | GPT-4o structured output, ranks substitutes 0–100 |
+| `substitution.py` | Stub | `substitution_groups`, `substitutions` | Implement `run()` |
+| `proposal.py` | Stub | `proposals`, `agnes_suggestions` | Implement `run()` |
+| `search_engine.py` | Stub | `substitution_groups` (embeddings) | Web scraping + `rag.store_embedding()` |
+| `auditor.py` | Stub | `proposals` (confidence) | Implement `run()` |
 
 **To activate a background agent:**
 ```python
@@ -211,9 +218,29 @@ Domain-scoped AI chat via LangChain + OpenAI. Runs on `POST /agnes/ask`.
 
 **Requires:** `OPENAI_API_KEY` in `.env`
 
+**RAG flow (invisible to user — happens inside every request):**
+```
+user message "tell me about whey protein"
+  → rag.search()        embed message, pgvector search → top-5 similar materials
+  → repo.get_material_context()  fetch companies + suppliers from raw_material_map
+  → format into context block (capped at 5 companies/suppliers per material)
+  → inject into system prompt sent to LLM (user never sees this)
+  → LLM answers using actual DB data instead of hallucinating
+```
+
+Falls back gracefully if `substitution_groups` has no embeddings yet — LLM answers from domain knowledge only.
+
+**Key functions:**
+- `rag.search(query, top_k)` — embeds query, returns top-k materials by pgvector cosine similarity
+- `repo.get_material_context(names)` — fetches `{raw_material_name, company_name, supplier_name, finished_product_sku}` from `raw_material_map`
+- `rag.store_embedding(enriched_result)` — called by SearchEngine to populate embeddings
+- `rag.get_unembedded_names()` — returns material names not yet embedded (used by SearchEngine)
+
+**Prompts:** All Agnes prompts live in `app/prompts/system/agnes.j2` — edit without touching Python.
+
 **Roadmap:**
-- Phase 2: inject DB context (proposals, raw materials) into prompt
-- Phase 3: tool use — LLM queries DB and calls agents on demand (RAG + agentic)
+- Phase 2 (current): RAG-backed context retrieval from DB
+- Phase 3: tool use — LLM calls DB queries and agents on demand (agentic)
 
 ---
 
@@ -254,6 +281,8 @@ def test_something(api):
 ## Database
 
 Full schema in `init/01_schema.sql`. Uses pgvector extension for future semantic similarity search.
+
+**Prompt system:** `app/prompts/` contains Jinja2 templates (`.j2`). Use `render("system/agnes")` or `render("user/compliance_rank", original=..., product=..., substitutes=..., top_x=5)` to load and render. Add new prompt file → call `render()` — no code changes needed elsewhere.
 
 **Derived tables** (agents write, routers read):
 - `raw_material_map` — flattened BOM view per company+ingredient+supplier. Rebuilt by `refresh_raw_material_map()` SQL function.
