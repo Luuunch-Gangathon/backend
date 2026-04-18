@@ -171,46 +171,40 @@ def _parse_proposal(row) -> Proposal:
     )
 
 
+_PROPOSALS_SELECT = """
+    SELECT DISTINCT ON (p.id)
+           p.id, p.kind, p.headline, p.summary,
+           p.proposed_action, p.companies_involved, p.current_supplier_ids,
+           p.proposed_supplier_id, p.proposed_substitute_rm_name,
+           p.fragmentation_score, p.tradeoffs_gained, p.tradeoffs_at_risk,
+           p.conservative_skus, p.conservative_timeline,
+           p.aggressive_skus, p.aggressive_timeline,
+           p.evidence, p.estimated_impact, p.compliance_requirements,
+           pr.id  AS raw_material_id,
+           pr2.id AS proposed_substitute_rm_id
+    FROM proposals p
+    JOIN products pr
+      ON pr.sku LIKE '%' || p.raw_material_name || '%'
+     AND pr.type = 'raw-material'
+    LEFT JOIN products pr2
+      ON p.proposed_substitute_rm_name IS NOT NULL
+     AND pr2.sku LIKE '%' || p.proposed_substitute_rm_name || '%'
+     AND pr2.type = 'raw-material'
+"""
+
+
 async def list_proposals() -> list[Proposal]:
     async with db.get_conn() as conn:
-        rows = await conn.fetch(
-            """
-            SELECT p.id, p.kind, p.headline, p.summary,
-                   p.proposed_action, p.companies_involved, p.current_supplier_ids,
-                   p.proposed_supplier_id, p.proposed_substitute_rm_name,
-                   p.fragmentation_score, p.tradeoffs_gained, p.tradeoffs_at_risk,
-                   p.conservative_skus, p.conservative_timeline,
-                   p.aggressive_skus, p.aggressive_timeline,
-                   p.evidence, p.estimated_impact, p.compliance_requirements,
-                   pr.id AS raw_material_id,
-                   pr2.id AS proposed_substitute_rm_id
-            FROM proposals p
-            LEFT JOIN products pr  ON pr.sku  LIKE '%' || p.raw_material_name || '%' AND pr.type = 'raw-material'
-            LEFT JOIN products pr2 ON pr2.sku LIKE '%' || COALESCE(p.proposed_substitute_rm_name, '') || '%' AND pr2.type = 'raw-material'
-            ORDER BY p.fragmentation_score DESC
-            """
-        )
-    return [_parse_proposal(r) for r in rows]
+        rows = await conn.fetch(_PROPOSALS_SELECT + " ORDER BY p.id")
+    result = [_parse_proposal(r) for r in rows]
+    result.sort(key=lambda p: p.fragmentation_score, reverse=True)
+    return result
 
 
 async def get_proposal(proposal_id: int) -> Optional[Proposal]:
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
-            """
-            SELECT p.id, p.kind, p.headline, p.summary,
-                   p.proposed_action, p.companies_involved, p.current_supplier_ids,
-                   p.proposed_supplier_id, p.proposed_substitute_rm_name,
-                   p.fragmentation_score, p.tradeoffs_gained, p.tradeoffs_at_risk,
-                   p.conservative_skus, p.conservative_timeline,
-                   p.aggressive_skus, p.aggressive_timeline,
-                   p.evidence, p.estimated_impact, p.compliance_requirements,
-                   pr.id AS raw_material_id,
-                   pr2.id AS proposed_substitute_rm_id
-            FROM proposals p
-            LEFT JOIN products pr  ON pr.sku  LIKE '%' || p.raw_material_name || '%' AND pr.type = 'raw-material'
-            LEFT JOIN products pr2 ON pr2.sku LIKE '%' || COALESCE(p.proposed_substitute_rm_name, '') || '%' AND pr2.type = 'raw-material'
-            WHERE p.id = $1
-            """,
+            _PROPOSALS_SELECT + " WHERE p.id = $1 ORDER BY p.id",
             proposal_id,
         )
     return _parse_proposal(row) if row else None
