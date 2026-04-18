@@ -1,0 +1,111 @@
+"""LLM knowledge handler — last-resort enrichment from LLM training data.
+
+No external sources are queried. The LLM answers from its own knowledge.
+Trust tier: "inferred" — cheapest and least authoritative source.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+from typing import Any
+
+import anthropic
+
+from app.api.search_engine.sources.cost_tracker import track_usage
+
+logger = logging.getLogger(__name__)
+
+MODEL = "claude-haiku-4-5-20251001"
+
+# Properties the LLM is allowed to return. "price" is in PROPERTIES so the
+# prompt includes it, but it is filtered out before results are returned.
+PROPERTIES = [
+    "chemical_identity",
+    "functional_role",
+    "source_origin",
+    "dietary_flags",
+    "allergens",
+    "certifications",
+    "regulatory_status",
+    "form_grade",
+    "price",
+]
+
+# Properties that must never appear in results regardless of LLM output.
+_EXCLUDED = {"price"}
+
+PROMPT = """You are a materials science expert. For the raw material "{material_name}", provide any properties you know with high confidence. Only state facts you are very confident about — it is better to return null than to guess.
+
+Return a JSON object with these properties (use null if unsure):
+- chemical_identity: {{"cas_number": "...", "formula": "...", "synonyms": [...]}} or null
+- functional_role: [list of roles] or null
+- source_origin: "plant" | "animal" | "synthetic" | "mineral" or null
+- dietary_flags: {{"vegan": bool, "vegetarian": bool, "halal": bool, "kosher": bool}} or null
+- allergens: {{"contains": [...], "free_from": [...]}} or null
+- certifications: [list] or null
+- regulatory_status: {{"gras": bool}} or null
+- form_grade: {{"form": "...", "grade": "..."}} or null
+- price: null (LLM should never guess prices)
+
+Return only the JSON object, no additional commentary."""
+
+
+def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
+    """Enrich a material using LLM knowledge — no external sources.
+
+    Returns a list of property dicts. source_url is always None.
+    Falls back to empty list on any error.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        logger.debug("ANTHROPIC_API_KEY not set — skipping llm_knowledge handler")
+        return []
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=800,
+            messages=[{"role": "user", "content": PROMPT.format(material_name=name)}],
+        )
+        track_usage(response, MODEL, "llm_knowledge")
+
+        raw_text = response.content[0].text
+        logger.debug("LLM knowledge raw response: %s", raw_text[:500])
+
+        # Strip optional markdown code fences
+        json_str = raw_text
+        if "```json" in json_str:
+            json_str = json_str.split("```json")[1].split("```")[0]
+        elif "```" in json_str:
+            json_str = json_str.split("```")[1].split("```")[0]
+
+        extracted: dict[str, Any] = json.loads(json_str.strip())
+
+        results = []
+        for prop in PROPERTIES:
+            if prop in _EXCLUDED:
+                continue
+            value = extracted.get(prop)
+            if value is not None:
+                results.append(
+                    {
+                        "property": prop,
+                        "value": value,
+                        "source_url": None,
+                        "raw_excerpt": "LLM knowledge (no external source)",
+                    }
+                )
+
+        logger.info(
+            "llm_knowledge: returned %d properties for '%s'", len(results), name
+        )
+        return results
+
+    except Exception:
+        logger.warning(
+            "llm_knowledge handler failed for '%s'", name, exc_info=True
+        )
+        return []

@@ -29,6 +29,9 @@ from app.api.search_engine.sources.chebi import (
 from app.api.search_engine.sources.nih_dsld import (
     nih_dsld_enrich as _nih_dsld_enrich_real,
 )
+from app.api.search_engine.sources.llm_knowledge import (
+    llm_knowledge_enrich as _llm_knowledge_enrich_real,
+)
 
 
 def _stub(name: str, context: dict) -> list[dict]:
@@ -73,7 +76,7 @@ def web_search_enrich(name: str, context: dict) -> list[dict]:
 
 
 def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
+    return _llm_knowledge_enrich_real(name, context)
 
 
 SOURCE_HANDLERS: dict[str, callable] = {
@@ -88,5 +91,5 @@ SOURCE_HANDLERS: dict[str, callable] = {
     "efsa": efsa_enrich,
     "retail_page": retail_page_enrich,
     "web_search": web_search_enrich,
-    "llm_knowledge": llm_knowledge_enrich,
+    "llm_knowledge": _llm_knowledge_enrich_real,
 }
