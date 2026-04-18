@@ -20,7 +20,8 @@ from app.data import db
 logger = logging.getLogger(__name__)
 
 _EMBEDDING_MODEL = "text-embedding-3-small"
-_openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+_EMBEDDING_DIMS = 1536
+_openai = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 
 async def run() -> None:
@@ -58,12 +59,16 @@ async def store_embedding(enriched_result: dict) -> None:
     logger.debug("SubstitutionAgent: embedding text for %r: %s", normalized_name, embedding_text[:120])
 
     vector = await _embed(embedding_text)
+    if len(vector) != _EMBEDDING_DIMS:
+        raise ValueError(f"Expected {_EMBEDDING_DIMS}-dim embedding, got {len(vector)}")
+
+    vector_literal = "[" + ",".join(str(x) for x in vector) + "]"
 
     async with db.get_conn() as conn:
         await conn.execute(
             """
             INSERT INTO substitution_groups (raw_material_name, spec, embedding, updated_at)
-            VALUES ($1, $2, $3, now())
+            VALUES ($1, $2::jsonb, $3::vector, now())
             ON CONFLICT (raw_material_name) DO UPDATE
                 SET spec       = EXCLUDED.spec,
                     embedding  = EXCLUDED.embedding,
@@ -71,7 +76,7 @@ async def store_embedding(enriched_result: dict) -> None:
             """,
             normalized_name,
             json.dumps(enriched_result.get("properties", {})),
-            vector,
+            vector_literal,
         )
 
     logger.info("SubstitutionAgent: stored embedding for %r", normalized_name)
