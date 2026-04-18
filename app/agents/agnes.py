@@ -52,22 +52,23 @@ def _get_llm() -> ChatOpenAI:
 
 async def _try_command(message: str) -> str | None:
     """Match message against known commands. Returns result string or None if no match."""
-    msg = message.strip().lower()
+    msg = message.strip()
+    msg_lower = msg.lower()
 
     # "search all" → enrich all unenriched materials
-    if msg == "search all":
+    if msg_lower == "search all":
         await search_engine.run_all()
         return "SearchEngine completed for all unenriched materials."
 
-    # "search <material name>" → enrich single material
-    m = re.match(r"^search\s+(.+)$", msg)
+    # "search <material name>" → enrich single material (preserve original case for DB match)
+    m = re.match(r"^search\s+(.+)$", msg_lower)
     if m:
-        name = m.group(1).strip()
+        name = message.strip()[len("search "):].strip()  # original case
         await search_engine.run_one(name)
         return f"Enriched and embedded '{name}'. Data now available for queries."
 
     # "compliance <rm_id> <product_id>" → score substitutes
-    m = re.match(r"^compliance\s+(\d+)\s+(\d+)$", msg)
+    m = re.match(r"^compliance\s+(\d+)\s+(\d+)$", msg_lower)
     if m:
         # TODO: teammate implements this command.
         #

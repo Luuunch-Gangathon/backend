@@ -1,6 +1,6 @@
 # Spherecast Supply Chain Co-Pilot — Backend
 
-FastAPI backend for wAgent. Reads supply chain data from Postgres, enriches via SearchEngine on startup, and serves an agentic AI chat (Agnes) that can call tools to research materials, check compliance, and query the database.
+FastAPI backend for wAgent. Reads supply chain data from Postgres, enriches via SearchEngine on startup, and serves an AI chat (Agnes) with keyword-triggered commands for searching materials, checking compliance, and querying the database.
 
 ---
 
@@ -17,17 +17,17 @@ FRONTEND
 │       /suppliers, /proposals, /substitutions         │
 │       → repo.py → DB                                 │
 │                                                      │
-│  POST /agnes/ask  → AgnesAgent (agentic LLM)         │
-│                     │                                │
-│                     ACTION tools:                     │
-│                     ├─ search_raw_material (enrich 1)  │
-│                     ├─ search_all_raw_materials        │
-│                     ├─ check_compliance (TODO)         │
-│                     READ tools:                       │
-│                     ├─ query_materials (RAG)           │
-│                     ├─ get_product_bom                 │
-│                     └─ get_company_info                │
-│                     LLM decides which tools to call   │
+│  POST /agnes/ask  → AgnesAgent                        │
+│                     Phase 1: keyword-triggered cmds   │
+│                     Phase 2: LLM decides (TODO)       │
+│                                                      │
+│                     Commands:                         │
+│                     "search <name>"   → enrich 1      │
+│                     "search all"      → enrich all    │
+│                     "compliance X Y"  → score (TODO)  │
+│                     "bom <id>"        → show BOM      │
+│                     "company <id>"    → show company   │
+│                     anything else     → chat + RAG    │
 └──────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────┐
@@ -65,7 +65,7 @@ FRONTEND
 - Routers call `repo.py` only. Never write DB.
 - Agents write to DB directly via `db.py`.
 - IDs are plain integers matching Postgres `PRIMARY KEY`.
-- `POST /agnes/ask` is the only endpoint that runs agents (via tool use).
+- `POST /agnes/ask` is the only endpoint that runs agents (via keyword commands).
 - SearchEngine runs once on startup for all materials. Can also be called on-demand for one material.
 - ComplianceAgent is on-demand only — called from Agnes chat or frontend.
 
@@ -117,7 +117,7 @@ Interactive docs: `http://localhost:8000/docs`
 | GET | `/proposals`, `/proposals/{id}` | Consolidation proposals (TBD) |
 | GET | `/substitutions` | Scored substitution pairs |
 | GET | `/agnes/suggestions?proposal_id=` | Pre-seeded chat questions (TBD) |
-| POST | `/agnes/ask` | Agentic chat — LLM with tool use |
+| POST | `/agnes/ask` | AI chat — keyword commands + RAG-backed LLM |
 
 ---
 
@@ -169,7 +169,7 @@ backend/
 |-------|------|-------------|
 | `search_engine.py` | Startup + on-demand | Enriches materials → generates embeddings → stores in `substitution_groups` |
 | `compliance.py` | On-demand | Scores substitute candidates 0-100 via GPT-4o structured output |
-| `agnes.py` | Live (POST /agnes/ask) | Agentic chat — decides which tools to call based on user message |
+| `agnes.py` | Live (POST /agnes/ask) | Keyword-triggered commands + RAG chat. Phase 2: agentic tool use. |
 
 ### SearchEngine flow
 
@@ -186,30 +186,27 @@ Two entry points:
 - `run_all()` — startup, processes all unenriched materials
 - `run_one(name)` — on-demand, single material (from Agnes chat or frontend)
 
-### Agnes — agentic chat with tools
+### Agnes — keyword commands + RAG chat
 
-Agnes has 6 tools, split into two categories:
+**Phase 1 (current):** user types explicit commands. No LLM reasoning over tool selection.
+**Phase 2 (next):** swap keyword matching for LangChain `bind_tools()` — LLM decides which tools to call.
 
-**ACTION tools** — do real work:
-| Tool | What it does | Status |
-|------|-------------|--------|
-| `search_raw_material(name)` | Enrich single material via SearchEngine | Working (name-only fallback) |
-| `search_all_raw_materials()` | Enrich all unenriched materials | Working (name-only fallback) |
-| `check_compliance(rm_id, product_id)` | Score substitutes via ComplianceAgent | TODO — teammate implements |
+Commands:
+| Command | What it does | Status |
+|---------|-------------|--------|
+| `search <name>` | Enrich single material via SearchEngine | Working (name-only fallback) |
+| `search all` | Enrich all unenriched materials | Working (name-only fallback) |
+| `compliance <rm_id> <product_id>` | Score substitutes via ComplianceAgent | TODO — teammate implements |
+| `bom <product_id>` | Show BOM ingredients | Working |
+| `company <company_id>` | Show company + products | Working |
+| anything else | RAG-backed LLM chat | Working |
 
-**READ tools** — give Agnes eyes into DB:
-| Tool | What it does | Status |
-|------|-------------|--------|
-| `query_materials(query)` | RAG semantic search over embedded materials | Working |
-| `get_product_bom(product_id)` | Get ingredients for a product | Working |
-| `get_company_info(company_id)` | Get company details + products | Working |
-
-Read tools exist because Agnes needs DB access to answer questions accurately — without them she guesses.
-
-Example: user asks *"Can we replace soy lecithin in Optimum Nutrition products?"*
-→ Agnes calls `query_materials("soy lecithin")` → finds candidates
-→ calls `check_compliance(rm_id, product_id)` → scores them (once implemented)
-→ answers with grounded data
+Example:
+```
+user: "search whey-protein-isolate"     → enriches + embeds that material
+user: "bom 90"                          → shows ingredients for product 90
+user: "tell me about lecithin"          → RAG search + LLM answers with DB context
+```
 
 **Session flow:**
 ```

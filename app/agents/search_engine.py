@@ -17,7 +17,7 @@ Writes to:
 
 from __future__ import annotations
 import logging
-from app.data import db, rag
+from app.data import rag
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +30,16 @@ async def run_all() -> None:
     names = await rag.get_unembedded_names()
     logger.info("SearchEngine: %d materials to process", len(names))
 
+    ok, fail = 0, 0
     for name in names:
         try:
             await _enrich_and_embed(name)
+            ok += 1
         except Exception:
+            fail += 1
             logger.exception("SearchEngine: failed for %r — skipping", name)
 
-    logger.info("SearchEngine: done — processed %d materials", len(names))
+    logger.info("SearchEngine: done — %d ok, %d failed", ok, fail)
 
 
 async def run_one(raw_material_name: str) -> None:
