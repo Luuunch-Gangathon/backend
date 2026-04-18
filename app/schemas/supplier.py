@@ -2,6 +2,6 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 
-class RawMaterial(BaseModel):
+class Supplier(BaseModel):
     id: int
-    sku: str
+    name: str
