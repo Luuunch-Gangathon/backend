@@ -99,13 +99,13 @@ async def _crawl_page(url: str) -> str | None:
         markdown = getattr(result, "markdown", "") or ""
         logger.info("Page crawled, markdown length: %d chars", len(markdown))
         return markdown if markdown else None
-    except Exception:
-        logger.warning("Crawl failed for %s", url, exc_info=True)
+    except Exception as e:
+        logger.warning("Crawl failed for %s — %s", url, e)
         return None
 
 
 def _extract_properties(markdown: str, material_name: str) -> MaterialProperties | None:
-    """Call Anthropic to extract structured properties from page markdown."""
+    """Call OpenAI to extract structured properties from page markdown."""
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         logger.warning("ANTHROPIC_API_KEY not set, skipping extraction")
@@ -151,8 +151,8 @@ Page content:
                      sum(1 for f in _PROPERTY_FIELDS if getattr(props, f) is not None))
         return props
 
-    except Exception:
-        logger.warning("LLM extraction failed for material: %s", material_name, exc_info=True)
+    except Exception as e:
+        logger.warning("LLM extraction failed for material: %s — %s", material_name, e)
         return None
 
 

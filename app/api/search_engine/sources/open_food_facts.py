@@ -100,8 +100,8 @@ def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
         response = httpx.get(_OFF_SEARCH_URL, params=params, headers=_HEADERS, timeout=10)
         response.raise_for_status()
         data = response.json()
-    except Exception:
-        logger.warning("Open Food Facts API request failed for '%s'", name, exc_info=True)
+    except Exception as e:
+        logger.warning("Open Food Facts API request failed for '%s' — %s", name, e)
         return []
 
     products: list[dict] = data.get("products", [])

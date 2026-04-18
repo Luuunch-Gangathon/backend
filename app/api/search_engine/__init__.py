@@ -25,7 +25,7 @@ from app.data.rag import store_embedding, store_name_only_embedding
 
 logger = logging.getLogger(__name__)
 
-_RESULTS_PATH = Path(__file__).resolve().parents[3] / "data" / "enrichment_results.json"
+_RESULTS_PATH = Path(__file__).resolve().parents[3] / "enrichment_results.json"
 
 
 def enrich(raw_fields: dict) -> EnrichmentResult:

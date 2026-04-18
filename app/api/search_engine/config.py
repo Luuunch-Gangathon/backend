@@ -6,19 +6,11 @@ and SOURCES here. The engine and handlers do not need modification.
 
 from __future__ import annotations
 
-PROPERTIES: list[str] = [
-    # "chemical_identity",  # temporarily excluded — PubChem lookup is slow and not needed for substitution MVP
-    "functional_role",
-    "source_origin",
-    "dietary_flags",
-    "allergens",
-    "certifications",
-    "regulatory_status",
-    "form_grade",
-    "price",
-]
+from app.api.search_engine.property_schema import PROPERTY_TEMPLATES
 
-TRUST_TIERS: list[str] = ["verified", "probable", "inferred"]
+PROPERTIES: list[str] = list(PROPERTY_TEMPLATES.keys())
+
+TRUST_TIERS: list[str] = ["verified", "probable", "inferred", "speculative"]
 
 SOURCES: list[dict] = [
     {
@@ -71,14 +63,19 @@ SOURCES: list[dict] = [
         "trust_tier": "probable",
         "provides": ["*"],
     },
+    # {
+    #     "name": "web_search",  # temporarily excluded — needs fine-tuning (picks irrelevant pages, truncated content)
+    #     "trust_tier": "inferred",
+    #     "provides": ["*"],
+    # },
     {
-        "name": "web_search",
+        "name": "llm_knowledge",
         "trust_tier": "inferred",
         "provides": ["*"],
     },
     {
-        "name": "llm_knowledge",
-        "trust_tier": "inferred",
+        "name": "llm_general_fallback",
+        "trust_tier": "speculative",
         "provides": ["*"],
     },
 ]

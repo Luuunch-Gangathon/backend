@@ -50,8 +50,8 @@ def _fetch_enforcement(name: str) -> list[dict] | None:
             return None
         data = resp.json()
         return data.get("results", [])
-    except Exception:
-        logger.warning("openFDA enforcement request failed for %r", name, exc_info=True)
+    except Exception as e:
+        logger.warning("openFDA enforcement request failed for %r — %s", name, e)
         return None
 
 
@@ -77,8 +77,8 @@ def _fetch_events(name: str) -> int | None:
             return None
         data = resp.json()
         return len(data.get("results", []))
-    except Exception:
-        logger.warning("openFDA event request failed for %r", name, exc_info=True)
+    except Exception as e:
+        logger.warning("openFDA event request failed for %r — %s", name, e)
         return None
 
 

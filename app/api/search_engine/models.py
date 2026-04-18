@@ -11,7 +11,7 @@ class PropertyResult(BaseModel):
     """A single enriched property value with provenance."""
 
     value: Any
-    confidence: Literal["verified", "probable", "inferred", "unknown"]
+    confidence: Literal["verified", "probable", "inferred", "speculative", "unknown"]
     source_name: Optional[str] = None
     source_url: Optional[str] = None
     raw_excerpt: Optional[str] = None

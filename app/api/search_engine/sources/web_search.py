@@ -64,7 +64,7 @@ Page content:
 
 
 def _extract_properties_from_page(markdown: str, material_name: str) -> dict[str, Any] | None:
-    """Call Anthropic Haiku to extract properties from page content."""
+    """Call OpenAI to extract properties from page content."""
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         logger.warning("ANTHROPIC_API_KEY not set, skipping web search extraction")
@@ -107,10 +107,8 @@ def _extract_properties_from_page(markdown: str, material_name: str) -> dict[str
         extracted = json.loads(json_str.strip())
         return extracted if isinstance(extracted, dict) else None
 
-    except Exception:
-        logger.warning(
-            "Web search LLM extraction failed for material: %s", material_name, exc_info=True
-        )
+    except Exception as e:
+        logger.warning("Web search LLM extraction failed for material: %s — %s", material_name, e)
         return None
 
 
@@ -149,8 +147,8 @@ def web_search_enrich(name: str, context: dict) -> list[dict]:
     # Crawl the page
     try:
         markdown = asyncio.run(_crawl_page(target_url))
-    except Exception:
-        logger.warning("Web search crawl failed for %s", target_url, exc_info=True)
+    except Exception as e:
+        logger.warning("Web search crawl failed for %s — %s", target_url, e)
         return []
 
     if not markdown:

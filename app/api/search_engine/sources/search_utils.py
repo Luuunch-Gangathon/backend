@@ -51,8 +51,8 @@ def search(query: str, max_results: int = 5) -> list[dict]:
             }
             for r in raw
         ]
-    except Exception:
-        logger.warning("Search failed for query: %s", query, exc_info=True)
+    except Exception as e:
+        logger.warning("Search failed for query: %s — %s", query, e)
         return []
 
 
@@ -140,8 +140,8 @@ Answer with ONLY a JSON object: {{"is_match": true/false, "reason": "brief expla
         result = json.loads(json_str.strip())
         return result.get("is_match", False)
 
-    except Exception:
-        logger.warning("Domain verification failed for %s", domain, exc_info=True)
+    except Exception as e:
+        logger.warning("Domain verification failed for %s — %s", domain, e)
         return False
 
 

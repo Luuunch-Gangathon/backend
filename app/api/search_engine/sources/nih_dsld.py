@@ -110,8 +110,8 @@ def _fetch_products(name: str) -> list[dict] | None:
             return products
     except httpx.HTTPStatusError:
         logger.warning("DSLD primary endpoint returned non-2xx for %r", name)
-    except Exception:
-        logger.warning("DSLD primary endpoint request failed for %r", name, exc_info=True)
+    except Exception as e:
+        logger.warning("DSLD primary endpoint request failed for %r — %s", name, e)
         return None
 
     # Fallback endpoint
@@ -124,8 +124,8 @@ def _fetch_products(name: str) -> list[dict] | None:
         resp.raise_for_status()
         data = resp.json()
         return data.get("hits", data.get("results", []))
-    except Exception:
-        logger.warning("DSLD fallback endpoint failed for %r", name, exc_info=True)
+    except Exception as e:
+        logger.warning("DSLD fallback endpoint failed for %r — %s", name, e)
         return None
 
 

@@ -19,6 +19,12 @@ logger = logging.getLogger(__name__)
 
 MODEL = "claude-haiku-4-5-20251001"
 
+
+def _is_empty(value: Any) -> bool:
+    if isinstance(value, (list, dict)):
+        return len(value) == 0
+    return False
+
 # Properties the LLM is allowed to return. "price" is in PROPERTIES so the
 # prompt includes it, but it is filtered out before results are returned.
 PROPERTIES = [
@@ -38,12 +44,14 @@ _EXCLUDED = {"price"}
 
 PROMPT = """You are a materials science expert. For the raw material "{material_name}", provide any properties you know with high confidence. Only state facts you are very confident about — it is better to return null than to guess.
 
+IMPORTANT: If you don't know a property, return null for the ENTIRE property — do NOT return an object with null sub-fields like {{"contains": null, "free_from": null}}. That should just be null.
+
 Return a JSON object with these properties (use null if unsure):
 - chemical_identity: {{"cas_number": "...", "formula": "...", "synonyms": [...]}} or null
 - functional_role: [list of roles] or null
 - source_origin: "plant" | "animal" | "synthetic" | "mineral" or null
 - dietary_flags: {{"vegan": bool, "vegetarian": bool, "halal": bool, "kosher": bool}} or null
-- allergens: {{"contains": [...], "free_from": [...]}} or null
+- allergens: {{"contains": ["list of allergens"], "free_from": ["list"]}} or null
 - certifications: [list] or null
 - regulatory_status: {{"gras": bool}} or null
 - form_grade: {{"form": "...", "grade": "..."}} or null
@@ -89,7 +97,7 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
             if prop in _EXCLUDED:
                 continue
             value = extracted.get(prop)
-            if value is not None:
+            if value is not None and not _is_empty(value):
                 results.append(
                     {
                         "property": prop,
@@ -104,8 +112,8 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
         )
         return results
 
-    except Exception:
+    except Exception as e:
         logger.warning(
-            "llm_knowledge handler failed for '%s'", name, exc_info=True
+            "llm_knowledge handler failed for '%s' — %s", name, e
         )
         return []

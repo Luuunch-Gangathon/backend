@@ -32,6 +32,9 @@ from app.api.search_engine.sources.nih_dsld import (
 from app.api.search_engine.sources.llm_knowledge import (
     llm_knowledge_enrich as _llm_knowledge_enrich_real,
 )
+from app.api.search_engine.sources.llm_general_fallback import (
+    llm_general_fallback_enrich as _llm_general_fallback_enrich_real,
+)
 from app.api.search_engine.sources.web_search import (
     web_search_enrich as _web_search_enrich_real,
 )
@@ -82,6 +85,10 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
     return _llm_knowledge_enrich_real(name, context)
 
 
+def llm_general_fallback_enrich(name: str, context: dict) -> list[dict]:
+    return _llm_general_fallback_enrich_real(name, context)
+
+
 SOURCE_HANDLERS: dict[str, callable] = {
     "supplier_website": supplier_website_enrich,
     "pubchem": pubchem_enrich,
@@ -95,4 +102,5 @@ SOURCE_HANDLERS: dict[str, callable] = {
     "retail_page": retail_page_enrich,
     "web_search": _web_search_enrich_real,
     "llm_knowledge": _llm_knowledge_enrich_real,
+    "llm_general_fallback": _llm_general_fallback_enrich_real,
 }

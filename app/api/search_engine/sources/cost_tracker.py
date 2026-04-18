@@ -19,7 +19,8 @@ COST_FILE = Path(__file__).resolve().parents[4] / "llm_costs.json"
 # Pricing per million tokens (as of 2025)
 MODEL_PRICING: dict[str, dict[str, float]] = {
     "claude-haiku-4-5-20251001": {"input": 0.80, "output": 4.00},
-    "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00},
+    "claude-3-haiku-20240307": {"input": 0.25, "output": 1.25},
+    "claude-sonnet-4-6": {"input": 3.00, "output": 15.00},
 }
 
 
@@ -46,7 +47,7 @@ def track_usage(response, model: str, purpose: str) -> None:
     """Track an Anthropic API response's token usage and cost.
 
     Args:
-        response: The Anthropic messages.create() response object.
+        response: The anthropic.messages.create() response object.
         model: Model ID used (e.g. "claude-haiku-4-5-20251001").
         purpose: What the call was for (e.g. "domain_verification", "property_extraction").
     """
