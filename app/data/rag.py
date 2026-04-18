@@ -44,7 +44,14 @@ from app.data import db
 logger = logging.getLogger(__name__)
 
 _EMBEDDING_MODEL = "text-embedding-3-small"
-_openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+_openai: AsyncOpenAI | None = None
+
+
+def _get_openai() -> AsyncOpenAI:
+    global _openai
+    if _openai is None:
+        _openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    return _openai
 
 
 async def store_embedding(enriched_result: dict) -> None:
@@ -131,7 +138,7 @@ async def seed_name_only_embeddings() -> int:
     for batch_start in range(0, len(names), _EMBED_BATCH_SIZE):
         batch = names[batch_start: batch_start + _EMBED_BATCH_SIZE]
         try:
-            response = await _openai.embeddings.create(model=_EMBEDDING_MODEL, input=batch)
+            response = await _get_openai().embeddings.create(model=_EMBEDDING_MODEL, input=batch)
             vectors = [item.embedding for item in response.data]
         except Exception:
             logger.exception("rag: embedding batch %d failed, skipping", batch_start)
@@ -262,5 +269,5 @@ def _build_embedding_text(name: str, props: dict) -> str:
 
 
 async def _embed(text: str) -> list[float]:
-    response = await _openai.embeddings.create(model=_EMBEDDING_MODEL, input=text)
+    response = await _get_openai().embeddings.create(model=_EMBEDDING_MODEL, input=text)
     return response.data[0].embedding
