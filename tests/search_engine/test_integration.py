@@ -5,13 +5,13 @@ from __future__ import annotations
 from unittest.mock import patch
 
 
-def _fake_pubchem(name: str, context: dict) -> list[dict]:
+def _fake_foodb(name: str, context: dict) -> list[dict]:
     return [
         {
-            "property": "chemical_identity",
-            "value": {"cas_number": "557-04-0", "synonyms": ["magnesium octadecanoate"]},
-            "source_url": "https://pubchem.ncbi.nlm.nih.gov/compound/11177",
-            "raw_excerpt": "CAS 557-04-0",
+            "property": "source_origin",
+            "value": "plant",
+            "source_url": "https://foodb.ca/compounds/FDB001234",
+            "raw_excerpt": "plant-derived",
         }
     ]
 
@@ -21,17 +21,14 @@ def _fake_empty(name: str, context: dict) -> list[dict]:
 
 
 def test_full_pipeline():
-    from app.api.search_engine import enrich
-    from app.api.search_engine.storage import EnrichmentStore
-
-    store = EnrichmentStore()
+    from app.agents.searchEngine import enrich
 
     fake_handlers = {s: _fake_empty for s in [
-        "supplier_website", "chebi", "foodb", "open_food_facts",
+        "supplier_website", "pubchem", "chebi", "open_food_facts",
         "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
-        "web_search", "llm_knowledge",
+        "web_search", "llm_knowledge", "llm_general_fallback",
     ]}
-    fake_handlers["pubchem"] = _fake_pubchem
+    fake_handlers["foodb"] = _fake_foodb
 
     raw_fields = {
         "Id": 42,
@@ -40,29 +37,20 @@ def test_full_pipeline():
         "SupplierIds": [12, 7],
     }
 
-    with patch("app.api.search_engine.engine.SOURCE_HANDLERS", fake_handlers):
-        result = enrich(raw_fields, store=store)
+    with patch("app.agents.searchEngine.engine.SOURCE_HANDLERS", fake_handlers):
+        result = enrich(raw_fields)
 
-    # Check the result
     assert result.material_id == "ing_db_42"
     assert result.normalized_name == "magnesium stearate"
     assert result.company_id == "co_db_52"
     assert result.supplier_ids == ["sup_db_12", "sup_db_7"]
     assert result.completeness == 1
-    assert result.properties["chemical_identity"].source_name == "pubchem"
-    assert result.properties["chemical_identity"].confidence == "verified"
-
-    # Check it was persisted
-    stored = store.get("ing_db_42")
-    assert stored is not None
-    assert stored["material_id"] == "ing_db_42"
+    assert result.properties["source_origin"].source_name == "foodb"
+    assert result.properties["source_origin"].confidence == "verified"
 
 
 def test_full_pipeline_unknown_material():
-    from app.api.search_engine import enrich
-    from app.api.search_engine.storage import EnrichmentStore
-
-    store = EnrichmentStore()
+    from app.agents.searchEngine import enrich
 
     fake_handlers = {s: _fake_empty for s in [
         "supplier_website", "pubchem", "chebi", "foodb", "open_food_facts",
@@ -76,8 +64,8 @@ def test_full_pipeline_unknown_material():
         "CompanyId": 1,
     }
 
-    with patch("app.api.search_engine.engine.SOURCE_HANDLERS", fake_handlers):
-        result = enrich(raw_fields, store=store)
+    with patch("app.agents.searchEngine.engine.SOURCE_HANDLERS", fake_handlers):
+        result = enrich(raw_fields)
 
     assert result.completeness == 0
     assert all(

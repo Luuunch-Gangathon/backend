@@ -55,7 +55,7 @@ class TestOpenfdaEnrich:
     """Test the openfda_enrich handler."""
 
     def _import(self):
-        from app.api.search_engine.sources.openfda import openfda_enrich
+        from app.agents.searchEngine.sources.openfda import openfda_enrich
         return openfda_enrich
 
     # --- recalls found ---
@@ -263,7 +263,7 @@ class TestOpenfdaEnrich:
     # --- handler is reachable from handlers registry ---
 
     def test_handler_is_registered(self):
-        from app.api.search_engine.handlers import SOURCE_HANDLERS
+        from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
         assert "openfda" in SOURCE_HANDLERS
         handler = SOURCE_HANDLERS["openfda"]

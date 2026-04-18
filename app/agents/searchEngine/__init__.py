@@ -1,11 +1,11 @@
 """Enrichment search engine — config-driven material property enrichment.
 
 Usage (sync — enrichment only):
-    from app.api.search_engine import enrich
+    from app.agents.searchEngine import enrich
     result = enrich(raw_fields)
 
 Usage (async — enrichment + DB persistence):
-    from app.api.search_engine import enrich_and_store
+    from app.agents.searchEngine import enrich_and_store
     result = await enrich_and_store(raw_fields, raw_material_name="magnesium-oxide")
 """
 
@@ -17,11 +17,11 @@ import logging
 from functools import partial
 from pathlib import Path
 
-from app.api.search_engine.engine import run_enrichment
-from app.api.search_engine.models import EnrichmentResult
-from app.api.search_engine.normalizer import normalize
-from app.data import db
-from app.data.rag import store_embedding, store_name_only_embedding
+from app.agents.searchEngine.engine import run_enrichment
+from app.agents.searchEngine.models import EnrichmentResult
+from app.agents.searchEngine.normalizer import normalize
+from app.data import db, rag
+from app.data.rag import store_embedding
 
 logger = logging.getLogger(__name__)
 

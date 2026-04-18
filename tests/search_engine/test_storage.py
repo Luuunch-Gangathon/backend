@@ -19,7 +19,7 @@ def _make_result(material_id: str = "ing_db_1") -> dict:
 
 
 def test_save_and_get():
-    from app.api.search_engine.storage import EnrichmentStore
+    from app.agents.searchEngine.storage import EnrichmentStore
 
     store = EnrichmentStore()
     result = _make_result("ing_db_42")
@@ -30,14 +30,14 @@ def test_save_and_get():
 
 
 def test_get_missing_returns_none():
-    from app.api.search_engine.storage import EnrichmentStore
+    from app.agents.searchEngine.storage import EnrichmentStore
 
     store = EnrichmentStore()
     assert store.get("nonexistent") is None
 
 
 def test_save_overwrites():
-    from app.api.search_engine.storage import EnrichmentStore
+    from app.agents.searchEngine.storage import EnrichmentStore
 
     store = EnrichmentStore()
     r1 = _make_result("ing_db_1")
@@ -53,7 +53,7 @@ def test_save_overwrites():
 
 
 def test_list_all():
-    from app.api.search_engine.storage import EnrichmentStore
+    from app.agents.searchEngine.storage import EnrichmentStore
 
     store = EnrichmentStore()
     store.save(_make_result("ing_db_1"))

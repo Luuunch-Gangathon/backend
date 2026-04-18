@@ -6,7 +6,7 @@ and SOURCES here. The engine and handlers do not need modification.
 
 from __future__ import annotations
 
-from app.api.search_engine.property_schema import PROPERTY_TEMPLATES
+from app.agents.searchEngine.property_schema import PROPERTY_TEMPLATES
 
 PROPERTIES: list[str] = list(PROPERTY_TEMPLATES.keys())
 

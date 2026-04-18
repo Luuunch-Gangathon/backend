@@ -19,7 +19,8 @@ from typing import Any
 
 import anthropic
 
-from app.api.search_engine.sources.cost_tracker import track_usage
+from app.agents.searchEngine.sources.cost_tracker import track_usage
+from app.agents.searchEngine.property_schema import normalize_value
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ def llm_general_fallback_enrich(name: str, context: dict) -> list[dict]:
         logger.debug("ANTHROPIC_API_KEY not set — skipping llm_general_fallback")
         return []
 
-    from app.api.search_engine.config import PROPERTIES as ALL_PROPERTIES
+    from app.agents.searchEngine.config import PROPERTIES as ALL_PROPERTIES
 
     missing = context.get("missing_properties", ALL_PROPERTIES)
     if not missing:
@@ -112,11 +113,12 @@ def llm_general_fallback_enrich(name: str, context: dict) -> list[dict]:
             if entry is None:
                 continue
             if not isinstance(entry, dict):
-                # LLM returned a raw value — treat as best-effort
-                if not _is_empty(entry):
+                # LLM returned a raw value — normalize against schema before accepting
+                normalized = normalize_value(prop, entry)
+                if normalized is not None and not _is_empty(normalized):
                     results.append({
                         "property": prop,
-                        "value": entry,
+                        "value": normalized,
                         "source_url": None,
                         "raw_excerpt": "LLM general fallback (speculative)",
                     })

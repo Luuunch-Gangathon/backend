@@ -123,7 +123,7 @@ class TestChebiEnrich:
     """Test the chebi_enrich handler."""
 
     def _import(self):
-        from app.api.search_engine.sources.chebi import chebi_enrich
+        from app.agents.searchEngine.sources.chebi import chebi_enrich
         return chebi_enrich
 
     # --- successful role extraction ---
@@ -313,14 +313,14 @@ class TestChebiEnrich:
 
     def test_handler_is_registered_in_source_handlers(self):
         """chebi_enrich is wired into SOURCE_HANDLERS and is the real impl."""
-        from app.api.search_engine.handlers import SOURCE_HANDLERS
-        from app.api.search_engine.sources.chebi import chebi_enrich as real_impl
+        from app.agents.searchEngine.handlers import SOURCE_HANDLERS
+        from app.agents.searchEngine.sources.chebi import chebi_enrich as real_impl
 
         assert SOURCE_HANDLERS["chebi"] is real_impl
 
     def test_registered_handler_returns_functional_role(self):
         """The handler in SOURCE_HANDLERS returns functional_role results."""
-        from app.api.search_engine.handlers import SOURCE_HANDLERS
+        from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
         handler = SOURCE_HANDLERS["chebi"]
 

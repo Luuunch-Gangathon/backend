@@ -17,9 +17,9 @@ from typing import Any
 
 import anthropic
 
-from app.api.search_engine.sources.cost_tracker import track_usage
-from app.api.search_engine.sources.search_utils import extract_domain, search
-from app.api.search_engine.sources.supplier_website import _crawl_page
+from app.agents.searchEngine.sources.cost_tracker import track_usage
+from app.agents.searchEngine.sources.search_utils import extract_domain, search
+from app.agents.searchEngine.sources.supplier_website import _crawl_page
 
 logger = logging.getLogger(__name__)
 

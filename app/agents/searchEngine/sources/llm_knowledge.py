@@ -13,7 +13,7 @@ from typing import Any
 
 import anthropic
 
-from app.api.search_engine.sources.cost_tracker import track_usage
+from app.agents.searchEngine.sources.cost_tracker import track_usage
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +25,7 @@ def _is_empty(value: Any) -> bool:
         return len(value) == 0
     return False
 
-# Properties the LLM is allowed to return. "price" is in PROPERTIES so the
-# prompt includes it, but it is filtered out before results are returned.
 PROPERTIES = [
-    "chemical_identity",
     "functional_role",
     "source_origin",
     "dietary_flags",
@@ -36,18 +33,13 @@ PROPERTIES = [
     "certifications",
     "regulatory_status",
     "form_grade",
-    "price",
 ]
-
-# Properties that must never appear in results regardless of LLM output.
-_EXCLUDED = {"price"}
 
 PROMPT = """You are a materials science expert. For the raw material "{material_name}", provide any properties you know with high confidence. Only state facts you are very confident about — it is better to return null than to guess.
 
 IMPORTANT: If you don't know a property, return null for the ENTIRE property — do NOT return an object with null sub-fields like {{"contains": null, "free_from": null}}. That should just be null.
 
 Return a JSON object with these properties (use null if unsure):
-- chemical_identity: {{"cas_number": "...", "formula": "...", "synonyms": [...]}} or null
 - functional_role: [list of roles] or null
 - source_origin: "plant" | "animal" | "synthetic" | "mineral" or null
 - dietary_flags: {{"vegan": bool, "vegetarian": bool, "halal": bool, "kosher": bool}} or null
@@ -55,7 +47,6 @@ Return a JSON object with these properties (use null if unsure):
 - certifications: [list] or null
 - regulatory_status: {{"gras": bool}} or null
 - form_grade: {{"form": "...", "grade": "..."}} or null
-- price: null (LLM should never guess prices)
 
 Return only the JSON object, no additional commentary."""
 
@@ -94,8 +85,6 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
 
         results = []
         for prop in PROPERTIES:
-            if prop in _EXCLUDED:
-                continue
             value = extracted.get(prop)
             if value is not None and not _is_empty(value):
                 results.append(

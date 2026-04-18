@@ -6,7 +6,7 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 # Module-level patch paths (all symbols imported at web_search module scope)
-_MOD = "app.api.search_engine.sources.web_search"
+_MOD = "app.agents.searchEngine.sources.web_search"
 
 
 # ---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ def _search_result(url: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def test_successful_extraction_returns_properties():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     extracted = {
         "allergens": {"contains": [], "free_from": ["gluten"]},
@@ -61,7 +61,7 @@ def test_successful_extraction_returns_properties():
 
 
 def test_result_has_all_required_keys():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     extracted = {"price": "$25/kg"}
 
@@ -89,7 +89,7 @@ def test_result_has_all_required_keys():
 # ---------------------------------------------------------------------------
 
 def test_no_search_results_returns_empty():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     with patch(f"{_MOD}.search", return_value=[]):
         results = web_search_enrich("magnesium stearate", {})
@@ -98,7 +98,7 @@ def test_no_search_results_returns_empty():
 
 
 def test_crawl_failure_returns_empty():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     with patch(f"{_MOD}.search",
                return_value=[_search_result("https://example-ingredients.com/product")],
@@ -113,7 +113,7 @@ def test_crawl_failure_returns_empty():
 
 
 def test_crawl_raises_exception_returns_empty():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     with patch(f"{_MOD}.search",
                return_value=[_search_result("https://example-ingredients.com/product")],
@@ -128,7 +128,7 @@ def test_crawl_raises_exception_returns_empty():
 
 
 def test_llm_returns_no_useful_properties_returns_empty():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     # All extracted values are null/None — handler should return nothing
     extracted = {
@@ -152,7 +152,7 @@ def test_llm_returns_no_useful_properties_returns_empty():
 
 
 def test_llm_extraction_returns_none_returns_empty():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     with patch(f"{_MOD}.search",
                return_value=[_search_result("https://example-ingredients.com/product")],
@@ -173,7 +173,7 @@ def test_llm_extraction_returns_none_returns_empty():
 # ---------------------------------------------------------------------------
 
 def test_blocklisted_domain_is_skipped():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     # All results are blocklisted; handler should return empty
     search_results = [
@@ -194,7 +194,7 @@ def test_blocklisted_domain_is_skipped():
 
 def test_blocklisted_domain_skipped_uses_next_result():
     """When the first result is blocklisted, the handler moves to the next."""
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     search_results = [
         _search_result("https://wikipedia.org/wiki/Magnesium_stearate"),
@@ -224,7 +224,7 @@ def test_blocklisted_domain_skipped_uses_next_result():
 # ---------------------------------------------------------------------------
 
 def test_no_api_key_returns_none(monkeypatch):
-    from app.api.search_engine.sources.web_search import _extract_properties_from_page
+    from app.agents.searchEngine.sources.web_search import _extract_properties_from_page
 
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
@@ -233,7 +233,7 @@ def test_no_api_key_returns_none(monkeypatch):
 
 
 def test_web_search_enrich_no_api_key_returns_empty(monkeypatch):
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
@@ -254,7 +254,7 @@ def test_web_search_enrich_no_api_key_returns_empty(monkeypatch):
 # ---------------------------------------------------------------------------
 
 def test_raw_excerpt_is_max_200_chars():
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     long_markdown = "A" * 500
     extracted = {"source_origin": "plant"}
@@ -279,7 +279,7 @@ def test_raw_excerpt_is_max_200_chars():
 # ---------------------------------------------------------------------------
 
 def test_extract_properties_parses_json():
-    from app.api.search_engine.sources.web_search import _extract_properties_from_page
+    from app.agents.searchEngine.sources.web_search import _extract_properties_from_page
 
     payload = {
         "source_origin": "plant",
@@ -303,7 +303,7 @@ def test_extract_properties_parses_json():
 
 
 def test_extract_properties_handles_markdown_code_fence():
-    from app.api.search_engine.sources.web_search import _extract_properties_from_page
+    from app.agents.searchEngine.sources.web_search import _extract_properties_from_page
 
     payload = {"price": "$30/kg"}
     raw_text = "```json\n" + json.dumps(payload) + "\n```"
@@ -325,7 +325,7 @@ def test_extract_properties_handles_markdown_code_fence():
 
 
 def test_extract_properties_returns_none_on_invalid_json():
-    from app.api.search_engine.sources.web_search import _extract_properties_from_page
+    from app.agents.searchEngine.sources.web_search import _extract_properties_from_page
 
     response = MagicMock()
     response.content = [MagicMock(text="not valid json at all!!!")]
@@ -343,7 +343,7 @@ def test_extract_properties_returns_none_on_invalid_json():
 
 
 def test_extract_properties_returns_none_on_api_error():
-    from app.api.search_engine.sources.web_search import _extract_properties_from_page
+    from app.agents.searchEngine.sources.web_search import _extract_properties_from_page
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test-key"}), \
          patch(f"{_MOD}.anthropic.Anthropic") as MockClient:
@@ -361,7 +361,7 @@ def test_extract_properties_returns_none_on_api_error():
 
 def test_only_known_properties_returned():
     """LLM may return extra keys; only the 9 known property fields should appear."""
-    from app.api.search_engine.sources.web_search import web_search_enrich
+    from app.agents.searchEngine.sources.web_search import web_search_enrich
 
     extracted = {
         "source_origin": "plant",

@@ -9,10 +9,10 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 
-from app.api.search_engine.config import PROPERTIES, SOURCES, TRUST_TIERS
-from app.api.search_engine.handlers import SOURCE_HANDLERS
-from app.api.search_engine.models import EnrichmentResult, PropertyResult
-from app.api.search_engine.property_schema import normalize_value
+from app.agents.searchEngine.config import PROPERTIES, SOURCES, TRUST_TIERS
+from app.agents.searchEngine.handlers import SOURCE_HANDLERS
+from app.agents.searchEngine.models import EnrichmentResult, PropertyResult
+from app.agents.searchEngine.property_schema import normalize_value
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 
 def test_material_properties_schema():
-    from app.api.search_engine.sources.supplier_website import MaterialProperties
+    from app.agents.searchEngine.sources.supplier_website import MaterialProperties
 
     props = MaterialProperties(
         is_correct_material=True,
@@ -23,7 +23,7 @@ def test_material_properties_schema():
 
 
 def test_material_properties_all_none():
-    from app.api.search_engine.sources.supplier_website import MaterialProperties
+    from app.agents.searchEngine.sources.supplier_website import MaterialProperties
 
     props = MaterialProperties(is_correct_material=False)
     assert props.chemical_identity is None
@@ -31,7 +31,7 @@ def test_material_properties_all_none():
 
 
 def test_convert_to_handler_results():
-    from app.api.search_engine.sources.supplier_website import (
+    from app.agents.searchEngine.sources.supplier_website import (
         MaterialProperties,
         convert_to_handler_results,
     )
@@ -65,7 +65,7 @@ def test_convert_to_handler_results():
 
 
 def test_convert_to_handler_results_wrong_material():
-    from app.api.search_engine.sources.supplier_website import (
+    from app.agents.searchEngine.sources.supplier_website import (
         MaterialProperties,
         convert_to_handler_results,
     )
@@ -86,7 +86,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 
 @pytest.mark.asyncio
 async def test_crawl_and_extract_success():
-    from app.api.search_engine.sources.supplier_website import _crawl_and_extract, MaterialProperties
+    from app.agents.searchEngine.sources.supplier_website import _crawl_and_extract, MaterialProperties
 
     fake_props = MaterialProperties(
         is_correct_material=True,
@@ -97,11 +97,11 @@ async def test_crawl_and_extract_success():
     )
 
     with patch(
-        "app.api.search_engine.sources.supplier_website._crawl_page",
+        "app.agents.searchEngine.sources.supplier_website._crawl_page",
         new_callable=AsyncMock,
         return_value="# Magnesium Stearate\nCAS: 557-04-0",
     ), patch(
-        "app.api.search_engine.sources.supplier_website._extract_properties",
+        "app.agents.searchEngine.sources.supplier_website._extract_properties",
         return_value=fake_props,
     ):
         result = await _crawl_and_extract("https://purebulk.com/products/mag", "magnesium stearate")
@@ -115,16 +115,16 @@ async def test_crawl_and_extract_success():
 
 @pytest.mark.asyncio
 async def test_crawl_and_extract_wrong_material():
-    from app.api.search_engine.sources.supplier_website import _crawl_and_extract, MaterialProperties
+    from app.agents.searchEngine.sources.supplier_website import _crawl_and_extract, MaterialProperties
 
     fake_props = MaterialProperties(is_correct_material=False)
 
     with patch(
-        "app.api.search_engine.sources.supplier_website._crawl_page",
+        "app.agents.searchEngine.sources.supplier_website._crawl_page",
         new_callable=AsyncMock,
         return_value="# Some Other Product",
     ), patch(
-        "app.api.search_engine.sources.supplier_website._extract_properties",
+        "app.agents.searchEngine.sources.supplier_website._extract_properties",
         return_value=fake_props,
     ):
         result = await _crawl_and_extract("https://example.com/wrong", "magnesium stearate")
@@ -136,10 +136,10 @@ async def test_crawl_and_extract_wrong_material():
 
 @pytest.mark.asyncio
 async def test_crawl_and_extract_returns_none_on_crawl_failure():
-    from app.api.search_engine.sources.supplier_website import _crawl_and_extract
+    from app.agents.searchEngine.sources.supplier_website import _crawl_and_extract
 
     with patch(
-        "app.api.search_engine.sources.supplier_website._crawl_page",
+        "app.agents.searchEngine.sources.supplier_website._crawl_page",
         new_callable=AsyncMock,
         return_value=None,
     ):
@@ -150,14 +150,14 @@ async def test_crawl_and_extract_returns_none_on_crawl_failure():
 
 @pytest.mark.asyncio
 async def test_crawl_and_extract_returns_none_on_extraction_failure():
-    from app.api.search_engine.sources.supplier_website import _crawl_and_extract
+    from app.agents.searchEngine.sources.supplier_website import _crawl_and_extract
 
     with patch(
-        "app.api.search_engine.sources.supplier_website._crawl_page",
+        "app.agents.searchEngine.sources.supplier_website._crawl_page",
         new_callable=AsyncMock,
         return_value="# Some page content",
     ), patch(
-        "app.api.search_engine.sources.supplier_website._extract_properties",
+        "app.agents.searchEngine.sources.supplier_website._extract_properties",
         return_value=None,
     ):
         result = await _crawl_and_extract("https://example.com", "magnesium stearate")
@@ -166,7 +166,7 @@ async def test_crawl_and_extract_returns_none_on_extraction_failure():
 
 
 def test_supplier_website_enrich_full_flow():
-    from app.api.search_engine.sources.supplier_website import (
+    from app.agents.searchEngine.sources.supplier_website import (
         supplier_website_enrich,
         MaterialProperties,
     )
@@ -178,19 +178,16 @@ def test_supplier_website_enrich_full_flow():
     )
 
     with patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_names",
-        return_value=["PureBulk"],
-    ), patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        "app.agents.searchEngine.sources.supplier_website.get_supplier_domain",
         return_value="purebulk.com",
     ), patch(
-        "app.api.search_engine.sources.supplier_website.find_product_page",
+        "app.agents.searchEngine.sources.supplier_website.find_product_page",
         return_value="https://purebulk.com/products/magnesium-stearate",
     ), patch(
-        "app.api.search_engine.sources.supplier_website._run_crawl_and_extract",
+        "app.agents.searchEngine.sources.supplier_website._run_crawl_and_extract",
         return_value=(fake_props, "# Magnesium Stearate page content"),
     ):
-        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_12"]})
+        results = supplier_website_enrich("magnesium stearate", {"supplier_names": ["PureBulk"]})
 
     assert len(results) == 2
     props_found = {r["property"] for r in results}
@@ -200,47 +197,41 @@ def test_supplier_website_enrich_full_flow():
 
 
 def test_supplier_website_enrich_no_suppliers():
-    from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+    from app.agents.searchEngine.sources.supplier_website import supplier_website_enrich
 
-    results = supplier_website_enrich("magnesium stearate", {"supplier_ids": []})
+    results = supplier_website_enrich("magnesium stearate", {})
     assert results == []
 
 
 def test_supplier_website_enrich_domain_not_found():
-    from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+    from app.agents.searchEngine.sources.supplier_website import supplier_website_enrich
 
     with patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_names",
-        return_value=["UnknownSupplier"],
-    ), patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        "app.agents.searchEngine.sources.supplier_website.get_supplier_domain",
         return_value=None,
     ):
-        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_99"]})
+        results = supplier_website_enrich("magnesium stearate", {"supplier_names": ["UnknownSupplier"]})
 
     assert results == []
 
 
 def test_supplier_website_enrich_no_product_page():
-    from app.api.search_engine.sources.supplier_website import supplier_website_enrich
+    from app.agents.searchEngine.sources.supplier_website import supplier_website_enrich
 
     with patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_names",
-        return_value=["PureBulk"],
-    ), patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        "app.agents.searchEngine.sources.supplier_website.get_supplier_domain",
         return_value="purebulk.com",
     ), patch(
-        "app.api.search_engine.sources.supplier_website.find_product_page",
+        "app.agents.searchEngine.sources.supplier_website.find_product_page",
         return_value=None,
     ):
-        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_12"]})
+        results = supplier_website_enrich("magnesium stearate", {"supplier_names": ["PureBulk"]})
 
     assert results == []
 
 
 def test_supplier_website_enrich_stops_at_first_successful_supplier():
-    from app.api.search_engine.sources.supplier_website import (
+    from app.agents.searchEngine.sources.supplier_website import (
         supplier_website_enrich,
         MaterialProperties,
     )
@@ -260,27 +251,24 @@ def test_supplier_website_enrich_stops_at_first_successful_supplier():
         return "https://jostchemical.com/products/mag"
 
     with patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_names",
-        return_value=["PureBulk", "Jost Chemical"],
-    ), patch(
-        "app.api.search_engine.sources.supplier_website.get_supplier_domain",
+        "app.agents.searchEngine.sources.supplier_website.get_supplier_domain",
         side_effect=["purebulk.com", "jostchemical.com"],
     ), patch(
-        "app.api.search_engine.sources.supplier_website.find_product_page",
+        "app.agents.searchEngine.sources.supplier_website.find_product_page",
         side_effect=mock_find,
     ), patch(
-        "app.api.search_engine.sources.supplier_website._run_crawl_and_extract",
+        "app.agents.searchEngine.sources.supplier_website._run_crawl_and_extract",
         return_value=(fake_props, "page text"),
     ):
-        results = supplier_website_enrich("magnesium stearate", {"supplier_ids": ["sup_db_12", "sup_db_7"]})
+        results = supplier_website_enrich("magnesium stearate", {"supplier_names": ["PureBulk", "Jost Chemical"]})
 
     assert len(results) == 1
     assert find_call_count == 1
 
 
 def test_handler_is_registered():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
-    from app.api.search_engine.sources.supplier_website import (
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.sources.supplier_website import (
         supplier_website_enrich as real_impl,
     )
 

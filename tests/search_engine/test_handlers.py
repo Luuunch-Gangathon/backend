@@ -4,8 +4,8 @@ from __future__ import annotations
 
 
 def test_handler_registry_has_all_sources():
-    from app.api.search_engine.config import SOURCES
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.config import SOURCES
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     for source in SOURCES:
         assert source["name"] in SOURCE_HANDLERS, (
@@ -14,14 +14,14 @@ def test_handler_registry_has_all_sources():
 
 
 def test_all_handlers_are_callable():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     for name, handler in SOURCE_HANDLERS.items():
         assert callable(handler), f"Handler '{name}' is not callable"
 
 
 def test_stub_handler_returns_list():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     for name, handler in SOURCE_HANDLERS.items():
         result = handler("magnesium stearate", {})
@@ -31,7 +31,7 @@ def test_stub_handler_returns_list():
 
 
 def test_stub_handler_result_items_have_required_keys():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     required_keys = {"property", "value", "source_url", "raw_excerpt"}
     for name, handler in SOURCE_HANDLERS.items():

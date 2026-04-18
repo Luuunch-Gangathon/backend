@@ -130,7 +130,7 @@ Page content:
             messages=[{"role": "user", "content": prompt}],
         )
 
-        from app.api.search_engine.sources.cost_tracker import track_usage
+        from app.agents.searchEngine.sources.cost_tracker import track_usage
         track_usage(response, model, "property_extraction")
 
         raw_text = response.content[0].text
@@ -174,11 +174,10 @@ async def _crawl_and_extract(
     return props, markdown
 
 
-from app.api.search_engine.sources.search_utils import (
+from app.agents.searchEngine.sources.search_utils import (
     get_supplier_domain,
     find_product_page,
 )
-from app.api.search_engine.sources.db_utils import get_supplier_names
 
 
 def _run_crawl_and_extract(
@@ -199,10 +198,9 @@ def supplier_website_enrich(name: str, context: dict) -> list[dict]:
     """
     supplier_names = context.get("supplier_names", [])
     if not supplier_names:
-        supplier_ids = context.get("supplier_ids", [])
-        if not supplier_ids:
-            return []
-        supplier_names = get_supplier_names(supplier_ids)
+        # supplier_names must be pre-populated at async boundary (enrich_and_store).
+        # sync enrich() has no DB access — skip supplier website enrichment.
+        return []
 
     for supplier_name in supplier_names:
         domain = get_supplier_domain(supplier_name)

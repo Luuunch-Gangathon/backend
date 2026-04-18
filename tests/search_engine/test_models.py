@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 
 def test_property_result_valid():
-    from app.api.search_engine.models import PropertyResult
+    from app.agents.searchEngine.models import PropertyResult
 
     pr = PropertyResult(
         value={"cas_number": "557-04-0", "synonyms": ["magnesium octadecanoate"]},
@@ -21,7 +21,7 @@ def test_property_result_valid():
 
 
 def test_property_result_unknown():
-    from app.api.search_engine.models import PropertyResult
+    from app.agents.searchEngine.models import PropertyResult
 
     pr = PropertyResult(
         value=None,
@@ -35,7 +35,7 @@ def test_property_result_unknown():
 
 
 def test_property_result_invalid_confidence():
-    from app.api.search_engine.models import PropertyResult
+    from app.agents.searchEngine.models import PropertyResult
 
     with pytest.raises(ValidationError):
         PropertyResult(
@@ -48,7 +48,7 @@ def test_property_result_invalid_confidence():
 
 
 def test_enrichment_result_valid():
-    from app.api.search_engine.models import EnrichmentResult, PropertyResult
+    from app.agents.searchEngine.models import EnrichmentResult, PropertyResult
 
     pr = PropertyResult(
         value=True,
@@ -74,7 +74,7 @@ def test_enrichment_result_valid():
 
 
 def test_enrichment_result_empty_properties():
-    from app.api.search_engine.models import EnrichmentResult
+    from app.agents.searchEngine.models import EnrichmentResult
 
     er = EnrichmentResult(
         material_id="ing_db_1",

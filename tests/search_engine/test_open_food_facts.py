@@ -35,7 +35,7 @@ def _make_error_response(status_code: int = 500) -> MagicMock:
 # ---------------------------------------------------------------------------
 
 def test_clean_tag_strips_prefix_and_formats():
-    from app.api.search_engine.sources.open_food_facts import _clean_tag
+    from app.agents.searchEngine.sources.open_food_facts import _clean_tag
 
     assert _clean_tag("en:gluten-free") == "Gluten Free"
     assert _clean_tag("en:organic") == "Organic"
@@ -43,13 +43,13 @@ def test_clean_tag_strips_prefix_and_formats():
 
 
 def test_clean_tag_no_prefix():
-    from app.api.search_engine.sources.open_food_facts import _clean_tag
+    from app.agents.searchEngine.sources.open_food_facts import _clean_tag
 
     assert _clean_tag("non-gmo") == "Non Gmo"
 
 
 def test_clean_tag_no_hyphens():
-    from app.api.search_engine.sources.open_food_facts import _clean_tag
+    from app.agents.searchEngine.sources.open_food_facts import _clean_tag
 
     assert _clean_tag("en:vegan") == "Vegan"
 
@@ -59,7 +59,7 @@ def test_clean_tag_no_hyphens():
 # ---------------------------------------------------------------------------
 
 def test_aggregate_extracts_allergens():
-    from app.api.search_engine.sources.open_food_facts import _aggregate
+    from app.agents.searchEngine.sources.open_food_facts import _aggregate
 
     products = [
         {"allergens_tags": ["en:gluten", "en:milk"], "labels_tags": []},
@@ -72,7 +72,7 @@ def test_aggregate_extracts_allergens():
 
 
 def test_aggregate_extracts_dietary_flags():
-    from app.api.search_engine.sources.open_food_facts import _aggregate
+    from app.agents.searchEngine.sources.open_food_facts import _aggregate
 
     products = [
         {"allergens_tags": [], "labels_tags": ["en:vegan", "en:organic"]},
@@ -86,7 +86,7 @@ def test_aggregate_extracts_dietary_flags():
 
 
 def test_aggregate_extracts_certifications():
-    from app.api.search_engine.sources.open_food_facts import _aggregate
+    from app.agents.searchEngine.sources.open_food_facts import _aggregate
 
     products = [
         {"allergens_tags": [], "labels_tags": ["en:organic", "en:non-gmo"]},
@@ -97,7 +97,7 @@ def test_aggregate_extracts_certifications():
 
 
 def test_aggregate_empty_products():
-    from app.api.search_engine.sources.open_food_facts import _aggregate
+    from app.agents.searchEngine.sources.open_food_facts import _aggregate
 
     result = _aggregate([])
     assert result["allergens"] == []
@@ -110,7 +110,7 @@ def test_aggregate_empty_products():
 # ---------------------------------------------------------------------------
 
 def test_enrich_returns_all_three_properties():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [
         {
@@ -135,7 +135,7 @@ def test_enrich_returns_all_three_properties():
 
 
 def test_enrich_allergens_structure():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [{"allergens_tags": ["en:gluten", "en:milk"], "labels_tags": []}]
     mock_resp = _make_response(products)
@@ -153,7 +153,7 @@ def test_enrich_allergens_structure():
 
 
 def test_enrich_dietary_flags_structure():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [{"allergens_tags": [], "labels_tags": ["en:vegan", "en:halal"]}]
     mock_resp = _make_response(products)
@@ -168,7 +168,7 @@ def test_enrich_dietary_flags_structure():
 
 
 def test_enrich_certifications_structure():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [{"allergens_tags": [], "labels_tags": ["en:organic", "en:non-gmo"]}]
     mock_resp = _make_response(products)
@@ -183,7 +183,7 @@ def test_enrich_certifications_structure():
 
 
 def test_enrich_source_url_present():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [{"allergens_tags": ["en:gluten"], "labels_tags": []}]
     mock_resp = _make_response(products)
@@ -201,7 +201,7 @@ def test_enrich_source_url_present():
 # ---------------------------------------------------------------------------
 
 def test_enrich_no_products_returns_empty():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     mock_resp = _make_response([])
 
@@ -216,7 +216,7 @@ def test_enrich_no_products_returns_empty():
 # ---------------------------------------------------------------------------
 
 def test_enrich_api_error_returns_empty():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     with patch("httpx.get", side_effect=httpx.RequestError("Connection refused", request=MagicMock())):
         results = open_food_facts_enrich("guar gum", {})
@@ -225,7 +225,7 @@ def test_enrich_api_error_returns_empty():
 
 
 def test_enrich_http_status_error_returns_empty():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     mock_resp = _make_error_response(500)
 
@@ -240,7 +240,7 @@ def test_enrich_http_status_error_returns_empty():
 # ---------------------------------------------------------------------------
 
 def test_enrich_only_allergens_no_labels():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [{"allergens_tags": ["en:soy"], "labels_tags": []}]
     mock_resp = _make_response(products)
@@ -255,7 +255,7 @@ def test_enrich_only_allergens_no_labels():
 
 
 def test_enrich_only_labels_no_allergens():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     products = [{"allergens_tags": [], "labels_tags": ["en:kosher", "en:organic"]}]
     mock_resp = _make_response(products)
@@ -270,7 +270,7 @@ def test_enrich_only_labels_no_allergens():
 
 
 def test_enrich_products_with_no_relevant_tags():
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     # Products exist but carry no useful tag data
     products = [{"allergens_tags": [], "labels_tags": []}]
@@ -287,8 +287,8 @@ def test_enrich_products_with_no_relevant_tags():
 # ---------------------------------------------------------------------------
 
 def test_handler_is_registered():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
-    from app.api.search_engine.sources.open_food_facts import open_food_facts_enrich
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.sources.open_food_facts import open_food_facts_enrich
 
     # The stub in handlers.py delegates to this real impl once wired.
     # For now we just verify the key exists.

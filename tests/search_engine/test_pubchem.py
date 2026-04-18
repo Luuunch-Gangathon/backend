@@ -68,7 +68,7 @@ def _make_response(status_code: int, json_body: dict | None = None) -> MagicMock
 
 def test_pubchem_enrich_success():
     """Successful lookup returns a single chemical_identity result with all fields."""
-    from app.api.search_engine.sources.pubchem import pubchem_enrich
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich
 
     with patch("httpx.get") as mock_get:
         mock_get.side_effect = [
@@ -93,7 +93,7 @@ def test_pubchem_enrich_success():
 
 def test_pubchem_enrich_cas_extraction():
     """CAS number is correctly extracted from the synonyms list."""
-    from app.api.search_engine.sources.pubchem import pubchem_enrich
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich
 
     with patch("httpx.get") as mock_get:
         mock_get.side_effect = [
@@ -107,7 +107,7 @@ def test_pubchem_enrich_cas_extraction():
 
 def test_pubchem_enrich_no_cas_in_synonyms():
     """When no CAS-pattern synonym exists cas_number is None."""
-    from app.api.search_engine.sources.pubchem import pubchem_enrich
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich
 
     synonyms_no_cas = {
         "InformationList": {
@@ -132,7 +132,7 @@ def test_pubchem_enrich_no_cas_in_synonyms():
 
 def test_pubchem_enrich_not_found_404():
     """404 from compound endpoint returns empty list."""
-    from app.api.search_engine.sources.pubchem import pubchem_enrich
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich
 
     with patch("httpx.get") as mock_get:
         mock_get.return_value = _make_response(404)
@@ -143,7 +143,7 @@ def test_pubchem_enrich_not_found_404():
 
 def test_pubchem_enrich_api_error():
     """Network / unexpected error returns empty list and logs warning."""
-    from app.api.search_engine.sources.pubchem import pubchem_enrich
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich
     import httpx
 
     with patch("httpx.get", side_effect=httpx.RequestError("timeout")):
@@ -154,7 +154,7 @@ def test_pubchem_enrich_api_error():
 
 def test_pubchem_enrich_synonyms_404_still_returns_result():
     """If the synonyms endpoint 404s, handler still returns result with no CAS/synonyms."""
-    from app.api.search_engine.sources.pubchem import pubchem_enrich
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich
 
     with patch("httpx.get") as mock_get:
         mock_get.side_effect = [
@@ -172,7 +172,7 @@ def test_pubchem_enrich_synonyms_404_still_returns_result():
 
 def test_pubchem_enrich_is_registered_in_handlers():
     """The real pubchem_enrich function is wired into SOURCE_HANDLERS."""
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
-    from app.api.search_engine.sources.pubchem import pubchem_enrich as real_impl
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.sources.pubchem import pubchem_enrich as real_impl
 
     assert SOURCE_HANDLERS["pubchem"] is real_impl

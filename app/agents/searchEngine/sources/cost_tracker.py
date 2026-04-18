@@ -82,8 +82,8 @@ def track_usage(response, model: str, purpose: str) -> None:
     })
 
     _save(data)
-    logger.info("LLM cost: $%.5f (%d in / %d out) — total: $%.4f (%d calls)",
-                cost, input_tokens, output_tokens, data["total_cost_usd"], data["calls"])
+    logger.debug("LLM cost: $%.5f (%d in / %d out) — total: $%.4f (%d calls)",
+                 cost, input_tokens, output_tokens, data["total_cost_usd"], data["calls"])
 
 
 def get_summary() -> str:

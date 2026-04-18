@@ -124,7 +124,7 @@ Answer with ONLY a JSON object: {{"is_match": true/false, "reason": "brief expla
             messages=[{"role": "user", "content": prompt}],
         )
 
-        from app.api.search_engine.sources.cost_tracker import track_usage
+        from app.agents.searchEngine.sources.cost_tracker import track_usage
         track_usage(response, model, "domain_verification")
 
         raw_text = response.content[0].text

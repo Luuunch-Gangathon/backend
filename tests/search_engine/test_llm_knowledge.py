@@ -21,7 +21,6 @@ def _make_response(content_text: str, input_tokens: int = 100, output_tokens: in
 def _valid_llm_json(**overrides) -> str:
     """Return a JSON string resembling a valid LLM response."""
     data = {
-        "chemical_identity": {"cas_number": "557-04-0", "formula": "C36H70MgO4"},
         "functional_role": ["lubricant", "flow agent"],
         "source_origin": "plant",
         "dietary_flags": {"vegan": True, "vegetarian": True, "halal": True, "kosher": True},
@@ -40,18 +39,17 @@ def _valid_llm_json(**overrides) -> str:
 # ---------------------------------------------------------------------------
 
 def test_successful_extraction_returns_properties():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     fake_resp = _make_response(_valid_llm_json())
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("magnesium stearate", {})
 
     property_names = {r["property"] for r in results}
-    assert "chemical_identity" in property_names
     assert "functional_role" in property_names
     assert "source_origin" in property_names
     assert "dietary_flags" in property_names
@@ -62,13 +60,13 @@ def test_successful_extraction_returns_properties():
 
 
 def test_source_url_is_always_none():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     fake_resp = _make_response(_valid_llm_json())
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("magnesium stearate", {})
 
@@ -78,13 +76,13 @@ def test_source_url_is_always_none():
 
 
 def test_raw_excerpt_is_always_llm_knowledge_string():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     fake_resp = _make_response(_valid_llm_json())
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("magnesium stearate", {})
 
@@ -99,14 +97,14 @@ def test_raw_excerpt_is_always_llm_knowledge_string():
 
 def test_price_is_excluded_even_if_llm_returns_it():
     """price should never appear in results even when LLM mistakenly provides it."""
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     payload = _valid_llm_json(price="$25/kg")
     fake_resp = _make_response(payload)
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("magnesium stearate", {})
 
@@ -116,13 +114,13 @@ def test_price_is_excluded_even_if_llm_returns_it():
 
 def test_price_null_produces_no_entry():
     """When price is null the key should not appear in results at all."""
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     fake_resp = _make_response(_valid_llm_json(price=None))
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("magnesium stearate", {})
 
@@ -135,7 +133,7 @@ def test_price_null_produces_no_entry():
 # ---------------------------------------------------------------------------
 
 def test_no_api_key_returns_empty_list():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     with patch.dict("os.environ", {}, clear=True):
         # ensure key is absent
@@ -151,10 +149,10 @@ def test_no_api_key_returns_empty_list():
 # ---------------------------------------------------------------------------
 
 def test_llm_error_returns_empty_list():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient:
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient:
         MockClient.return_value.messages.create.side_effect = RuntimeError("API failure")
         results = llm_knowledge_enrich("gelatin", {})
 
@@ -166,10 +164,9 @@ def test_llm_error_returns_empty_list():
 # ---------------------------------------------------------------------------
 
 def test_json_parsing_handles_json_code_blocks():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     body = _valid_llm_json(
-        chemical_identity={"cas_number": "9000-70-8"},
         functional_role=["gelling agent"],
         source_origin="animal",
     )
@@ -177,13 +174,12 @@ def test_json_parsing_handles_json_code_blocks():
     fake_resp = _make_response(wrapped)
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("gelatin", {})
 
     property_names = {r["property"] for r in results}
-    assert "chemical_identity" in property_names
     assert "source_origin" in property_names
 
     origin = next(r for r in results if r["property"] == "source_origin")
@@ -191,15 +187,15 @@ def test_json_parsing_handles_json_code_blocks():
 
 
 def test_json_parsing_handles_plain_code_blocks():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     body = _valid_llm_json(source_origin="synthetic")
     wrapped = f"```\n{body}\n```"
     fake_resp = _make_response(wrapped)
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("titanium dioxide", {})
 
@@ -214,7 +210,7 @@ def test_json_parsing_handles_plain_code_blocks():
 
 def test_null_properties_are_omitted():
     """Only non-null properties should appear in results."""
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     sparse = json.dumps({
         "chemical_identity": None,
@@ -230,8 +226,8 @@ def test_null_properties_are_omitted():
     fake_resp = _make_response(sparse)
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         MockClient.return_value.messages.create.return_value = fake_resp
         results = llm_knowledge_enrich("calcium carbonate", {})
 
@@ -245,13 +241,13 @@ def test_null_properties_are_omitted():
 # ---------------------------------------------------------------------------
 
 def test_track_usage_is_called():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     fake_resp = _make_response(_valid_llm_json())
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage") as mock_track:
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage") as mock_track:
         MockClient.return_value.messages.create.return_value = fake_resp
         llm_knowledge_enrich("magnesium stearate", {})
 
@@ -262,13 +258,13 @@ def test_track_usage_is_called():
 
 
 def test_correct_model_is_used():
-    from app.api.search_engine.sources.llm_knowledge import llm_knowledge_enrich
+    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
 
     fake_resp = _make_response(_valid_llm_json())
 
     with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.api.search_engine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.api.search_engine.sources.llm_knowledge.track_usage"):
+         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
+         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
         mock_create = MockClient.return_value.messages.create
         mock_create.return_value = fake_resp
         llm_knowledge_enrich("magnesium stearate", {})

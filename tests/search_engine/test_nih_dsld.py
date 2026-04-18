@@ -50,7 +50,7 @@ def _dsld_product(label_claims: list[str], product_id: str = "prod_1") -> dict:
 
 class TestExtractFlags:
     def _import(self):
-        from app.api.search_engine.sources.nih_dsld import _extract_flags
+        from app.agents.searchEngine.sources.nih_dsld import _extract_flags
         return _extract_flags
 
     def test_detects_vegan_claim(self):
@@ -113,7 +113,7 @@ class TestExtractFlags:
 
 class TestAggregateProducts:
     def _import(self):
-        from app.api.search_engine.sources.nih_dsld import _aggregate_products
+        from app.agents.searchEngine.sources.nih_dsld import _aggregate_products
         return _aggregate_products
 
     def test_aggregates_dietary_from_multiple_products(self):
@@ -156,7 +156,7 @@ class TestAggregateProducts:
 
 class TestNihDsldEnrichSuccess:
     def _import(self):
-        from app.api.search_engine.sources.nih_dsld import nih_dsld_enrich
+        from app.agents.searchEngine.sources.nih_dsld import nih_dsld_enrich
         return nih_dsld_enrich
 
     def test_returns_dietary_flags_and_certifications(self):
@@ -236,7 +236,7 @@ class TestNihDsldEnrichSuccess:
 
 class TestNihDsldEnrichNoResults:
     def _import(self):
-        from app.api.search_engine.sources.nih_dsld import nih_dsld_enrich
+        from app.agents.searchEngine.sources.nih_dsld import nih_dsld_enrich
         return nih_dsld_enrich
 
     def test_no_products_returns_empty(self):
@@ -291,7 +291,7 @@ class TestNihDsldEnrichNoResults:
 
 class TestNihDsldEnrichErrors:
     def _import(self):
-        from app.api.search_engine.sources.nih_dsld import nih_dsld_enrich
+        from app.agents.searchEngine.sources.nih_dsld import nih_dsld_enrich
         return nih_dsld_enrich
 
     def test_network_error_returns_empty(self):
@@ -327,7 +327,7 @@ class TestNihDsldEnrichErrors:
 # ---------------------------------------------------------------------------
 
 def test_handler_is_registered():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     assert "nih_dsld" in SOURCE_HANDLERS
     handler = SOURCE_HANDLERS["nih_dsld"]
@@ -336,7 +336,7 @@ def test_handler_is_registered():
 
 def test_handler_delegates_to_real_impl():
     """The registered handler should delegate to the real implementation, not the stub."""
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     handler = SOURCE_HANDLERS["nih_dsld"]
     products = [

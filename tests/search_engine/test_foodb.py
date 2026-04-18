@@ -108,41 +108,41 @@ _LIST_RESPONSE_PLANT = [
 # ---------------------------------------------------------------------------
 
 def test_classify_origin_plant():
-    from app.api.search_engine.sources.foodb import _classify_origin
+    from app.agents.searchEngine.sources.foodb import _classify_origin
 
     result = _classify_origin(["spinach", "kale", "broccoli", "apple fruit"])
     assert result == "plant"
 
 
 def test_classify_origin_animal():
-    from app.api.search_engine.sources.foodb import _classify_origin
+    from app.agents.searchEngine.sources.foodb import _classify_origin
 
     result = _classify_origin(["beef meat", "chicken", "fish"])
     assert result == "animal"
 
 
 def test_classify_origin_mineral():
-    from app.api.search_engine.sources.foodb import _classify_origin
+    from app.agents.searchEngine.sources.foodb import _classify_origin
 
     result = _classify_origin(["salt mineral", "calcium rock"])
     assert result == "mineral"
 
 
 def test_classify_origin_empty_returns_none():
-    from app.api.search_engine.sources.foodb import _classify_origin
+    from app.agents.searchEngine.sources.foodb import _classify_origin
 
     assert _classify_origin([]) is None
 
 
 def test_classify_origin_no_keywords_returns_none():
-    from app.api.search_engine.sources.foodb import _classify_origin
+    from app.agents.searchEngine.sources.foodb import _classify_origin
 
     # Names that match none of the keyword lists
     assert _classify_origin(["XYZ compound", "unknown substance"]) is None
 
 
 def test_classify_origin_majority_wins():
-    from app.api.search_engine.sources.foodb import _classify_origin
+    from app.agents.searchEngine.sources.foodb import _classify_origin
 
     # 3 plant vs 1 animal
     result = _classify_origin(["spinach", "kale", "broccoli", "beef"])
@@ -154,7 +154,7 @@ def test_classify_origin_majority_wins():
 # ---------------------------------------------------------------------------
 
 def test_foodb_enrich_plant_origin():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(200, _PLANT_COMPOUND_RESPONSE)):
         results = foodb_enrich("quercetin", {})
@@ -169,7 +169,7 @@ def test_foodb_enrich_plant_origin():
 
 
 def test_foodb_enrich_animal_origin():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(200, _ANIMAL_COMPOUND_RESPONSE)):
         results = foodb_enrich("taurine", {})
@@ -180,7 +180,7 @@ def test_foodb_enrich_animal_origin():
 
 
 def test_foodb_enrich_mineral_origin():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(200, _MINERAL_COMPOUND_RESPONSE)):
         results = foodb_enrich("magnesium stearate", {})
@@ -191,7 +191,7 @@ def test_foodb_enrich_mineral_origin():
 
 def test_foodb_enrich_list_response_format():
     """Handler works when API returns a list directly (not wrapped in 'data')."""
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(200, _LIST_RESPONSE_PLANT)):
         results = foodb_enrich("chlorophyll", {})
@@ -203,7 +203,7 @@ def test_foodb_enrich_list_response_format():
 
 def test_foodb_enrich_source_url_falls_back_to_numeric_id():
     """If no public_id but numeric id present, URL uses numeric id."""
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     response = {
         "data": [
@@ -226,7 +226,7 @@ def test_foodb_enrich_source_url_falls_back_to_numeric_id():
 
 
 def test_foodb_enrich_raw_excerpt_contains_food_names():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(200, _PLANT_COMPOUND_RESPONSE)):
         results = foodb_enrich("quercetin", {})
@@ -243,7 +243,7 @@ def test_foodb_enrich_raw_excerpt_contains_food_names():
 # ---------------------------------------------------------------------------
 
 def test_foodb_enrich_empty_data_returns_empty():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(200, _EMPTY_RESPONSE)):
         results = foodb_enrich("nonexistent compound xyz", {})
@@ -252,7 +252,7 @@ def test_foodb_enrich_empty_data_returns_empty():
 
 
 def test_foodb_enrich_404_returns_empty():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(404)):
         results = foodb_enrich("ghost compound", {})
@@ -262,7 +262,7 @@ def test_foodb_enrich_404_returns_empty():
 
 def test_foodb_enrich_no_classifiable_sources_returns_empty():
     """Compound found but food sources don't match any keyword category."""
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     response = {
         "data": [
@@ -287,7 +287,7 @@ def test_foodb_enrich_no_classifiable_sources_returns_empty():
 # ---------------------------------------------------------------------------
 
 def test_foodb_enrich_request_error_returns_empty():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", side_effect=httpx.RequestError("Connection refused", request=MagicMock())):
         results = foodb_enrich("quercetin", {})
@@ -296,7 +296,7 @@ def test_foodb_enrich_request_error_returns_empty():
 
 
 def test_foodb_enrich_http_500_returns_empty():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", return_value=_make_response(500)):
         results = foodb_enrich("quercetin", {})
@@ -305,7 +305,7 @@ def test_foodb_enrich_http_500_returns_empty():
 
 
 def test_foodb_enrich_timeout_returns_empty():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     with patch("httpx.get", side_effect=httpx.TimeoutException("timeout", request=MagicMock())):
         results = foodb_enrich("quercetin", {})
@@ -315,7 +315,7 @@ def test_foodb_enrich_timeout_returns_empty():
 
 def test_foodb_enrich_malformed_json_returns_empty():
     """If the response body can't be parsed as JSON, return empty list."""
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     resp = MagicMock()
     resp.status_code = 200
@@ -333,7 +333,7 @@ def test_foodb_enrich_malformed_json_returns_empty():
 # ---------------------------------------------------------------------------
 
 def test_foodb_enrich_sends_api_key_when_env_set():
-    from app.api.search_engine.sources.foodb import foodb_enrich
+    from app.agents.searchEngine.sources.foodb import foodb_enrich
 
     captured_kwargs: dict = {}
 
@@ -354,6 +354,6 @@ def test_foodb_enrich_sends_api_key_when_env_set():
 # ---------------------------------------------------------------------------
 
 def test_foodb_handler_is_registered_in_handlers():
-    from app.api.search_engine.handlers import SOURCE_HANDLERS
+    from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
     assert "foodb" in SOURCE_HANDLERS
