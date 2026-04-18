@@ -22,6 +22,7 @@ class AgnesMessage(BaseModel):
 class AgnesAskRequest(BaseModel):
     message: str
     session_id: str | None = None   # None = start new session
+    product_id: int | None = None   # set on first request; stored in session
 
 
 class AgnesAskResponse(BaseModel):
