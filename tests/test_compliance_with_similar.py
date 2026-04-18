@@ -13,7 +13,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from app.agents import compliance
-from app.agents.compliance import SubstituteScore, _RankingResponse
+from app.agents.compliance import _RankingResponse
+from app.schemas.compliance import SubstituteProposal as SubstituteScore
 from app.data.repo import find_similar_raw_materials, get_product, get_raw_material
 from tests.conftest import emb
 
@@ -86,7 +87,7 @@ async def test_compliance_run_accepts_similar_pairs(seed) -> None:
     mock_client.beta.chat.completions.parse = mock_parse
 
     with patch.object(compliance, "_client", mock_client):
-        await compliance.run(product, source_rm, sub_pairs)
+        await compliance.check_compliance(product.id, source_rm.id)
 
     mock_parse.assert_called_once()
 
