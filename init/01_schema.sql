@@ -228,3 +228,22 @@ CREATE TABLE IF NOT EXISTS agnes_suggestions (
     proposal_id INTEGER NOT NULL REFERENCES proposals(id) ON DELETE CASCADE,
     question    TEXT    NOT NULL
 );
+
+-- ─── decisions ────────────────────────────────────────────────────────────────
+--
+-- Written when a user accepts or declines an inline proposal card from the
+-- tool-calling Agnes agent. Session-scoped; no user auth required.
+
+CREATE TABLE IF NOT EXISTS decisions (
+    id                              SERIAL      PRIMARY KEY,
+    session_id                      TEXT        NOT NULL,
+    status                          TEXT        NOT NULL CHECK (status IN ('accepted', 'declined')),
+    original_raw_material_name      TEXT        NOT NULL,
+    substitute_raw_material_name    TEXT        NOT NULL,
+    product_sku                     TEXT,
+    score                           INT         NOT NULL,
+    reasoning                       TEXT        NOT NULL,
+    created_at                      TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_decisions_session_id ON decisions(session_id);

@@ -1,13 +1,14 @@
-"""Integration test: compare seeder → find_similar_raw_materials → compliance.run.
+"""Integration test: find_similar_raw_materials → compliance.rank_substitutes.
 
-Proves that the data shape produced by the compare pipeline is accepted by
-compliance end-to-end, and that vector_similarity appears in the LLM prompt.
+Proves that the data shape from pgvector is accepted by rank_substitutes
+and that vector_similarity appears in the LLM prompt.
 OpenAI is monkey-patched; Postgres is real (pgvector).
 """
 from __future__ import annotations
 
 import json
 import math
+import re
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -22,6 +23,8 @@ _FG = 810001   # finished-good product
 _S  = 910001   # source raw-material
 _N1 = 910002   # near substitute 1
 _N2 = 910003   # near substitute 2
+
+_RE = re.compile(r"rm_db_(\d+)$")
 
 
 async def _setup(seed) -> None:
@@ -43,19 +46,15 @@ async def _setup(seed) -> None:
     await seed.substitution_group("rm-comp-near2", emb(cos2, math.sqrt(1 - cos2**2)))
 
 
-async def test_compliance_run_accepts_similar_pairs(seed) -> None:
+async def test_rank_substitutes_accepts_similar_pairs(seed) -> None:
     await _setup(seed)
 
-    # Real pgvector call — returns SimilarRawMaterial list with similarity_score.
     similar = await find_similar_raw_materials(f"rm_db_{_S}")
     assert len(similar) >= 2, "Expected at least 2 similar materials above 0.75 threshold"
 
-    # Resolve to (RawMaterial, float) pairs — same as pipeline._run_compliance.
-    import re
-    _re = re.compile(r"rm_db_(\d+)$")
     sub_pairs = []
     for s in similar:
-        m = _re.match(s.raw_material_id)
+        m = _RE.match(s.raw_material_id)
         if m:
             rm = await get_raw_material(int(m.group(1)))
             if rm:
@@ -69,7 +68,6 @@ async def test_compliance_run_accepts_similar_pairs(seed) -> None:
     product = await get_product(_FG)
     assert product is not None
 
-    # Stub the OpenAI response.
     stub_response = MagicMock()
     stub_response.choices[0].message.parsed = _RankingResponse(
         substitutes=[SubstituteScore(id=sub_pairs[0][0].id, score=88, reasoning="Good match")]
@@ -86,9 +84,11 @@ async def test_compliance_run_accepts_similar_pairs(seed) -> None:
     mock_client.beta.chat.completions.parse = mock_parse
 
     with patch.object(compliance, "_client", mock_client):
-        await compliance.run(product, source_rm, sub_pairs)
+        results = await compliance.rank_substitutes(source_rm, sub_pairs, product)
 
     mock_parse.assert_called_once()
+    assert len(results) >= 1
+    assert results[0].score == 88
 
     # Verify vector_similarity appears in the user prompt for every substitute.
     user_msg = next(m["content"] for m in captured_messages if m["role"] == "user")

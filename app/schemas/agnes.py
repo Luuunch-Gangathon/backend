@@ -1,15 +1,7 @@
-# Agnes chat schemas.
-# Session-based: server stores history, frontend sends session_id each request.
-# TBD: may add streaming, tool_calls, evidence items in future phases.
-
 from __future__ import annotations
 from typing import Literal
 from pydantic import BaseModel
-
-
-class AgnesSuggestedQuestion(BaseModel):
-    id: int
-    question: str
+from .tool_results import ToolCall
 
 
 class AgnesMessage(BaseModel):
@@ -21,9 +13,10 @@ class AgnesMessage(BaseModel):
 
 class AgnesAskRequest(BaseModel):
     message: str
-    session_id: str | None = None   # None = start new session
+    session_id: str | None = None
 
 
 class AgnesAskResponse(BaseModel):
     reply: AgnesMessage
-    session_id: str                  # frontend stores and sends back each request
+    session_id: str
+    tool_calls: list[ToolCall] = []

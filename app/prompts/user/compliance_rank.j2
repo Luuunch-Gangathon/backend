@@ -1,8 +1,19 @@
-Original material: {{ original | tojson }}
+Original material: {{ original | tojson(indent=2) }}
 
-Finished good (product): {{ product | tojson }}
+Finished good (product): {{ product | tojson(indent=2) }}
+{% if product_profile %}
 
-Substitute candidates:
+Product compliance profile (aggregated from current BOM + SKU hints):
+{{ product_profile | tojson(indent=2) }}
+
+HARD CONSTRAINTS: every candidate MUST satisfy the product_profile's
+`dietary_requirements` and `allergen_constraints.must_be_free_of`, and SHOULD
+satisfy every entry in `required_certifications`. Candidates that violate a
+dietary requirement or contain a banned allergen must score ≤ 40.
+{% endif %}
+
+Substitute candidates (each includes their own enriched `spec`):
 {{ substitutes | tojson(indent=2) }}
 
-Return the top {{ top_x }} substitutes ranked by score.
+Return the top {{ top_x }} substitutes ranked by score. In `reasoning`, cite the
+specific product_profile fields each candidate satisfies or violates.

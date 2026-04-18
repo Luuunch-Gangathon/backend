@@ -5,7 +5,6 @@ All IDs are plain integers matching Postgres PRIMARY KEY.
 
 from __future__ import annotations
 
-import json
 import re
 from typing import Optional
 
@@ -16,13 +15,6 @@ from app.schemas import (
     RawMaterial,
     SimilarRawMaterial,
     Supplier,
-    Proposal,
-    EvidenceItem,
-    ComplianceRequirement,
-    Tradeoffs,
-    RolloutPlan,
-    Substitution,
-    AgnesSuggestedQuestion,
 )
 
 from . import db
@@ -73,6 +65,16 @@ async def get_product(product_id: int) -> Optional[Product]:
     return Product(id=row["id"], sku=row["sku"], company_id=row["company_id"]) if row else None
 
 
+async def get_product_by_sku(sku: str) -> Optional[Product]:
+    """Look up a finished-good product by partial SKU match."""
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            "SELECT id, sku, company_id FROM products WHERE type = 'finished-good' AND sku ILIKE $1 LIMIT 1",
+            f"%{sku}%",
+        )
+    return Product(id=row["id"], sku=row["sku"], company_id=row["company_id"]) if row else None
+
+
 async def get_bom(product_id: int) -> Optional[BOM]:
     async with db.get_conn() as conn:
         bom_row = await conn.fetchrow(
@@ -103,15 +105,54 @@ async def get_bom(product_id: int) -> Optional[BOM]:
 async def list_raw_materials() -> list[RawMaterial]:
     async with db.get_conn() as conn:
         rows = await conn.fetch(
-            "SELECT id, sku FROM products WHERE type = 'raw-material' ORDER BY sku"
+            """
+            SELECT
+                p.id,
+                p.sku,
+                COALESCE(sup.cnt, 0) AS suppliers_count,
+                COALESCE(used.cnt, 0) AS used_products_count
+            FROM products p
+            LEFT JOIN (
+                SELECT product_id, COUNT(DISTINCT supplier_id) AS cnt
+                FROM supplier_products
+                GROUP BY product_id
+            ) sup ON sup.product_id = p.id
+            LEFT JOIN (
+                SELECT bc.consumed_product_id AS product_id,
+                       COUNT(DISTINCT b.produced_product_id) AS cnt
+                FROM bom_components bc
+                JOIN boms b ON b.id = bc.bom_id
+                GROUP BY bc.consumed_product_id
+            ) used ON used.product_id = p.id
+            WHERE p.type = 'raw-material'
+            ORDER BY p.sku
+            """
         )
-    return [RawMaterial(id=r["id"], sku=r["sku"]) for r in rows]
+    return [
+        RawMaterial(
+            id=r["id"],
+            sku=r["sku"],
+            suppliers_count=r["suppliers_count"],
+            used_products_count=r["used_products_count"],
+        )
+        for r in rows
+    ]
 
 
 async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
             "SELECT id, sku FROM products WHERE id = $1 AND type = 'raw-material'", rm_id
+        )
+    return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
+
+
+async def get_raw_material_by_name(name: str) -> Optional[RawMaterial]:
+    """Look up a raw-material product by partial SKU/name match."""
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            "SELECT id, sku FROM products WHERE type = 'raw-material' AND sku ILIKE $1 ORDER BY id LIMIT 1",
+            f"%{name}%",
         )
     return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
 
@@ -168,6 +209,43 @@ async def find_similar_raw_materials(
     ]
 
 
+async def cosine_similarity_for_pairs(
+    original_name: str,
+    candidate_names: list[str],
+) -> dict[str, float]:
+    """Return cosine similarity between original and each candidate name.
+
+    Uses substitution_groups embeddings. Returns {candidate_name: similarity}.
+    Missing candidates get similarity 0.0.
+    """
+    if not candidate_names:
+        return {}
+    try:
+        async with db.get_conn() as conn:
+            rows = await conn.fetch(
+                """
+                WITH src AS (
+                    SELECT embedding FROM substitution_groups WHERE raw_material_name = $1 LIMIT 1
+                )
+                SELECT sg.raw_material_name,
+                       1 - (sg.embedding <=> (SELECT embedding FROM src)) AS similarity
+                FROM substitution_groups sg
+                WHERE sg.raw_material_name = ANY($2)
+                  AND sg.embedding IS NOT NULL
+                  AND (SELECT embedding FROM src) IS NOT NULL
+                """,
+                original_name,
+                candidate_names,
+            )
+    except Exception:
+        return {n: 0.0 for n in candidate_names}
+
+    result = {n: 0.0 for n in candidate_names}
+    for row in rows:
+        result[row["raw_material_name"]] = float(row["similarity"])
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Suppliers
 # ---------------------------------------------------------------------------
@@ -185,143 +263,158 @@ async def get_supplier(supplier_id: int) -> Optional[Supplier]:
 
 
 # ---------------------------------------------------------------------------
-# Proposals
+# RAG context — used by tools to enrich results with company/supplier data
 # ---------------------------------------------------------------------------
 
-def _parse_proposal(row) -> Proposal:
-    evidence_raw = row["evidence"] if row["evidence"] else []
-    if isinstance(evidence_raw, str):
-        evidence_raw = json.loads(evidence_raw)
+async def get_material_specs(names: list[str]) -> dict[str, dict]:
+    """Return the enriched spec JSON for each raw material name, keyed by name.
 
-    compliance_raw = row["compliance_requirements"] if row["compliance_requirements"] else []
-    if isinstance(compliance_raw, str):
-        compliance_raw = json.loads(compliance_raw)
-
-    return Proposal(
-        id=row["id"],
-        kind=row["kind"],
-        headline=row["headline"],
-        summary=row["summary"],
-        raw_material_id=row["raw_material_id"],
-        proposed_action=row["proposed_action"],
-        companies_involved=list(row["companies_involved"] or []),
-        current_suppliers=list(row["current_supplier_ids"] or []),
-        proposed_supplier_id=row["proposed_supplier_id"],
-        proposed_substitute_raw_material_id=row["proposed_substitute_rm_id"],
-        fragmentation_score=row["fragmentation_score"],
-        tradeoffs=Tradeoffs(
-            gained=list(row["tradeoffs_gained"] or []),
-            atRisk=list(row["tradeoffs_at_risk"] or []),
-        ),
-        conservative=RolloutPlan(
-            affected_skus=list(row["conservative_skus"] or []),
-            timeline=row["conservative_timeline"] or "",
-        ),
-        aggressive=RolloutPlan(
-            affected_skus=list(row["aggressive_skus"] or []),
-            timeline=row["aggressive_timeline"] or "",
-        ),
-        evidence=[EvidenceItem(**e) for e in evidence_raw],
-        estimated_impact=row["estimated_impact"] or "",
-        compliance_requirements=[ComplianceRequirement(**c) for c in compliance_raw],
-    )
-
-
-_PROPOSALS_SELECT = """
-    SELECT DISTINCT ON (p.id)
-           p.id, p.kind, p.headline, p.summary,
-           p.proposed_action, p.companies_involved, p.current_supplier_ids,
-           p.proposed_supplier_id, p.proposed_substitute_rm_name,
-           p.fragmentation_score, p.tradeoffs_gained, p.tradeoffs_at_risk,
-           p.conservative_skus, p.conservative_timeline,
-           p.aggressive_skus, p.aggressive_timeline,
-           p.evidence, p.estimated_impact, p.compliance_requirements,
-           pr.id  AS raw_material_id,
-           pr2.id AS proposed_substitute_rm_id
-    FROM proposals p
-    JOIN products pr
-      ON pr.sku LIKE '%' || p.raw_material_name || '%'
-     AND pr.type = 'raw-material'
-    LEFT JOIN products pr2
-      ON p.proposed_substitute_rm_name IS NOT NULL
-     AND pr2.sku LIKE '%' || p.proposed_substitute_rm_name || '%'
-     AND pr2.type = 'raw-material'
-"""
-
-
-async def list_proposals() -> list[Proposal]:
+    Specs live in substitution_groups.spec (populated by rag.store_embedding).
+    Missing names return no entry; callers should treat absence as unknown.
+    """
+    if not names:
+        return {}
     async with db.get_conn() as conn:
-        rows = await conn.fetch(_PROPOSALS_SELECT + " ORDER BY p.id")
-    result = [_parse_proposal(r) for r in rows]
-    result.sort(key=lambda p: p.fragmentation_score, reverse=True)
+        rows = await conn.fetch(
+            """
+            SELECT raw_material_name, spec
+            FROM substitution_groups
+            WHERE raw_material_name = ANY($1) AND spec IS NOT NULL
+            """,
+            names,
+        )
+    import json as _json
+    result: dict[str, dict] = {}
+    for r in rows:
+        spec = r["spec"]
+        if isinstance(spec, str):
+            try:
+                spec = _json.loads(spec)
+            except _json.JSONDecodeError:
+                continue
+        result[r["raw_material_name"]] = spec or {}
     return result
 
 
-async def get_proposal(proposal_id: int) -> Optional[Proposal]:
+async def get_product_dietary_profile(product_sku: str) -> dict:
+    """Aggregate the dietary/allergen/certification profile of a finished product
+    by examining every raw material in its BOM.
+
+    Aggregation rules:
+      - dietary_flags: AND across ingredients (product is vegan only if
+        EVERY ingredient's dietary_flags.value.vegan is true).
+      - allergens.contains: UNION (product contains X if ANY ingredient does).
+      - allergens.free_from: INTERSECTION (product is free from X only if
+        EVERY ingredient is free from X).
+      - certifications: INTERSECTION (product carries cert X only if every
+        ingredient is certified).
+      - also extracts dietary hints from the product SKU itself (e.g.
+        "FG-VEGAN-PROTEIN" → dietary_requirements.vegan = True).
+
+    Returns a dict:
+      {
+        "product_sku": str,
+        "dietary_requirements": {"vegan": bool, ...},
+        "allergen_constraints": {"must_contain": [...], "must_be_free_of": [...]},
+        "required_certifications": [...],
+        "current_ingredients": [{"name": str, "spec": dict}, ...],
+      }
+    """
+    profile = {
+        "product_sku": product_sku,
+        "dietary_requirements": {},
+        "allergen_constraints": {"must_contain": [], "must_be_free_of": []},
+        "required_certifications": [],
+        "current_ingredients": [],
+    }
+
     async with db.get_conn() as conn:
-        row = await conn.fetchrow(
-            _PROPOSALS_SELECT + " WHERE p.id = $1 ORDER BY p.id",
-            proposal_id,
-        )
-    return _parse_proposal(row) if row else None
-
-
-# ---------------------------------------------------------------------------
-# Substitutions
-# ---------------------------------------------------------------------------
-
-async def list_substitutions() -> list[Substitution]:
-    async with db.get_conn() as conn:
-        rows = await conn.fetch(
-            "SELECT id, from_raw_material_id, to_raw_material_id, score, reason FROM substitutions ORDER BY id"
-        )
-    return [
-        Substitution(
-            id=r["id"],
-            from_raw_material_id=r["from_raw_material_id"],
-            to_raw_material_id=r["to_raw_material_id"],
-            score=r["score"],
-            reason=r["reason"],
-        )
-        for r in rows
-    ]
-
-
-async def has_substitutions(rm_id: int) -> bool:
-    async with db.get_conn() as conn:
-        row = await conn.fetchrow(
-            "SELECT 1 FROM substitutions WHERE from_raw_material_id = $1 LIMIT 1",
-            rm_id,
-        )
-    return row is not None
-
-
-async def save_substitutions(
-    from_rm_id: int,
-    scored: list[tuple[int, int, str]],  # (to_rm_id, score, reason)
-) -> None:
-    if not scored:
-        return
-    async with db.get_conn() as conn:
-        await conn.executemany(
+        ingredient_rows = await conn.fetch(
             """
-            INSERT INTO substitutions (from_raw_material_id, to_raw_material_id, score, reason)
-            VALUES ($1, $2, $3, $4)
+            SELECT DISTINCT p_rm.sku AS raw_material_sku,
+                   regexp_replace(
+                       regexp_replace(p_rm.sku, '^RM-C[0-9]+-', ''),
+                       '-[a-f0-9]{8}$', ''
+                   ) AS raw_material_name
+            FROM   products        p_fg
+            JOIN   boms            b    ON b.produced_product_id  = p_fg.id
+            JOIN   bom_components  bc   ON bc.bom_id              = b.id
+            JOIN   products        p_rm ON p_rm.id                = bc.consumed_product_id
+            WHERE  p_fg.sku ILIKE $1
+              AND  p_fg.type = 'finished-good'
+              AND  p_rm.type = 'raw-material'
             """,
-            [(from_rm_id, to_id, score, reason) for to_id, score, reason in scored],
+            f"%{product_sku}%",
         )
 
+    ingredient_names = [r["raw_material_name"] for r in ingredient_rows]
+    specs = await get_material_specs(ingredient_names)
 
-# ---------------------------------------------------------------------------
-# RAG context — used by AgnesAgent to enrich LLM prompt
-# ---------------------------------------------------------------------------
+    for name in ingredient_names:
+        profile["current_ingredients"].append({"name": name, "spec": specs.get(name, {})})
+
+    # --- dietary flags: AND across ingredients (only keep if ALL true) ---
+    dietary_votes: dict[str, list[bool]] = {}
+    for spec in specs.values():
+        flags = (spec.get("dietary_flags") or {}).get("value") or {}
+        for key, val in flags.items():
+            if val is True:
+                dietary_votes.setdefault(key, []).append(True)
+            elif val is False:
+                dietary_votes.setdefault(key, []).append(False)
+    n_ingredients = len(specs)
+    if n_ingredients > 0:
+        for key, votes in dietary_votes.items():
+            if len(votes) == n_ingredients and all(votes):
+                profile["dietary_requirements"][key] = True
+
+    # --- allergens: union of contains, intersection of free_from ---
+    contains_union: set[str] = set()
+    free_from_sets: list[set[str]] = []
+    for spec in specs.values():
+        allergens = (spec.get("allergens") or {}).get("value") or {}
+        contains_union.update(allergens.get("contains") or [])
+        free_from_sets.append(set(allergens.get("free_from") or []))
+    if free_from_sets:
+        free_from_intersection = set.intersection(*free_from_sets)
+    else:
+        free_from_intersection = set()
+    profile["allergen_constraints"] = {
+        "must_contain": sorted(contains_union),
+        "must_be_free_of": sorted(free_from_intersection),
+    }
+
+    # --- certifications: intersection ---
+    cert_sets: list[set[str]] = []
+    for spec in specs.values():
+        certs = (spec.get("certifications") or {}).get("value") or []
+        cert_sets.append(set(certs))
+    if cert_sets:
+        profile["required_certifications"] = sorted(set.intersection(*cert_sets))
+
+    # --- SKU keyword hints (e.g. "FG-VEGAN-..." forces vegan=true) ---
+    sku_upper = product_sku.upper()
+    sku_hints = {
+        "VEGAN": "vegan",
+        "VEGETARIAN": "vegetarian",
+        "HALAL": "halal",
+        "KOSHER": "kosher",
+        "GLUTEN-FREE": "gluten_free",
+        "GLUTENFREE": "gluten_free",
+        "ORGANIC": "organic",
+    }
+    for keyword, flag in sku_hints.items():
+        if keyword in sku_upper:
+            profile["dietary_requirements"][flag] = True
+
+    return profile
+
 
 async def get_material_context(names: list[str]) -> list[dict]:
     """Fetch company + supplier context for a list of raw material names.
 
     Queries raw_material_map for each name and returns a flat list of dicts:
     {raw_material_name, company_name, supplier_name, finished_product_sku}
-    Used by AgnesAgent to inject grounded DB context into LLM prompt.
     """
     if not names:
         return []
@@ -336,16 +429,3 @@ async def get_material_context(names: list[str]) -> list[dict]:
             names,
         )
     return [dict(r) for r in rows]
-
-
-# ---------------------------------------------------------------------------
-# Agnes suggestions
-# ---------------------------------------------------------------------------
-
-async def list_agnes_suggestions(proposal_id: int) -> list[AgnesSuggestedQuestion]:
-    async with db.get_conn() as conn:
-        rows = await conn.fetch(
-            "SELECT id, question FROM agnes_suggestions WHERE proposal_id = $1 ORDER BY id",
-            proposal_id,
-        )
-    return [AgnesSuggestedQuestion(id=r["id"], question=r["question"]) for r in rows]
