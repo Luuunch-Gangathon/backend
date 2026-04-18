@@ -23,6 +23,12 @@ from app.api.search_engine.sources.open_food_facts import (
 from app.api.search_engine.sources.openfda import (
     openfda_enrich as _openfda_enrich_real,
 )
+from app.api.search_engine.sources.chebi import (
+    chebi_enrich as _chebi_enrich_real,
+)
+from app.api.search_engine.sources.nih_dsld import (
+    nih_dsld_enrich as _nih_dsld_enrich_real,
+)
 
 
 def _stub(name: str, context: dict) -> list[dict]:
@@ -31,7 +37,7 @@ def _stub(name: str, context: dict) -> list[dict]:
 
 
 def chebi_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
+    return _chebi_enrich_real(name, context)
 
 
 def foodb_enrich(name: str, context: dict) -> list[dict]:
@@ -43,7 +49,7 @@ def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
 
 
 def nih_dsld_enrich(name: str, context: dict) -> list[dict]:
-    return _stub(name, context)
+    return _nih_dsld_enrich_real(name, context)
 
 
 def openfda_enrich(name: str, context: dict) -> list[dict]:
@@ -73,7 +79,7 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
 SOURCE_HANDLERS: dict[str, callable] = {
     "supplier_website": supplier_website_enrich,
     "pubchem": pubchem_enrich,
-    "chebi": chebi_enrich,
+    "chebi": _chebi_enrich_real,
     "foodb": foodb_enrich,
     "open_food_facts": open_food_facts_enrich,
     "nih_dsld": nih_dsld_enrich,
