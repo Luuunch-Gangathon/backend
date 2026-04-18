@@ -6,6 +6,7 @@ All IDs are plain integers matching Postgres PRIMARY KEY.
 from __future__ import annotations
 
 import json
+import re
 from typing import Optional
 
 from app.schemas import (
@@ -13,6 +14,7 @@ from app.schemas import (
     Product,
     BOM,
     RawMaterial,
+    SimilarRawMaterial,
     Supplier,
     Proposal,
     EvidenceItem,
@@ -24,6 +26,8 @@ from app.schemas import (
 )
 
 from . import db
+
+SIMILARITY_THRESHOLD: float = 0.75  # cosine similarity cutoff (-1..1)
 
 
 # ---------------------------------------------------------------------------
@@ -110,6 +114,58 @@ async def get_raw_material(rm_id: int) -> Optional[RawMaterial]:
             "SELECT id, sku FROM products WHERE id = $1 AND type = 'raw-material'", rm_id
         )
     return RawMaterial(id=row["id"], sku=row["sku"]) if row else None
+
+
+_DB_ID_RE = re.compile(r"^rm_db_(\d+)$")
+
+
+async def find_similar_raw_materials(
+    raw_material_id: str,
+) -> list[SimilarRawMaterial]:
+    """Return raw materials whose embedding is above SIMILARITY_THRESHOLD
+    cosine-similar to the source id's embedding.
+
+    DB-backed ids only (rm_db_<n>). Fixture ids and malformed ids return [].
+    Source id is excluded from results.
+    """
+    m = _DB_ID_RE.match(raw_material_id)
+    if not m:
+        return []
+    db_id = int(m.group(1))
+
+    try:
+        async with db.get_conn() as conn:
+            rows = await conn.fetch(
+                """
+                WITH source AS (
+                    SELECT sg.raw_material_name, sg.embedding
+                    FROM raw_material_map rmm
+                    JOIN substitution_groups sg
+                      ON sg.raw_material_name = rmm.raw_material_name
+                    WHERE rmm.raw_material_id = $1
+                    LIMIT 1
+                )
+                SELECT rmm.raw_material_id,
+                       1 - (sg.embedding <=> (SELECT embedding FROM source)) AS score
+                FROM   substitution_groups sg
+                JOIN   raw_material_map    rmm ON rmm.raw_material_name = sg.raw_material_name
+                WHERE  sg.raw_material_name <> (SELECT raw_material_name FROM source)
+                  AND  1 - (sg.embedding <=> (SELECT embedding FROM source)) >= $2
+                ORDER  BY score DESC
+                """,
+                db_id,
+                SIMILARITY_THRESHOLD,
+            )
+    except Exception:
+        return []
+
+    return [
+        SimilarRawMaterial(
+            raw_material_id=f"rm_db_{row['raw_material_id']}",
+            similarity_score=float(row["score"]),
+        )
+        for row in rows
+    ]
 
 
 # ---------------------------------------------------------------------------
