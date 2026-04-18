@@ -14,6 +14,21 @@ import asyncpg
 SQLITE_PATH = Path(__file__).resolve().parents[2] / "data" / "db.sqlite"
 
 
+async def ensure_extra_tables(pool: asyncpg.Pool) -> None:
+    """Create tables that did not exist in the original SQLite schema."""
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS decisions (
+                id          SERIAL PRIMARY KEY,
+                proposal_id INTEGER NOT NULL,
+                status      TEXT    NOT NULL CHECK (status IN ('accepted', 'rejected')),
+                reason      TEXT,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                UNIQUE (proposal_id)
+            )
+        """)
+
+
 async def run_if_empty(pool: asyncpg.Pool) -> None:
     """Migrate from SQLite if PostgreSQL has no data yet. No-op otherwise."""
     async with pool.acquire() as conn:

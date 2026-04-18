@@ -23,6 +23,7 @@ from app.schemas import (
     RolloutPlan,
     Substitution,
     AgnesSuggestedQuestion,
+    Decision,
 )
 
 from . import db
@@ -284,6 +285,53 @@ async def list_substitutions() -> list[Substitution]:
         )
         for r in rows
     ]
+
+
+# ---------------------------------------------------------------------------
+# Decisions
+# ---------------------------------------------------------------------------
+
+async def create_decision(
+    proposal_id: int, status: str, reason: Optional[str]
+) -> Decision:
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            """
+            INSERT INTO decisions (proposal_id, status, reason)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (proposal_id) DO UPDATE
+                SET status     = EXCLUDED.status,
+                    reason     = EXCLUDED.reason,
+                    created_at = NOW()
+            RETURNING id, proposal_id, status, reason, created_at
+            """,
+            proposal_id, status, reason,
+        )
+    return Decision(
+        id=row["id"],
+        proposal_id=row["proposal_id"],
+        status=row["status"],
+        reason=row["reason"],
+        created_at=row["created_at"],
+    )
+
+
+async def get_decision_by_proposal(proposal_id: int) -> Optional[Decision]:
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            "SELECT id, proposal_id, status, reason, created_at FROM decisions WHERE proposal_id = $1",
+            proposal_id,
+        )
+    if not row:
+        return None
+    return Decision(
+        id=row["id"],
+        proposal_id=row["proposal_id"],
+        status=row["status"],
+        reason=row["reason"],
+        created_at=row["created_at"],
+    )
+
 
 
 # ---------------------------------------------------------------------------

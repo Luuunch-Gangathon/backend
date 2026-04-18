@@ -6,6 +6,7 @@ from .supplier import Supplier
 from .proposal import Proposal, EvidenceItem, ComplianceRequirement, Tradeoffs, RolloutPlan
 from .substitution import Substitution
 from .agnes import AgnesSuggestedQuestion, AgnesMessage, AgnesAskRequest, AgnesAskResponse
+from .decision import Decision, CreateDecisionRequest
 
 __all__ = [
     "Company",
@@ -24,4 +25,6 @@ __all__ = [
     "AgnesMessage",
     "AgnesAskRequest",
     "AgnesAskResponse",
+    "Decision",
+    "CreateDecisionRequest",
 ]
