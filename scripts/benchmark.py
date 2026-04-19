@@ -36,6 +36,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.data import db
+from app.agents import compliance as compliance_engine
 from app.agents.compliance import check_compliance
 
 logging.basicConfig(level=logging.WARNING)
@@ -46,6 +47,22 @@ RESULTS_JSON = BENCHMARK_DIR / "results.json"
 RESULTS_MD = BENCHMARK_DIR / "results.md"
 
 DEFAULT_K = 3
+
+# Engine AI metadata — read straight from app/agents/compliance.py so the
+# benchmark always records whichever model/settings the engine is currently
+# using. If you change the engine constants there, the benchmark metadata
+# updates automatically on the next run.
+ENGINE_METADATA = {
+    "provider": compliance_engine.PROVIDER,
+    "model": compliance_engine.MODEL,
+    "temperature": compliance_engine.TEMPERATURE,
+    "response_format": compliance_engine.RESPONSE_FORMAT,
+    "reasoning_effort": compliance_engine.REASONING_EFFORT,
+    "prompts": {
+        "system": compliance_engine.SYSTEM_PROMPT_REF,
+        "user": compliance_engine.USER_PROMPT_REF,
+    },
+}
 
 
 # ---------------------------------------------------------------------------
@@ -78,6 +95,35 @@ def mrr(returned: list[int], expected: set[int]) -> float:
         if rid in expected:
             return 1.0 / i
     return 0.0
+
+
+def hit_at_n(returned: list[int], expected: set[int], n: int) -> float:
+    """Binary: 1.0 if any of top-n is relevant, else 0.0."""
+    return 1.0 if set(returned[:n]) & expected else 0.0
+
+
+def map_at_k(returned: list[int], expected: set[int], k: int) -> float:
+    """Mean Average Precision @ K — rewards placing hits at higher ranks."""
+    if not expected:
+        return 1.0
+    hits = 0
+    ap = 0.0
+    for i, rid in enumerate(returned[:k], start=1):
+        if rid in expected:
+            hits += 1
+            ap += hits / i
+    return ap / min(len(expected), k)
+
+
+def jaccard(returned: list[int], expected: set[int], k: int) -> float:
+    """Order-independent set overlap: |A∩B| / |A∪B| on top-k."""
+    top_k = set(returned[:k])
+    if not top_k and not expected:
+        return 1.0
+    union = top_k | expected
+    if not union:
+        return 0.0
+    return len(top_k & expected) / len(union)
 
 
 def ndcg_at_k(returned: list[int], ideal_ranking: list[int], k: int) -> float:
@@ -113,15 +159,21 @@ async def run_case(case: dict, k: int = DEFAULT_K) -> dict:
     except Exception as exc:
         return {
             "case_id": case["case_id"],
+            "description": case.get("description", ""),
             "error": str(exc),
             "pass": False,
             "precision": 0.0,
             "recall": 0.0,
             "f1": 0.0,
+            "jaccard": 0.0,
             "mrr": 0.0,
             "ndcg": 0.0,
+            "map": 0.0,
+            "hit@1": 0.0,
+            "hit@3": 0.0,
             "returned_ids": [],
             "scores": [],
+            "expected_ids": list(expected_ids),
             "difficulty": case.get("difficulty", "unknown"),
         }
 
@@ -131,8 +183,12 @@ async def run_case(case: dict, k: int = DEFAULT_K) -> dict:
     p = precision_at_k(returned_ids, expected_ids, k)
     r = recall_at_k(returned_ids, expected_ids, k)
     f = f1(p, r)
+    j = jaccard(returned_ids, expected_ids, k)
     m = mrr(returned_ids, expected_ids)
     n = ndcg_at_k(returned_ids, ideal_ranking, k)
+    map_k = map_at_k(returned_ids, expected_ids, k)
+    h1 = hit_at_n(returned_ids, expected_ids, 1)
+    h3 = hit_at_n(returned_ids, expected_ids, 3)
 
     passed = r > 0
 
@@ -145,8 +201,12 @@ async def run_case(case: dict, k: int = DEFAULT_K) -> dict:
         "precision": round(p, 4),
         "recall": round(r, 4),
         "f1": round(f, 4),
+        "jaccard": round(j, 4),
         "mrr": round(m, 4),
         "ndcg": round(n, 4),
+        "map": round(map_k, 4),
+        "hit@1": round(h1, 4),
+        "hit@3": round(h3, 4),
         "pass": passed,
         "difficulty": case.get("difficulty", "unknown"),
         "error": None,
@@ -160,8 +220,8 @@ async def run_case(case: dict, k: int = DEFAULT_K) -> dict:
 def aggregate(results: list[dict]) -> dict:
     if not results:
         return {}
-    keys = ["precision", "recall", "f1", "mrr", "ndcg"]
-    agg = {k: round(sum(r[k] for r in results) / len(results), 4) for k in keys}
+    keys = ["precision", "recall", "f1", "jaccard", "mrr", "ndcg", "map", "hit@1", "hit@3"]
+    agg = {k: round(sum(r.get(k, 0.0) for r in results) / len(results), 4) for k in keys}
     agg["pass_rate"] = round(sum(1 for r in results if r["pass"]) / len(results), 4)
     return agg
 
@@ -238,7 +298,14 @@ def print_report(results: list[dict], agg: dict, by_diff: dict, k: int) -> None:
     print()
 
 
-def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str, k: int) -> str:
+def build_markdown(
+    results: list[dict],
+    agg: dict,
+    by_diff: dict,
+    run_at: str,
+    k: int,
+    dataset_metadata: dict | None = None,
+) -> str:
     passed = sum(1 for r in results if r["pass"])
     total = len(results)
     lines: list[str] = []
@@ -248,6 +315,31 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str, k
     lines.append(f"**Run:** {run_at}  ")
     lines.append(f"**K:** {k}  ")
     lines.append(f"**Cases:** {total} | **Passed:** {passed} | **Failed:** {total - passed}")
+    lines.append("")
+
+    lines.append("## Configuration")
+    lines.append("")
+    lines.append("| Component | Provider | Model | Temperature | Reasoning effort |")
+    lines.append("|-----------|----------|-------|-------------|------------------|")
+    eng = ENGINE_METADATA
+    lines.append(
+        f"| Engine (benchmarked) | {eng.get('provider','?')} | `{eng.get('model','?')}` | "
+        f"{eng.get('temperature','?')} | {eng.get('reasoning_effort') or '—'} |"
+    )
+    if dataset_metadata and dataset_metadata.get("oracle"):
+        oracle = dataset_metadata["oracle"]
+        temp = oracle.get("temperature")
+        temp_cell = temp if temp is not None else "—"
+        lines.append(
+            f"| Oracle (ground truth) | {oracle.get('provider','?')} | `{oracle.get('model','?')}` | "
+            f"{temp_cell} | {oracle.get('reasoning_effort') or '—'} |"
+        )
+        if oracle.get("temperature_note"):
+            lines.append("")
+            lines.append(f"_Oracle note: {oracle['temperature_note']}_")
+    if dataset_metadata and dataset_metadata.get("generated_at"):
+        lines.append("")
+        lines.append(f"**Dataset generated:** {dataset_metadata['generated_at']}  ")
     lines.append("")
 
     lines.append(f"## Aggregate Metrics (K={k})")
@@ -260,6 +352,55 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str, k
     lines.append(f"| MRR | {agg.get('mrr', 0):.4f} |")
     lines.append(f"| NDCG@{k} | {agg.get('ndcg', 0):.4f} |")
     lines.append(f"| Pass Rate | {agg.get('pass_rate', 0):.4f} |")
+    lines.append("")
+
+    lines.append(f"## Order-Independent Set Overlap (K={k})")
+    lines.append("")
+    lines.append("_Compares `returned_ids` and `expected_ids` as sets — rank order is ignored._")
+    lines.append("")
+    lines.append("| Metric | Score |")
+    lines.append("|--------|-------|")
+    lines.append(f"| Precision@{k} (set) | {agg.get('precision', 0):.4f} |")
+    lines.append(f"| Recall@{k} (set) | {agg.get('recall', 0):.4f} |")
+    lines.append(f"| F1@{k} (set) | {agg.get('f1', 0):.4f} |")
+    lines.append(f"| Jaccard@{k} | {agg.get('jaccard', 0):.4f} |")
+    lines.append("")
+
+    lines.append(f"## Order-Dependent Ranking (K={k})")
+    lines.append("")
+    lines.append("_Rewards the engine for placing matches near the top of its ranking._")
+    lines.append("")
+    lines.append("| Metric | Score |")
+    lines.append("|--------|-------|")
+    lines.append(f"| MRR | {agg.get('mrr', 0):.4f} |")
+    lines.append(f"| NDCG@{k} | {agg.get('ndcg', 0):.4f} |")
+    lines.append(f"| MAP@{k} | {agg.get('map', 0):.4f} |")
+    lines.append(f"| Hit@1 | {agg.get('hit@1', 0):.4f} |")
+    lines.append(f"| Hit@3 | {agg.get('hit@3', 0):.4f} |")
+    lines.append("")
+
+    non_error = [r for r in results if not r.get("error")]
+    errored = total - len(non_error)
+    agg_ok = aggregate(non_error) if non_error else {}
+    lines.append(f"## Excluding Errored Cases (K={k})")
+    lines.append("")
+    lines.append(
+        f"_Same metrics computed on **{len(non_error)}** successful cases "
+        f"(excluded: {errored} errored out of {total})._"
+    )
+    lines.append("")
+    lines.append("| Metric | Score |")
+    lines.append("|--------|-------|")
+    lines.append(f"| Precision@{k} | {agg_ok.get('precision', 0):.4f} |")
+    lines.append(f"| Recall@{k} | {agg_ok.get('recall', 0):.4f} |")
+    lines.append(f"| F1@{k} | {agg_ok.get('f1', 0):.4f} |")
+    lines.append(f"| Jaccard@{k} | {agg_ok.get('jaccard', 0):.4f} |")
+    lines.append(f"| MRR | {agg_ok.get('mrr', 0):.4f} |")
+    lines.append(f"| NDCG@{k} | {agg_ok.get('ndcg', 0):.4f} |")
+    lines.append(f"| MAP@{k} | {agg_ok.get('map', 0):.4f} |")
+    lines.append(f"| Hit@1 | {agg_ok.get('hit@1', 0):.4f} |")
+    lines.append(f"| Hit@3 | {agg_ok.get('hit@3', 0):.4f} |")
+    lines.append(f"| Pass Rate | {agg_ok.get('pass_rate', 0):.4f} |")
     lines.append("")
 
     if by_diff:
@@ -301,8 +442,8 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str, k
             lines.append(f"_{r['description']}_")
         lines.append("")
         lines.append(f"- **Difficulty:** {r.get('difficulty', '?')}")
-        lines.append(f"- **Returned IDs:** {r['returned_ids']} (scores: {r['scores']})")
-        lines.append(f"- **Expected IDs:** {r['expected_ids']}")
+        lines.append(f"- **Returned IDs:** {r.get('returned_ids', [])} (scores: {r.get('scores', [])})")
+        lines.append(f"- **Expected IDs:** {r.get('expected_ids', [])}")
         if r.get("error"):
             lines.append(f"- **Error:** {r['error']}")
         lines.append("")
@@ -357,6 +498,8 @@ async def main() -> None:
     output = {
         "run_at": run_at,
         "dataset_version": dataset.get("version", "unknown"),
+        "dataset_metadata": dataset.get("metadata", {}),
+        "engine": ENGINE_METADATA,
         "k": k,
         "aggregate": agg,
         "by_difficulty": by_diff,
@@ -369,7 +512,7 @@ async def main() -> None:
         json.dump(output, f, indent=2)
 
     with open(RESULTS_MD, "w") as f:
-        f.write(build_markdown(results, agg, by_diff, run_at, k))
+        f.write(build_markdown(results, agg, by_diff, run_at, k, dataset.get("metadata", {})))
 
     print_report(results, agg, by_diff, k)
     print(f"Results written to:")

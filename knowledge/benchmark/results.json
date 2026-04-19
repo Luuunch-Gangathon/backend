@@ -1,0 +1,6805 @@
+{
+  "run_at": "2026-04-19 12:53 UTC",
+  "dataset_version": "1.0",
+  "dataset_metadata": {},
+  "engine": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "temperature": 0,
+    "response_format": "structured_output",
+    "reasoning_effort": null,
+    "prompts": {
+      "system": "app/prompts/system/compliance.j2",
+      "user": "app/prompts/user/compliance_rank.j2"
+    }
+  },
+  "k": 5,
+  "aggregate": {
+    "precision": 0.3034,
+    "recall": 0.2975,
+    "f1": 0.2995,
+    "mrr": 0.5068,
+    "ndcg": 0.3359,
+    "pass_rate": 0.5847
+  },
+  "by_difficulty": {
+    "medium": {
+      "precision": 0.3228,
+      "recall": 0.3089,
+      "f1": 0.3136,
+      "mrr": 0.5886,
+      "ndcg": 0.3666,
+      "pass_rate": 0.6337
+    },
+    "easy": {
+      "precision": 0.2889,
+      "recall": 0.2889,
+      "f1": 0.2889,
+      "mrr": 0.4456,
+      "ndcg": 0.313,
+      "pass_rate": 0.5481
+    }
+  },
+  "cases": [
+    {
+      "case_id": "dipotassium-phosphate-001",
+      "description": "Replace dipotassium-phosphate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        786,
+        878,
+        514,
+        695,
+        1017
+      ],
+      "scores": [
+        85,
+        84,
+        70,
+        68,
+        67
+      ],
+      "expected_ids": [
+        704,
+        997,
+        493,
+        878,
+        786
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dipotassium-phosphate-002",
+      "description": "Replace dipotassium-phosphate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        786,
+        878,
+        514,
+        695,
+        1017
+      ],
+      "scores": [
+        85,
+        84,
+        75,
+        70,
+        68
+      ],
+      "expected_ids": [
+        704,
+        997,
+        493,
+        878,
+        786
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dipotassium-phosphate-003",
+      "description": "Replace dipotassium-phosphate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        786,
+        878,
+        514,
+        695,
+        1017
+      ],
+      "scores": [
+        85,
+        84,
+        75,
+        70,
+        68
+      ],
+      "expected_ids": [
+        704,
+        997,
+        493,
+        878,
+        786
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dipotassium-phosphate-004",
+      "description": "Replace dipotassium-phosphate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        786,
+        878,
+        514,
+        695,
+        1017
+      ],
+      "scores": [
+        85,
+        84,
+        75,
+        70,
+        68
+      ],
+      "expected_ids": [
+        704,
+        997,
+        493,
+        878,
+        786
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dipotassium-phosphate-005",
+      "description": "Replace dipotassium-phosphate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        786,
+        878,
+        493,
+        695,
+        514
+      ],
+      "scores": [
+        85,
+        84,
+        78,
+        75,
+        70
+      ],
+      "expected_ids": [
+        704,
+        997,
+        493,
+        878,
+        786
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-citrate-001",
+      "description": "Replace potassium-citrate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        611,
+        878,
+        997,
+        1026,
+        786
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        75,
+        74
+      ],
+      "expected_ids": [
+        717,
+        785,
+        497,
+        1017,
+        575
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-citrate-002",
+      "description": "Replace potassium-citrate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        611,
+        878,
+        997,
+        490,
+        786
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        78,
+        78
+      ],
+      "expected_ids": [
+        328,
+        717,
+        785,
+        1017,
+        575
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-citrate-003",
+      "description": "Replace potassium-citrate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        611,
+        878,
+        997,
+        328,
+        569
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        75,
+        70
+      ],
+      "expected_ids": [
+        328,
+        717,
+        785,
+        1017,
+        575
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.25,
+      "ndcg": 0.1461,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-citrate-004",
+      "description": "Replace potassium-citrate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        611,
+        878,
+        997,
+        490,
+        786
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        78,
+        78
+      ],
+      "expected_ids": [
+        717,
+        785,
+        497,
+        1017,
+        575
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-citrate-005",
+      "description": "Replace potassium-citrate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        611,
+        878,
+        997,
+        490,
+        786
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        78,
+        78
+      ],
+      "expected_ids": [
+        328,
+        717,
+        785,
+        1017,
+        575
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "salt-001",
+      "description": "Replace salt in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        486,
+        880,
+        577,
+        214,
+        612
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        486,
+        712,
+        880,
+        439,
+        696
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "salt-002",
+      "description": "Replace salt in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        486,
+        880,
+        439,
+        712,
+        696
+      ],
+      "scores": [
+        98,
+        98,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        486,
+        712,
+        880,
+        439,
+        696
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "salt-003",
+      "description": "Replace salt in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        486,
+        880,
+        439,
+        577,
+        214
+      ],
+      "scores": [
+        95,
+        95,
+        90,
+        90,
+        90
+      ],
+      "expected_ids": [
+        486,
+        880,
+        214,
+        439,
+        696
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8539,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "salt-004",
+      "description": "Replace salt in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        486,
+        880,
+        577,
+        214,
+        612
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        486,
+        712,
+        880,
+        439,
+        696
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "salt-005",
+      "description": "Replace salt in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        486,
+        880,
+        577,
+        214,
+        612
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        486,
+        712,
+        880,
+        439,
+        696
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "sodium-citrate-001",
+      "description": "Replace sodium-citrate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        917,
+        991,
+        715,
+        778,
+        488
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        82,
+        81
+      ],
+      "expected_ids": [
+        321,
+        1026,
+        328,
+        186,
+        252
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-citrate-002",
+      "description": "Replace sodium-citrate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        917,
+        991,
+        715,
+        778,
+        488
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        82,
+        81
+      ],
+      "expected_ids": [
+        321,
+        1026,
+        328,
+        186,
+        252
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-citrate-003",
+      "description": "Replace sodium-citrate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        917,
+        991,
+        715,
+        778,
+        488
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        321,
+        1026,
+        328,
+        186,
+        252
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-citrate-004",
+      "description": "Replace sodium-citrate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        917,
+        991,
+        715,
+        778,
+        488
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        82,
+        81
+      ],
+      "expected_ids": [
+        321,
+        1026,
+        328,
+        186,
+        252
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-citrate-005",
+      "description": "Replace sodium-citrate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        917,
+        991,
+        715,
+        778,
+        488
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        321,
+        1026,
+        328,
+        186,
+        252
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137655 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137654 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137656 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137656 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-005",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137654 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-001",
+      "description": "Replace vitamin-b3-niacinamide in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        173,
+        1012,
+        647,
+        300
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-002",
+      "description": "Replace vitamin-b3-niacinamide in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        173,
+        1012,
+        647,
+        300
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-003",
+      "description": "Replace vitamin-b3-niacinamide in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        173,
+        1012,
+        647,
+        300
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-004",
+      "description": "Replace vitamin-b3-niacinamide in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        173,
+        1012,
+        647,
+        300
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-005",
+      "description": "Replace vitamin-b3-niacinamide in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        173,
+        1012,
+        647,
+        300
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-001",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        986,
+        167,
+        632,
+        936,
+        568
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        167,
+        632,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8539,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-002",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        986,
+        167,
+        350,
+        632,
+        936
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        167,
+        936,
+        632,
+        568,
+        350
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 0.5,
+      "ndcg": 0.6608,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-003",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        986,
+        167,
+        350,
+        632,
+        936
+      ],
+      "scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ],
+      "expected_ids": [
+        589,
+        301,
+        371,
+        568,
+        986
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-004",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        986,
+        167,
+        350,
+        632,
+        936
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        167,
+        632,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-005",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        986,
+        167,
+        350,
+        632,
+        936
+      ],
+      "scores": [
+        95,
+        94,
+        94,
+        94,
+        94
+      ],
+      "expected_ids": [
+        167,
+        632,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-001",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        576,
+        710,
+        177,
+        377,
+        1019
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-002",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        1019,
+        710,
+        177,
+        400,
+        310
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        576,
+        400,
+        177,
+        596,
+        310
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 0.3333,
+      "ndcg": 0.4469,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-003",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        310,
+        400,
+        596,
+        1037,
+        177
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        576,
+        400,
+        177,
+        596,
+        310
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8539,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-004",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        310,
+        400,
+        596,
+        177,
+        576
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        576,
+        400,
+        177,
+        596,
+        310
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-005",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "returned_ids": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        576,
+        400,
+        177,
+        596,
+        310
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 186157 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 186156 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 186158 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 186158 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-005",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 186156 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "ascorbic-acid-001",
+      "description": "Replace ascorbic-acid in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        699,
+        982,
+        614,
+        503,
+        830
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        160,
+        457,
+        236,
+        622,
+        335
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-citrate-001",
+      "description": "Replace calcium-citrate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        866,
+        397,
+        351,
+        514,
+        609
+      ],
+      "scores": [
+        85,
+        82,
+        80,
+        78,
+        75
+      ],
+      "expected_ids": [
+        777,
+        265,
+        460,
+        340,
+        150
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "calcium-d-pantothenate-001",
+      "description": "Replace calcium-d-pantothenate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        167,
+        350,
+        632,
+        936,
+        986
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        84
+      ],
+      "expected_ids": [
+        167,
+        936,
+        632,
+        986,
+        350
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-001",
+      "description": "Replace cyanocobalamin in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        995,
+        702,
+        499,
+        595,
+        399
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        165,
+        935,
+        631,
+        349,
+        702
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.5,
+      "ndcg": 0.214,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "magnesium-citrate-001",
+      "description": "Replace magnesium-citrate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        813,
+        531,
+        1003,
+        1005,
+        811
+      ],
+      "scores": [
+        85,
+        80,
+        80,
+        75,
+        70
+      ],
+      "expected_ids": [
+        708,
+        780,
+        532,
+        442,
+        508
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "manganese-chelate-001",
+      "description": "Replace manganese-chelate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        871,
+        942,
+        365,
+        642,
+        272
+      ],
+      "scores": [
+        85,
+        83,
+        82,
+        81,
+        80
+      ],
+      "expected_ids": [
+        642,
+        871,
+        365,
+        782,
+        272
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.786,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "niacin-001",
+      "description": "Replace niacin in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        646,
+        585,
+        300,
+        173,
+        369
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3836,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pink-himalayan-salt-001",
+      "description": "Replace pink-himalayan-salt in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        439,
+        696,
+        712,
+        880,
+        749
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        86
+      ],
+      "expected_ids": [
+        486,
+        327,
+        784,
+        880,
+        723
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.25,
+      "ndcg": 0.1461,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "potassium-citrate-006",
+      "description": "Replace potassium-citrate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        611,
+        878,
+        997,
+        786,
+        1026
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        78,
+        75
+      ],
+      "expected_ids": [
+        717,
+        493,
+        569,
+        785,
+        1017
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hcl-001",
+      "description": "Replace pyridoxine-hcl in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        502,
+        1037,
+        596,
+        310,
+        400
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        400,
+        177,
+        596,
+        662,
+        502
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6399,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "sodium-chloride-001",
+      "description": "Replace sodium-chloride in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        880,
+        486,
+        677,
+        495,
+        241
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        612,
+        486,
+        880,
+        241,
+        214
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6844,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "zinc-oxide-001",
+      "description": "Replace zinc-oxide in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "returned_ids": [
+        615,
+        881,
+        791,
+        748,
+        249
+      ],
+      "scores": [
+        85,
+        80,
+        78,
+        76,
+        75
+      ],
+      "expected_ids": [
+        405,
+        280,
+        250,
+        668,
+        957
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "biotin-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148282 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148178 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "b-vitamins-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 136685 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "folate-001",
+      "description": "Replace folate in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        633,
+        937,
+        356,
+        355,
+        464
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        50,
+        50
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        937,
+        633
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "folate-002",
+      "description": "Replace folate in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        633,
+        937,
+        356,
+        355,
+        464
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        45,
+        45
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        937,
+        633
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacin-002",
+      "description": "Replace niacin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        86
+      ],
+      "expected_ids": [
+        646,
+        300,
+        173,
+        369,
+        573
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3836,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacin-003",
+      "description": "Replace niacin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "scores": [
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "expected_ids": [
+        646,
+        300,
+        173,
+        369,
+        573
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3836,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pantothenic-acid-001",
+      "description": "Replace pantothenic-acid in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        986,
+        350,
+        501,
+        632
+      ],
+      "scores": [
+        88,
+        86,
+        85,
+        84,
+        83
+      ],
+      "expected_ids": [
+        648,
+        301,
+        371,
+        1014,
+        986
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.5,
+      "ndcg": 0.214,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pantothenic-acid-002",
+      "description": "Replace pantothenic-acid in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        568
+      ],
+      "scores": [
+        89
+      ],
+      "expected_ids": [
+        648,
+        301,
+        371,
+        1014,
+        986
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-001",
+      "description": "Replace riboflavin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        178,
+        379,
+        309,
+        303
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-002",
+      "description": "Replace riboflavin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        652,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "thiamin-001",
+      "description": "Replace thiamin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        658,
+        394
+      ],
+      "scores": [
+        95,
+        94,
+        92,
+        90,
+        89
+      ],
+      "expected_ids": [
+        393,
+        394,
+        305,
+        658,
+        307
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8304,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "thiamin-002",
+      "description": "Replace thiamin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        658,
+        394
+      ],
+      "scores": [
+        95,
+        94,
+        92,
+        90,
+        89
+      ],
+      "expected_ids": [
+        393,
+        1033,
+        657,
+        305,
+        307
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-a-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137361 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-a-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137257 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-b12-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 197047 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-b12-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 196943 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b6-001",
+      "description": "Replace vitamin-b6 in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        502,
+        862,
+        1019,
+        710,
+        177
+      ],
+      "scores": [
+        95,
+        85,
+        80,
+        78,
+        75
+      ],
+      "expected_ids": [
+        1037,
+        400,
+        310,
+        662,
+        502
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-002",
+      "description": "Replace vitamin-b6 in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        502,
+        862,
+        177,
+        576,
+        1019
+      ],
+      "scores": [
+        95,
+        90,
+        90,
+        90,
+        85
+      ],
+      "expected_ids": [
+        1037,
+        400,
+        662,
+        310,
+        502
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-c-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141930 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-c-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141826 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-c-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141813 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-d3-001",
+      "description": "Replace vitamin-d3 in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        553,
+        266,
+        626,
+        342,
+        159
+      ],
+      "scores": [
+        85,
+        83,
+        82,
+        82,
+        81
+      ],
+      "expected_ids": [
+        402,
+        245,
+        246,
+        476,
+        159
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.2,
+      "ndcg": 0.1312,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-d3-002",
+      "description": "Replace vitamin-d3 in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        553,
+        266,
+        626,
+        342,
+        159
+      ],
+      "scores": [
+        85,
+        83,
+        82,
+        82,
+        81
+      ],
+      "expected_ids": [
+        552,
+        911,
+        402,
+        246,
+        476
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-d3-003",
+      "description": "Replace vitamin-d3 in FG-thrive-market-new-chapter-mens-advanced-multivitamin (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        553,
+        266,
+        626,
+        342,
+        475
+      ],
+      "scores": [
+        90,
+        88,
+        87,
+        86,
+        85
+      ],
+      "expected_ids": [
+        552,
+        402,
+        246,
+        476,
+        159
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-e-001",
+      "description": "Replace vitamin-e in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        396
+      ],
+      "scores": [
+        90,
+        88,
+        86,
+        84,
+        82
+      ],
+      "expected_ids": [
+        313,
+        554,
+        403,
+        665,
+        478
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-e-002",
+      "description": "Replace vitamin-e in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        166
+      ],
+      "scores": [
+        89,
+        87,
+        85,
+        83,
+        81
+      ],
+      "expected_ids": [
+        313,
+        554,
+        403,
+        665,
+        478
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-k-001",
+      "description": "Replace vitamin-k in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        315,
+        372,
+        834,
+        555,
+        747
+      ],
+      "scores": [
+        92,
+        88,
+        85,
+        83,
+        82
+      ],
+      "expected_ids": [
+        404,
+        666,
+        314,
+        315,
+        479
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-k-002",
+      "description": "Replace vitamin-k in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "returned_ids": [
+        315,
+        372,
+        834,
+        555,
+        946
+      ],
+      "scores": [
+        92,
+        88,
+        85,
+        83,
+        82
+      ],
+      "expected_ids": [
+        404,
+        666,
+        314,
+        315,
+        479
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "ascorbic-acid-002",
+      "description": "Replace ascorbic-acid in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        699,
+        982,
+        614,
+        503,
+        865
+      ],
+      "scores": [
+        98,
+        97,
+        96,
+        95,
+        85
+      ],
+      "expected_ids": [
+        160,
+        614,
+        982,
+        503,
+        699
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "ascorbic-acid-003",
+      "description": "Replace ascorbic-acid in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        699,
+        982,
+        614,
+        503,
+        865
+      ],
+      "scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ],
+      "expected_ids": [
+        160,
+        614,
+        982,
+        503,
+        699
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "ascorbic-acid-004",
+      "description": "Replace ascorbic-acid in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        699,
+        982,
+        614,
+        503,
+        830
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        160,
+        614,
+        982,
+        503,
+        699
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "ascorbic-acid-005",
+      "description": "Replace ascorbic-acid in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        699,
+        982,
+        614,
+        503,
+        865
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        95
+      ],
+      "expected_ids": [
+        160,
+        614,
+        982,
+        503,
+        699
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "ascorbic-acid-006",
+      "description": "Replace ascorbic-acid in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        699,
+        982,
+        614,
+        503,
+        865
+      ],
+      "scores": [
+        98,
+        97,
+        96,
+        95,
+        85
+      ],
+      "expected_ids": [
+        160,
+        614,
+        982,
+        503,
+        699
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "beta-carotene-001",
+      "description": "Replace beta-carotene in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        286,
+        339,
+        580,
+        624,
+        929
+      ],
+      "scores": [
+        45,
+        45,
+        45,
+        45,
+        45
+      ],
+      "expected_ids": [
+        864,
+        161,
+        928,
+        711,
+        338
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "beta-carotene-002",
+      "description": "Replace beta-carotene in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        286
+      ],
+      "scores": [
+        45
+      ],
+      "expected_ids": [
+        864,
+        161,
+        928,
+        338,
+        703
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "beta-carotene-003",
+      "description": "Replace beta-carotene in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        286,
+        339,
+        580,
+        624,
+        929
+      ],
+      "scores": [
+        45,
+        45,
+        45,
+        45,
+        45
+      ],
+      "expected_ids": [
+        864,
+        161,
+        928,
+        711,
+        338
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "beta-carotene-004",
+      "description": "Replace beta-carotene in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        286,
+        339,
+        580,
+        624,
+        929
+      ],
+      "scores": [
+        45,
+        45,
+        45,
+        45,
+        45
+      ],
+      "expected_ids": [
+        864,
+        161,
+        338,
+        928
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "beta-carotene-005",
+      "description": "Replace beta-carotene in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        286,
+        339,
+        580,
+        624,
+        929
+      ],
+      "scores": [
+        45,
+        45,
+        45,
+        45,
+        45
+      ],
+      "expected_ids": [
+        864,
+        161,
+        928,
+        711,
+        338
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "biotin-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148287 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148286 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-005",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148286 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-006",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148286 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-007",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148289 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-008",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148287 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-009",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148288 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "biotin-010",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 148288 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "calcium-carbonate-001",
+      "description": "Replace calcium-carbonate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        609
+      ],
+      "scores": [
+        88,
+        87,
+        86,
+        85,
+        84
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-002",
+      "description": "Replace calcium-carbonate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        397
+      ],
+      "scores": [
+        88,
+        88,
+        88,
+        88,
+        87
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-003",
+      "description": "Replace calcium-carbonate in FG-cvs-410537 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        397
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        84
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-004",
+      "description": "Replace calcium-carbonate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        609
+      ],
+      "scores": [
+        88,
+        88,
+        88,
+        88,
+        85
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-005",
+      "description": "Replace calcium-carbonate in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        609
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        85
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-006",
+      "description": "Replace calcium-carbonate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        397
+      ],
+      "scores": [
+        88,
+        88,
+        88,
+        88,
+        87
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-007",
+      "description": "Replace calcium-carbonate in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        397
+      ],
+      "scores": [
+        88,
+        88,
+        88,
+        88,
+        87
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "calcium-carbonate-008",
+      "description": "Replace calcium-carbonate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        569,
+        777,
+        460,
+        150,
+        609
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        82,
+        81
+      ],
+      "expected_ids": [
+        520,
+        265,
+        459,
+        340,
+        607
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cholecalciferol-001",
+      "description": "Replace cholecalciferol in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        266,
+        912,
+        553,
+        159,
+        517
+      ],
+      "scores": [
+        90,
+        88,
+        88,
+        88,
+        88
+      ],
+      "expected_ids": [
+        932,
+        455,
+        431,
+        342,
+        159
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.25,
+      "ndcg": 0.1461,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cholecalciferol-002",
+      "description": "Replace cholecalciferol in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        266,
+        912,
+        553,
+        159,
+        517
+      ],
+      "scores": [
+        90,
+        88,
+        88,
+        88,
+        88
+      ],
+      "expected_ids": [
+        932,
+        266,
+        431,
+        342,
+        159
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.4852,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "cholecalciferol-003",
+      "description": "Replace cholecalciferol in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        266,
+        912,
+        553,
+        159,
+        517
+      ],
+      "scores": [
+        90,
+        89,
+        89,
+        89,
+        89
+      ],
+      "expected_ids": [
+        932,
+        266,
+        431,
+        342,
+        159
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.4852,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "cholecalciferol-004",
+      "description": "Replace cholecalciferol in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        266,
+        912,
+        553,
+        159,
+        517
+      ],
+      "scores": [
+        90,
+        88,
+        87,
+        86,
+        85
+      ],
+      "expected_ids": [
+        932,
+        266,
+        431,
+        342,
+        159
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.4852,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "cholecalciferol-005",
+      "description": "Replace cholecalciferol in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        266,
+        912,
+        553,
+        159,
+        517
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        86
+      ],
+      "expected_ids": [
+        932,
+        266,
+        431,
+        342,
+        159
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.4852,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "chromium-chloride-001",
+      "description": "Replace chromium-chloride in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        990,
+        289,
+        343,
+        461,
+        608
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        75
+      ],
+      "expected_ids": [
+        289,
+        461,
+        343,
+        344,
+        990
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "chromium-chloride-002",
+      "description": "Replace chromium-chloride in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        990,
+        343,
+        461,
+        289,
+        608
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        80
+      ],
+      "expected_ids": [
+        289,
+        461,
+        343,
+        344,
+        990
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "chromium-chloride-003",
+      "description": "Replace chromium-chloride in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        990,
+        289,
+        343,
+        461,
+        608
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        75
+      ],
+      "expected_ids": [
+        289,
+        461,
+        343,
+        344,
+        990
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "chromium-chloride-004",
+      "description": "Replace chromium-chloride in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        753,
+        251,
+        288,
+        848,
+        343
+      ],
+      "scores": [
+        78,
+        78,
+        78,
+        78,
+        77
+      ],
+      "expected_ids": [
+        608,
+        289,
+        933,
+        344,
+        345
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "chromium-chloride-005",
+      "description": "Replace chromium-chloride in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        753,
+        251,
+        288,
+        848,
+        343
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        80
+      ],
+      "expected_ids": [
+        289,
+        461,
+        343,
+        344,
+        990
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.2,
+      "ndcg": 0.1312,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "copper-sulfate-001",
+      "description": "Replace copper-sulfate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        348,
+        934,
+        860,
+        615,
+        642
+      ],
+      "scores": [
+        85,
+        85,
+        80,
+        78,
+        77
+      ],
+      "expected_ids": [
+        934,
+        615,
+        267,
+        628,
+        348
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6992,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "copper-sulfate-002",
+      "description": "Replace copper-sulfate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        348,
+        934,
+        860,
+        615,
+        642
+      ],
+      "scores": [
+        85,
+        85,
+        80,
+        78,
+        77
+      ],
+      "expected_ids": [
+        290,
+        934,
+        267,
+        462,
+        348
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "copper-sulfate-003",
+      "description": "Replace copper-sulfate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        348,
+        934,
+        860,
+        615,
+        642
+      ],
+      "scores": [
+        85,
+        85,
+        80,
+        78,
+        77
+      ],
+      "expected_ids": [
+        934,
+        615,
+        267,
+        347,
+        348
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6992,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "copper-sulfate-004",
+      "description": "Replace copper-sulfate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        348,
+        934,
+        860,
+        615,
+        642
+      ],
+      "scores": [
+        85,
+        85,
+        80,
+        78,
+        77
+      ],
+      "expected_ids": [
+        934,
+        615,
+        267,
+        272,
+        348
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6992,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "copper-sulfate-005",
+      "description": "Replace copper-sulfate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        348,
+        934,
+        860,
+        615,
+        642
+      ],
+      "scores": [
+        85,
+        85,
+        80,
+        78,
+        77
+      ],
+      "expected_ids": [
+        290,
+        934,
+        267,
+        462,
+        348
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-002",
+      "description": "Replace cyanocobalamin in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        995,
+        702,
+        499,
+        595,
+        399
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        165,
+        935,
+        570,
+        349,
+        702
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.5,
+      "ndcg": 0.214,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-003",
+      "description": "Replace cyanocobalamin in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        995,
+        702,
+        499,
+        595,
+        399
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        165,
+        935,
+        570,
+        349,
+        702
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.5,
+      "ndcg": 0.214,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-004",
+      "description": "Replace cyanocobalamin in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        995,
+        702,
+        499,
+        595,
+        399
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        165,
+        935,
+        570,
+        349,
+        702
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.5,
+      "ndcg": 0.214,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-005",
+      "description": "Replace cyanocobalamin in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        995,
+        702,
+        499,
+        595,
+        399
+      ],
+      "scores": [
+        95,
+        95,
+        95,
+        95,
+        95
+      ],
+      "expected_ids": [
+        165,
+        935,
+        570,
+        349,
+        702
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.5,
+      "ndcg": 0.214,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-006",
+      "description": "Replace cyanocobalamin in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        995
+      ],
+      "scores": [
+        95
+      ],
+      "expected_ids": [
+        165,
+        935,
+        570,
+        349,
+        702
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "d-calcium-pantothenate-001",
+      "description": "Replace d-calcium-pantothenate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        501,
+        986,
+        1014,
+        589
+      ],
+      "scores": [
+        95,
+        90,
+        85,
+        80,
+        75
+      ],
+      "expected_ids": [
+        167,
+        501,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "d-calcium-pantothenate-002",
+      "description": "Replace d-calcium-pantothenate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        501,
+        986,
+        1014,
+        301
+      ],
+      "scores": [
+        95,
+        90,
+        85,
+        80,
+        75
+      ],
+      "expected_ids": [
+        167,
+        501,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "d-calcium-pantothenate-003",
+      "description": "Replace d-calcium-pantothenate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        986,
+        501,
+        1014,
+        589
+      ],
+      "scores": [
+        95,
+        90,
+        85,
+        80,
+        75
+      ],
+      "expected_ids": [
+        167,
+        501,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "d-calcium-pantothenate-004",
+      "description": "Replace d-calcium-pantothenate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        501,
+        986,
+        1014,
+        589
+      ],
+      "scores": [
+        92,
+        88,
+        85,
+        80,
+        78
+      ],
+      "expected_ids": [
+        167,
+        501,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "d-calcium-pantothenate-005",
+      "description": "Replace d-calcium-pantothenate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        501,
+        986,
+        1014,
+        301
+      ],
+      "scores": [
+        95,
+        90,
+        85,
+        80,
+        75
+      ],
+      "expected_ids": [
+        167,
+        501,
+        568,
+        986,
+        350
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-001",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        843,
+        406,
+        746,
+        166
+      ],
+      "scores": [
+        88,
+        86,
+        84,
+        82,
+        80
+      ],
+      "expected_ids": [
+        746,
+        843,
+        406,
+        407,
+        703
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-002",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        406,
+        843,
+        746,
+        166
+      ],
+      "scores": [
+        88,
+        85,
+        83,
+        81,
+        79
+      ],
+      "expected_ids": [
+        407,
+        843,
+        278,
+        406,
+        703
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-003",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        406,
+        843,
+        746,
+        166
+      ],
+      "scores": [
+        88,
+        85,
+        83,
+        80,
+        78
+      ],
+      "expected_ids": [
+        746,
+        843,
+        406,
+        407,
+        703
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-004",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        406,
+        843,
+        746,
+        166
+      ],
+      "scores": [
+        88,
+        85,
+        83,
+        81,
+        79
+      ],
+      "expected_ids": [
+        746,
+        843,
+        406,
+        407,
+        703
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8688,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-005",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        406,
+        843,
+        746,
+        166
+      ],
+      "scores": [
+        88,
+        85,
+        83,
+        81,
+        79
+      ],
+      "expected_ids": [
+        407,
+        396,
+        278,
+        406,
+        703
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "folic-acid-001",
+      "description": "Replace folic-acid in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        291,
+        998,
+        583,
+        457,
+        160
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        60,
+        59
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        583,
+        937
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "folic-acid-002",
+      "description": "Replace folic-acid in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        291,
+        998,
+        583,
+        457,
+        160
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        70,
+        69
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        583,
+        937
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "folic-acid-003",
+      "description": "Replace folic-acid in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        291,
+        998,
+        583,
+        457,
+        160
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        70,
+        69
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        583,
+        937
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "folic-acid-004",
+      "description": "Replace folic-acid in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        291,
+        998,
+        583,
+        457,
+        160
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        70,
+        70
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        583,
+        937
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "folic-acid-005",
+      "description": "Replace folic-acid in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        291,
+        998,
+        583,
+        457,
+        160
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        60,
+        59
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        583,
+        937
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "folic-acid-006",
+      "description": "Replace folic-acid in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        291,
+        998,
+        583,
+        457,
+        160
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        60,
+        59
+      ],
+      "expected_ids": [
+        291,
+        356,
+        998,
+        583,
+        937
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "manganese-sulfate-001",
+      "description": "Replace manganese-sulfate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        469,
+        721,
+        1008,
+        172,
+        298
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        86
+      ],
+      "expected_ids": [
+        871,
+        365,
+        942,
+        272,
+        572
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "manganese-sulfate-002",
+      "description": "Replace manganese-sulfate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        871,
+        469,
+        721,
+        1008,
+        172
+      ],
+      "scores": [
+        90,
+        88,
+        87,
+        86,
+        85
+      ],
+      "expected_ids": [
+        871,
+        365,
+        942,
+        272,
+        572
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "manganese-sulfate-003",
+      "description": "Replace manganese-sulfate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        871,
+        469,
+        721,
+        1008,
+        172
+      ],
+      "scores": [
+        90,
+        88,
+        87,
+        86,
+        85
+      ],
+      "expected_ids": [
+        871,
+        365,
+        942,
+        272,
+        572
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "manganese-sulfate-004",
+      "description": "Replace manganese-sulfate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        469,
+        721,
+        1008,
+        172,
+        298
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        86
+      ],
+      "expected_ids": [
+        871,
+        365,
+        942,
+        272,
+        572
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "manganese-sulfate-005",
+      "description": "Replace manganese-sulfate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        469,
+        721,
+        1008,
+        172,
+        298
+      ],
+      "scores": [
+        90,
+        89,
+        88,
+        87,
+        86
+      ],
+      "expected_ids": [
+        871,
+        365,
+        942,
+        272,
+        572
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "niacin-004",
+      "description": "Replace niacin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        585,
+        300,
+        173,
+        369,
+        573
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3836,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacin-005",
+      "description": "Replace niacin in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        647,
+        300,
+        173,
+        1012,
+        1013
+      ],
+      "scores": [
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "expected_ids": [
+        585,
+        300,
+        173,
+        369,
+        573
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3836,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacinamide-001",
+      "description": "Replace niacinamide in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        500,
+        370,
+        945,
+        369
+      ],
+      "scores": [
+        95,
+        95,
+        90,
+        90,
+        85
+      ],
+      "expected_ids": [
+        300,
+        173,
+        1012,
+        1013,
+        500
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacinamide-002",
+      "description": "Replace niacinamide in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        500,
+        370,
+        945,
+        369
+      ],
+      "scores": [
+        95,
+        94,
+        90,
+        89,
+        85
+      ],
+      "expected_ids": [
+        300,
+        173,
+        1012,
+        1013,
+        500
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacinamide-003",
+      "description": "Replace niacinamide in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        500,
+        370,
+        369,
+        658
+      ],
+      "scores": [
+        95,
+        94,
+        90,
+        85,
+        70
+      ],
+      "expected_ids": [
+        300,
+        173,
+        1012,
+        1013,
+        500
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacinamide-004",
+      "description": "Replace niacinamide in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        500,
+        370,
+        945,
+        369
+      ],
+      "scores": [
+        95,
+        94,
+        90,
+        89,
+        85
+      ],
+      "expected_ids": [
+        300,
+        173,
+        1012,
+        1013,
+        500
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "niacinamide-005",
+      "description": "Replace niacinamide in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        1013,
+        500,
+        370,
+        945,
+        369
+      ],
+      "scores": [
+        95,
+        94,
+        92,
+        91,
+        85
+      ],
+      "expected_ids": [
+        300,
+        173,
+        1012,
+        1013,
+        500
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pantothenic-acid-003",
+      "description": "Replace pantothenic-acid in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        568,
+        350,
+        986,
+        632,
+        501
+      ],
+      "scores": [
+        88,
+        86,
+        84,
+        82,
+        80
+      ],
+      "expected_ids": [
+        589,
+        301,
+        371,
+        1014,
+        986
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.3333,
+      "ndcg": 0.1696,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "potassium-iodide-001",
+      "description": "Replace potassium-iodide in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        293,
+        899,
+        194,
+        224,
+        256
+      ],
+      "scores": [
+        78,
+        72,
+        72,
+        72,
+        72
+      ],
+      "expected_ids": [
+        293,
+        878,
+        786,
+        375,
+        376
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-iodide-002",
+      "description": "Replace potassium-iodide in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        293,
+        899,
+        194,
+        224,
+        256
+      ],
+      "scores": [
+        80,
+        75,
+        75,
+        75,
+        75
+      ],
+      "expected_ids": [
+        293,
+        878,
+        786,
+        375,
+        376
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-iodide-003",
+      "description": "Replace potassium-iodide in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        293,
+        899,
+        194,
+        224,
+        256
+      ],
+      "scores": [
+        85,
+        75,
+        74,
+        73,
+        72
+      ],
+      "expected_ids": [
+        293,
+        878,
+        786,
+        375,
+        376
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-iodide-004",
+      "description": "Replace potassium-iodide in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        293,
+        899,
+        194,
+        224,
+        256
+      ],
+      "scores": [
+        85,
+        75,
+        75,
+        75,
+        75
+      ],
+      "expected_ids": [
+        293,
+        878,
+        786,
+        375,
+        376
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "potassium-iodide-005",
+      "description": "Replace potassium-iodide in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        293,
+        899,
+        194,
+        224,
+        256
+      ],
+      "scores": [
+        85,
+        75,
+        74,
+        73,
+        72
+      ],
+      "expected_ids": [
+        293,
+        878,
+        786,
+        375,
+        376
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-001",
+      "description": "Replace pyridoxine-hydrochloride in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        710,
+        1019,
+        177,
+        576,
+        502
+      ],
+      "scores": [
+        95,
+        95,
+        94,
+        94,
+        94
+      ],
+      "expected_ids": [
+        576,
+        177,
+        948,
+        502,
+        377
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 0.3333,
+      "ndcg": 0.4469,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-002",
+      "description": "Replace pyridoxine-hydrochloride in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        710,
+        1019,
+        177,
+        576,
+        502
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        710,
+        948,
+        502,
+        377,
+        1019
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6844,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-003",
+      "description": "Replace pyridoxine-hydrochloride in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        710,
+        1019,
+        177,
+        502,
+        576
+      ],
+      "scores": [
+        95,
+        95,
+        93,
+        93,
+        93
+      ],
+      "expected_ids": [
+        576,
+        177,
+        948,
+        502,
+        377
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 0.3333,
+      "ndcg": 0.4469,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-004",
+      "description": "Replace pyridoxine-hydrochloride in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        710,
+        1019,
+        177,
+        576,
+        502
+      ],
+      "scores": [
+        95,
+        94,
+        92,
+        91,
+        90
+      ],
+      "expected_ids": [
+        576,
+        177,
+        948,
+        502,
+        377
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 0.3333,
+      "ndcg": 0.4469,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-005",
+      "description": "Replace pyridoxine-hydrochloride in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        710,
+        1019,
+        177,
+        502,
+        576
+      ],
+      "scores": [
+        95,
+        95,
+        93,
+        93,
+        93
+      ],
+      "expected_ids": [
+        576,
+        177,
+        948,
+        502,
+        377
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 0.3333,
+      "ndcg": 0.4469,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-003",
+      "description": "Replace riboflavin in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-004",
+      "description": "Replace riboflavin in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-005",
+      "description": "Replace riboflavin in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-006",
+      "description": "Replace riboflavin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-007",
+      "description": "Replace riboflavin in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-008",
+      "description": "Replace riboflavin in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "riboflavin-009",
+      "description": "Replace riboflavin in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [],
+      "scores": [],
+      "expected_ids": [
+        590,
+        303,
+        178,
+        309,
+        379
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "sodium-selenite-001",
+      "description": "Replace sodium-selenite in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        653,
+        304,
+        902,
+        591,
+        472
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        386,
+        472,
+        304,
+        952,
+        380
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3452,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-selenite-002",
+      "description": "Replace sodium-selenite in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        653,
+        304,
+        902,
+        591,
+        472
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        386,
+        472,
+        304,
+        952,
+        380
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3452,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-selenite-003",
+      "description": "Replace sodium-selenite in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        653,
+        304,
+        902,
+        591,
+        472
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        386,
+        472,
+        304,
+        952,
+        380
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3452,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-selenite-004",
+      "description": "Replace sodium-selenite in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        653,
+        304,
+        902,
+        591,
+        472
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        386,
+        472,
+        304,
+        952,
+        380
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3452,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sodium-selenite-005",
+      "description": "Replace sodium-selenite in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        653,
+        304,
+        902,
+        591,
+        472
+      ],
+      "scores": [
+        85,
+        85,
+        85,
+        85,
+        85
+      ],
+      "expected_ids": [
+        386,
+        472,
+        304,
+        952,
+        380
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.5,
+      "ndcg": 0.3452,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "thiamin-003",
+      "description": "Replace thiamin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        658,
+        394
+      ],
+      "scores": [
+        95,
+        94,
+        92,
+        90,
+        89
+      ],
+      "expected_ids": [
+        1033,
+        394,
+        593,
+        658,
+        956
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 0.25,
+      "ndcg": 0.2773,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "thiamin-004",
+      "description": "Replace thiamin in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        658,
+        307
+      ],
+      "scores": [
+        95,
+        94,
+        92,
+        90,
+        89
+      ],
+      "expected_ids": [
+        393,
+        1033,
+        593,
+        305,
+        307
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6844,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "thiamine-mononitrate-001",
+      "description": "Replace thiamine-mononitrate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        307,
+        1033
+      ],
+      "scores": [
+        88,
+        88,
+        88,
+        88,
+        87
+      ],
+      "expected_ids": [
+        393,
+        394,
+        305,
+        307,
+        956
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6992,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "thiamine-mononitrate-002",
+      "description": "Replace thiamine-mononitrate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        307,
+        1033
+      ],
+      "scores": [
+        88,
+        88,
+        87,
+        87,
+        85
+      ],
+      "expected_ids": [
+        393,
+        394,
+        305,
+        183,
+        956
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "thiamine-mononitrate-003",
+      "description": "Replace thiamine-mononitrate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        307,
+        1033
+      ],
+      "scores": [
+        88,
+        88,
+        87,
+        87,
+        86
+      ],
+      "expected_ids": [
+        1033,
+        394,
+        593,
+        657,
+        956
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 0.2,
+      "ndcg": 0.1312,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "thiamine-mononitrate-004",
+      "description": "Replace thiamine-mononitrate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        307,
+        1033
+      ],
+      "scores": [
+        88,
+        88,
+        87,
+        87,
+        86
+      ],
+      "expected_ids": [
+        393,
+        394,
+        305,
+        307,
+        956
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6992,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "thiamine-mononitrate-005",
+      "description": "Replace thiamine-mononitrate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        393,
+        305,
+        183,
+        307,
+        1033
+      ],
+      "scores": [
+        88,
+        88,
+        87,
+        87,
+        85
+      ],
+      "expected_ids": [
+        393,
+        394,
+        305,
+        307,
+        956
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6992,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-a-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137364 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-a-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137364 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-a-005",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137367 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-a-006",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137366 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-a-007",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 137366 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-a-acetate-001",
+      "description": "Replace vitamin-a-acetate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        743,
+        378,
+        711,
+        306,
+        1036
+      ],
+      "scores": [
+        85,
+        83,
+        82,
+        81,
+        80
+      ],
+      "expected_ids": [
+        743,
+        407,
+        378,
+        669,
+        703
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-a-acetate-002",
+      "description": "Replace vitamin-a-acetate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        378,
+        711,
+        306,
+        474,
+        1036
+      ],
+      "scores": [
+        85,
+        82,
+        80,
+        80,
+        80
+      ],
+      "expected_ids": [
+        743,
+        378,
+        398,
+        306,
+        474
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6548,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-a-acetate-003",
+      "description": "Replace vitamin-a-acetate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        378,
+        711,
+        184,
+        1036,
+        474
+      ],
+      "scores": [
+        85,
+        82,
+        80,
+        78,
+        76
+      ],
+      "expected_ids": [
+        743,
+        407,
+        378,
+        669,
+        703
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-a-acetate-004",
+      "description": "Replace vitamin-a-acetate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        743,
+        306,
+        1036,
+        474,
+        550
+      ],
+      "scores": [
+        85,
+        84,
+        83,
+        82,
+        81
+      ],
+      "expected_ids": [
+        743,
+        407,
+        378,
+        669,
+        703
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-a-acetate-005",
+      "description": "Replace vitamin-a-acetate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        743,
+        378,
+        184,
+        711,
+        306
+      ],
+      "scores": [
+        85,
+        83,
+        81,
+        80,
+        79
+      ],
+      "expected_ids": [
+        743,
+        378,
+        398,
+        306,
+        474
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.6844,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b12-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 197053 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b12-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 197052 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-b6-003",
+      "description": "Replace vitamin-b6 in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        502,
+        862,
+        1019,
+        710,
+        177
+      ],
+      "scores": [
+        95,
+        85,
+        80,
+        78,
+        75
+      ],
+      "expected_ids": [
+        1037,
+        400,
+        596,
+        310,
+        502
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-b6-004",
+      "description": "Replace vitamin-b6 in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        502,
+        862,
+        1019,
+        710,
+        177
+      ],
+      "scores": [
+        95,
+        85,
+        80,
+        78,
+        75
+      ],
+      "expected_ids": [
+        1037,
+        400,
+        596,
+        310,
+        502
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-c-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141934 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-c-005",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141934 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-c-006",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141937 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-c-007",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141936 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-c-008",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 141936 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "vitamin-d-001",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 153095 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-d-002",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 153098 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-d-003",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 153097 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-d-004",
+      "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 153097 tokens (including 348 in the response_format schemas.). Please reduce the length of the messages or schemas.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}",
+      "pass": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "returned_ids": [],
+      "scores": [],
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "vitamin-e-003",
+      "description": "Replace vitamin-e in FG-cvs-410537 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        396
+      ],
+      "scores": [
+        90,
+        88,
+        86,
+        84,
+        82
+      ],
+      "expected_ids": [
+        554,
+        403,
+        599,
+        313,
+        478
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-e-004",
+      "description": "Replace vitamin-e in FG-cvs-880579 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        396
+      ],
+      "scores": [
+        89,
+        87,
+        85,
+        83,
+        81
+      ],
+      "expected_ids": [
+        554,
+        403,
+        313,
+        478,
+        703
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-e-005",
+      "description": "Replace vitamin-e in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        396
+      ],
+      "scores": [
+        90,
+        88,
+        86,
+        84,
+        82
+      ],
+      "expected_ids": [
+        554,
+        403,
+        313,
+        478,
+        703
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-e-006",
+      "description": "Replace vitamin-e in FG-walgreens-300413257 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        166
+      ],
+      "scores": [
+        90,
+        88,
+        86,
+        84,
+        82
+      ],
+      "expected_ids": [
+        554,
+        403,
+        313,
+        478,
+        703
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-e-007",
+      "description": "Replace vitamin-e in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        703,
+        746,
+        843,
+        278,
+        166
+      ],
+      "scores": [
+        89,
+        87,
+        85,
+        83,
+        81
+      ],
+      "expected_ids": [
+        554,
+        403,
+        599,
+        313,
+        478
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-k-003",
+      "description": "Replace vitamin-k in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        315,
+        372,
+        834,
+        555,
+        946
+      ],
+      "scores": [
+        90,
+        85,
+        80,
+        78,
+        77
+      ],
+      "expected_ids": [
+        404,
+        600,
+        314,
+        315,
+        479
+      ],
+      "precision": 0.2,
+      "recall": 0.2,
+      "f1": 0.2,
+      "mrr": 1.0,
+      "ndcg": 0.3392,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "vitamin-k-004",
+      "description": "Replace vitamin-k in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        315,
+        372,
+        834,
+        555,
+        946
+      ],
+      "scores": [
+        90,
+        85,
+        80,
+        78,
+        75
+      ],
+      "expected_ids": [
+        404,
+        372,
+        314,
+        315,
+        479
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "zinc-oxide-002",
+      "description": "Replace zinc-oxide in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        615,
+        881,
+        791,
+        748,
+        249
+      ],
+      "scores": [
+        90,
+        85,
+        83,
+        82,
+        80
+      ],
+      "expected_ids": [
+        578,
+        405,
+        280,
+        250,
+        957
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "zinc-oxide-003",
+      "description": "Replace zinc-oxide in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        615,
+        791,
+        881,
+        748,
+        249
+      ],
+      "scores": [
+        90,
+        85,
+        83,
+        82,
+        80
+      ],
+      "expected_ids": [
+        578,
+        405,
+        280,
+        250,
+        957
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "zinc-oxide-004",
+      "description": "Replace zinc-oxide in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        615,
+        881,
+        791,
+        748,
+        249
+      ],
+      "scores": [
+        90,
+        85,
+        82,
+        80,
+        78
+      ],
+      "expected_ids": [
+        578,
+        405,
+        280,
+        250,
+        957
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "zinc-oxide-005",
+      "description": "Replace zinc-oxide in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        615,
+        881,
+        791,
+        748,
+        249
+      ],
+      "scores": [
+        90,
+        85,
+        82,
+        80,
+        78
+      ],
+      "expected_ids": [
+        578,
+        405,
+        280,
+        250,
+        957
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "zinc-oxide-006",
+      "description": "Replace zinc-oxide in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "returned_ids": [
+        615,
+        791,
+        881,
+        748,
+        249
+      ],
+      "scores": [
+        90,
+        85,
+        83,
+        82,
+        80
+      ],
+      "expected_ids": [
+        578,
+        405,
+        280,
+        250,
+        957
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "ascorbic-acid-vitamin-c-001",
+      "description": "Replace ascorbic-acid-vitamin-c in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        503,
+        335,
+        622,
+        236,
+        160
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        160,
+        236,
+        335,
+        982,
+        503
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.8304,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "cyanocobalamin-vitamin-b12-001",
+      "description": "Replace cyanocobalamin-vitamin-b12 in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        935,
+        349,
+        570,
+        631,
+        165
+      ],
+      "scores": [
+        98,
+        98,
+        98,
+        98,
+        98
+      ],
+      "expected_ids": [
+        995,
+        165,
+        499,
+        570,
+        349
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 0.5,
+      "ndcg": 0.5148,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "d-alpha-tocopheryl-acetate-vitamin-e-001",
+      "description": "Replace d-alpha-tocopheryl-acetate-vitamin-e in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        843,
+        166,
+        746,
+        407,
+        1041
+      ],
+      "scores": [
+        85,
+        82,
+        80,
+        78,
+        76
+      ],
+      "expected_ids": [
+        166,
+        746,
+        843,
+        403,
+        313
+      ],
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "dipotassium-phosphate-006",
+      "description": "Replace dipotassium-phosphate in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        786,
+        878,
+        695,
+        514,
+        1017
+      ],
+      "scores": [
+        85,
+        85,
+        75,
+        70,
+        65
+      ],
+      "expected_ids": [
+        997,
+        490,
+        493,
+        878,
+        786
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "l-isoleucine-001",
+      "description": "Replace l-isoleucine in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        707,
+        706,
+        839
+      ],
+      "scores": [
+        85,
+        83,
+        81
+      ],
+      "expected_ids": [
+        706,
+        707,
+        295,
+        839,
+        219
+      ],
+      "precision": 1.0,
+      "recall": 0.6,
+      "f1": 0.75,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "l-leucine-001",
+      "description": "Replace l-leucine in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        839,
+        705,
+        707
+      ],
+      "scores": [
+        85,
+        78,
+        76
+      ],
+      "expected_ids": [
+        705,
+        707,
+        295,
+        808,
+        839
+      ],
+      "precision": 1.0,
+      "recall": 0.6,
+      "f1": 0.75,
+      "mrr": 1.0,
+      "ndcg": 0.7227,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "l-valine-001",
+      "description": "Replace l-valine in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        705,
+        706
+      ],
+      "scores": [
+        85,
+        84
+      ],
+      "expected_ids": [
+        705,
+        706,
+        839,
+        308,
+        221
+      ],
+      "precision": 1.0,
+      "recall": 0.4,
+      "f1": 0.5714,
+      "mrr": 1.0,
+      "ndcg": 0.5531,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "magnesium-citrate-002",
+      "description": "Replace magnesium-citrate in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        813,
+        531,
+        1003,
+        1002,
+        1005
+      ],
+      "scores": [
+        85,
+        80,
+        80,
+        75,
+        70
+      ],
+      "expected_ids": [
+        780,
+        532,
+        442,
+        571,
+        508
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0,
+      "pass": false,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-vitamin-b6-001",
+      "description": "Replace pyridoxine-hydrochloride-vitamin-b6 in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        651,
+        948,
+        502,
+        377,
+        576
+      ],
+      "scores": [
+        95,
+        95,
+        94,
+        94,
+        93
+      ],
+      "expected_ids": [
+        576,
+        651,
+        177,
+        502,
+        377
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.786,
+      "pass": true,
+      "difficulty": "easy",
+      "error": null
+    },
+    {
+      "case_id": "retinyl-palmitate-vitamin-a-001",
+      "description": "Replace retinyl-palmitate-vitamin-a in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        660,
+        184,
+        743,
+        378,
+        703
+      ],
+      "scores": [
+        90,
+        85,
+        80,
+        75,
+        70
+      ],
+      "expected_ids": [
+        743,
+        660,
+        949,
+        378,
+        703
+      ],
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1": 0.8,
+      "mrr": 1.0,
+      "ndcg": 0.786,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    },
+    {
+      "case_id": "sea-salt-001",
+      "description": "Replace sea-salt in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "returned_ids": [
+        880,
+        612,
+        214,
+        486,
+        327
+      ],
+      "scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ],
+      "expected_ids": [
+        486,
+        880,
+        241,
+        439,
+        696
+      ],
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "mrr": 1.0,
+      "ndcg": 0.4852,
+      "pass": true,
+      "difficulty": "medium",
+      "error": null
+    }
+  ]
+}

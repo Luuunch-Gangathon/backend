@@ -33,6 +33,7 @@ import json
 import logging
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -265,6 +266,30 @@ async def main() -> None:
                     "specs — scoped to 5 target companies (Nature's Nutrition, PRIME HYDRATION+, "
                     "One A Day, New Chapter, Liquid I.V.) where the current supplier is PureBulk."
                 ),
+                "metadata": {
+                    "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+                    "oracle": {
+                        "provider": "anthropic",
+                        "model": ORACLE_MODEL,
+                        "max_tokens": ORACLE_MAX_TOKENS,
+                        "temperature": None,
+                        "temperature_note": "Omitted — deprecated for claude-opus-4-7 (model is deterministic by default).",
+                        "reasoning_effort": None,
+                    },
+                    "prompts": {
+                        "system": "app/prompts/system/compliance.j2",
+                        "user": "app/prompts/user/compliance_rank.j2",
+                        "json_format_hint_inline": True,
+                    },
+                    "scope": {
+                        "target_companies": TARGET_COMPANIES,
+                        "target_supplier": TARGET_SUPPLIER,
+                    },
+                    "ranking_config": {
+                        "top_x": TOP_X,
+                        "candidate_pool_cap": CANDIDATE_POOL_CAP,
+                    },
+                },
                 "cases": cases,
                 "_field_reference": {
                     "case_id": "Unique string identifier. Format: '<material>-<NNN>'.",

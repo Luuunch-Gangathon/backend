@@ -35,6 +35,20 @@ from app.schemas import SubstituteProposal
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# AI model configuration — single source of truth for the compliance engine.
+# scripts/benchmark.py imports these to record which model/settings produced
+# each results.json run, so any change here flows through to the benchmark
+# metadata automatically.
+# ---------------------------------------------------------------------------
+PROVIDER = "openai"
+MODEL = "gpt-4o"
+TEMPERATURE = 0
+RESPONSE_FORMAT = "structured_output"   # OpenAI beta.parse with Pydantic schema
+REASONING_EFFORT = None                  # gpt-4o doesn't support reasoning_effort
+SYSTEM_PROMPT_REF = "app/prompts/system/compliance.j2"
+USER_PROMPT_REF = "app/prompts/user/compliance_rank.j2"
+
 _client = None  # lazily initialized; replaced by tests via patch.object(compliance, "_client", mock)
 
 _DB_ID_RE = re.compile(r"^rm_db_(\d+)$")
@@ -96,13 +110,13 @@ async def check_compliance(
     )
 
     response = await _client.beta.chat.completions.parse(
-        model="gpt-4o",
+        model=MODEL,
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
         response_format=_RankingResponse,
-        temperature=0,
+        temperature=TEMPERATURE,
     )
 
     parsed = response.choices[0].message.parsed
