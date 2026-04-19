@@ -5,12 +5,12 @@ from __future__ import annotations
 from unittest.mock import patch
 
 
-def _fake_foodb(name: str, context: dict) -> list[dict]:
+def _fake_supplier_website(name: str, context: dict) -> list[dict]:
     return [
         {
             "property": "source_origin",
             "value": "plant",
-            "source_url": "https://foodb.ca/compounds/FDB001234",
+            "source_url": "https://purebulk.com/products/magnesium-stearate",
             "raw_excerpt": "plant-derived",
         }
     ]
@@ -23,12 +23,11 @@ def _fake_empty(name: str, context: dict) -> list[dict]:
 def test_full_pipeline():
     from app.agents.searchEngine import enrich
 
-    fake_handlers = {s: _fake_empty for s in [
-        "supplier_website", "pubchem", "chebi", "open_food_facts",
-        "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
-        "web_search", "llm_knowledge", "llm_general_fallback",
-    ]}
-    fake_handlers["foodb"] = _fake_foodb
+    fake_handlers = {
+        "supplier_website": _fake_supplier_website,
+        "llm_knowledge": _fake_empty,
+        "llm_general_fallback": _fake_empty,
+    }
 
     raw_fields = {
         "Id": 42,
@@ -45,18 +44,18 @@ def test_full_pipeline():
     assert result.company_id == "co_db_52"
     assert result.supplier_ids == ["sup_db_12", "sup_db_7"]
     assert result.completeness == 1
-    assert result.properties["source_origin"].source_name == "foodb"
+    assert result.properties["source_origin"].source_name == "supplier_website"
     assert result.properties["source_origin"].confidence == "verified"
 
 
 def test_full_pipeline_unknown_material():
     from app.agents.searchEngine import enrich
 
-    fake_handlers = {s: _fake_empty for s in [
-        "supplier_website", "pubchem", "chebi", "foodb", "open_food_facts",
-        "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
-        "web_search", "llm_knowledge",
-    ]}
+    fake_handlers = {
+        "supplier_website": _fake_empty,
+        "llm_knowledge": _fake_empty,
+        "llm_general_fallback": _fake_empty,
+    }
 
     raw_fields = {
         "Id": 999,
