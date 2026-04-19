@@ -34,7 +34,6 @@ Edit `compliance_cases.json`. Each case needs:
   "product_id": 90,
   "raw_material_id": 123,
   "expected_ids": [456, 789],
-  "excluded_ids": [],
   "ideal_ranking": [456, 789],
   "difficulty": "easy"
 }
@@ -47,18 +46,17 @@ To know what expected results should be: run compliance manually once and record
 
 | Metric | What it measures |
 |--------|-----------------|
-| **Precision@5** | Of the top-5 returned substitutes, what fraction were correct? |
-| **Recall@5** | Of all expected substitutes, what fraction did we find in top-5? |
-| **F1@5** | Harmonic mean of Precision and Recall — balanced single score |
+| **Precision@K** | Of the top-K returned substitutes, what fraction were correct? |
+| **Recall@K** | Of all expected substitutes, what fraction did we find in top-K? |
+| **F1@K** | Harmonic mean of Precision and Recall — balanced single score |
 | **MRR** | Mean Reciprocal Rank — how quickly does a correct answer appear? 1.0 = first position |
-| **NDCG@5** | Ranking quality — penalizes correct answers ranked too low |
-| **Exclusion Accuracy** | Did we avoid all known-bad substitutes? 1.0 = never suggested a bad one |
+| **NDCG@K** | Ranking quality — penalizes correct answers ranked too low |
+
+Default K=3. Override: `python scripts/benchmark.py --k 4`
 
 ## What "pass" means
 
-A case passes if:
-1. At least one expected substitute appeared in the results (recall > 0)
-2. No excluded substitutes appeared in the results
+A case passes if at least one expected substitute appeared in the top-K results (recall > 0).
 
 ## Expected results shape
 
