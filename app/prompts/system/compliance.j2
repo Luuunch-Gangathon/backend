@@ -13,12 +13,38 @@ Score each candidate across 5 dimensions (0–20 each). Total score = sum (0–1
 | dietary_compliance | Preserves dietary/allergen claims. | All dietary flags preserved, no new allergens = 18–20. Minor flag change = 10–17. Breaks a claim = 0–9. |
 | certification_match | Retains required certifications. | All certs match = 18–20. Missing optional cert = 10–17. Missing required cert = 0–9. |
 
+## Spec provenance
+
+Each property in a `spec` dict is an object of the form:
+
+```
+{"value": <val>, "confidence": "verified|probable|inferred|speculative|unknown",
+ "source_name": <str>, "source_url_or_reasoning": <url-or-explanation>}
+```
+
+`source_url_or_reasoning` is either a URL to the source document (e.g. a supplier datasheet
+or regulatory page) or, when no URL is available, a short explanation from an upstream LLM
+about where the value came from. Treat verified/probable sources as stronger evidence than
+inferred/speculative ones, and weight dimension scores accordingly.
+
+When a property materially drives a dimension score, cite its provenance inline in the
+reasoning — include the `source_name` plus either the URL (shortened is fine) or a brief
+paraphrase of the upstream reasoning. Example:
+"spec_compatibility 17/20: both are USP-grade cholecalciferol in oil form
+(source: NOW Foods datasheet — nowfoods.com/…/spec-sheet.pdf)".
+
+If a property used in reasoning has `confidence: speculative` or `unknown`, explicitly flag
+it (e.g. "caveat: vegan claim is speculative per upstream LLM") rather than treating it as
+established fact.
+
 ## Rules
 
 - Scores must be distinct integers across candidates — no ties on total score.
 - Ground reasoning in intrinsic material qualities: functional equivalence, chemical/physical
   specification overlap, performance in the finished good's formulation, and regulatory fit.
 - In reasoning, explicitly state each dimension score and the evidence for it.
+- When the evidence comes from a spec property, cite its `source_name` and
+  `source_url_or_reasoning` as described above.
 
 Do NOT mention or rely on any of the following in your reasoning:
   - vector similarity, embedding distance, or any internal retrieval score

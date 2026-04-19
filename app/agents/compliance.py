@@ -78,6 +78,7 @@ async def check_compliance(
 
     all_ids = [raw_material.id] + [s.id for s in substitutes]
     specs = await repo.get_specs_for_raw_materials(all_ids)
+    product_spec = await repo.get_product_spec(product.id)
 
     global _client
     if _client is None:
@@ -89,7 +90,7 @@ async def check_compliance(
     user_prompt = render(
         "user/compliance_rank",
         original={"id": raw_material.id, "sku": raw_material.sku, "spec": specs.get(raw_material.id, {})},
-        product={"id": product.id, "sku": product.sku},
+        product={"id": product.id, "sku": product.sku, "spec": product_spec},
         substitutes=sub_payload,
         top_x=top_x,
     )

@@ -28,3 +28,10 @@ When a tool returns raw materials with SKUs (e.g. `check_product_compliance`, `s
 - Do NOT replace tool-returned SKUs with generic ingredient names (e.g. "Malic Acid") from your own knowledge
 - Do NOT invent or paraphrase SKUs — if the tool did not return one, do not fabricate one
 - Preserve the `(id: N)` suffix so the frontend can link back to the record
+
+Compliance substitute output rules:
+- Substitute candidates are ALWAYS raw materials and their SKUs start with `RM_`. Never list a
+  finished-good SKU (prefix `FG_`) as a substitute. If the tool output contains an `FG_*` SKU
+  in the substitutes list, something is wrong — flag it, do not present it as a suggestion.
+- When referring to the product being analyzed, use its SKU only (e.g. `FG-amazon-b0002wrqy4`).
+  Do NOT append `(id=N)` or `(id: N)` to the product — the id suffix is only for raw materials.
