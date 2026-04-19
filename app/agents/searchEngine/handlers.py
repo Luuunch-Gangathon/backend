@@ -7,7 +7,6 @@ Each dict in the returned list must have:
     - property: str (which property this value is for)
     - value: Any (the property value)
     - source_url: str | None (citable URL)
-    - raw_excerpt: str | None (text the value was extracted from)
 
 All handlers are stubs returning empty lists. Replace with real
 implementations one by one. The engine and config do not change.
@@ -35,6 +34,9 @@ from app.agents.searchEngine.sources.llm_knowledge import (
 from app.agents.searchEngine.sources.llm_general_fallback import (
     llm_general_fallback_enrich as _llm_general_fallback_enrich_real,
 )
+from app.agents.searchEngine.sources.llm_enrichment import (
+    llm_enrichment_enrich as _llm_enrichment_enrich_real,
+)
 from app.agents.searchEngine.sources.web_search import (
     web_search_enrich as _web_search_enrich_real,
 )
@@ -59,4 +61,5 @@ SOURCE_HANDLERS: dict[str, callable] = {
     "web_search": _web_search_enrich_real,
     "llm_knowledge": _llm_knowledge_enrich_real,
     "llm_general_fallback": _llm_general_fallback_enrich_real,
+    "llm_enrichment": _llm_enrichment_enrich_real,
 }

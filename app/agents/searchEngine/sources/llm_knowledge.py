@@ -92,7 +92,6 @@ def llm_knowledge_enrich(name: str, context: dict) -> list[dict]:
                         "property": prop,
                         "value": value,
                         "source_url": None,
-                        "raw_excerpt": "LLM knowledge (no external source)",
                     }
                 )
 

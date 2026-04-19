@@ -1,27 +1,20 @@
 """SearchEngine
 
-Enriches raw materials with specs, then upgrades their embeddings.
+Enriches raw materials and finished products with specs, then upgrades their embeddings.
 
-Two entry points:
-  run_all()          — scheduled: enrich all materials that still have no spec
-  run_one(rm_name)   — on-demand: enrich a single material (from chat or frontend)
+Entry points:
+  run_all()              — scheduled: enrich all materials that still have no spec
+  run_one(rm_name)       — on-demand: enrich a single material
+  run_all_products()     — scheduled: enrich all finished products without spec
+  run_one_product(sku)   — on-demand: enrich a single product
 
-Flow per material:
-  Raw Material Name → searchEngine waterfall (web sources → LLM knowledge fallback)
-  → rag.store_embedding()  (upserts spec + rich vector, overwrites name-only baseline)
+Flow per entity:
+  Name → searchEngine waterfall (web sources → LLM knowledge fallback)
+  → rag.store_embedding()  (upserts spec + rich vector)
 
-Name-only baseline embeddings are seeded on startup by rag.seed_name_only_embeddings()
-before this engine runs. store_embedding() overwrites them with richer vectors once
-enrichment results are available.
-
-The underlying searchEngine tries sources in trust-tier order:
-  verified (supplier websites, ChEBI, FooDB, NIH, FDA, EFSA)
-  → probable (retail pages)
-  → inferred (LLM knowledge, web search)
-  → speculative (LLM general fallback)
-
-Without web access, LLM knowledge (Claude Haiku) fires automatically as the inferred
-tier, giving usable spec data for embedding quality testing.
+Raw materials use config.py (8 properties, 12 sources).
+Products use product_config.py (5 properties: dietary_flags, allergens,
+certifications, regulatory_status, form_grade).
 
 Writes to:
   - substitution_groups (spec + embedding columns via rag.store_embedding)
@@ -30,53 +23,56 @@ Writes to:
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import time
 from functools import partial
 
-from app.agents.searchEngine.engine import run_enrichment
+from app.agents.searchEngine.engine import (
+    run_material_enrichment,
+    run_material_enrichment_shortened,
+    run_product_enrichment,
+    run_product_enrichment_shortened,
+)
 from app.agents.searchEngine.models import EnrichmentResult
 from app.data import rag
 
 logger = logging.getLogger(__name__)
 
 
-async def run_all() -> None:
-    """Enrich all raw materials that have a name-only embedding but no spec yet.
+# ─── Raw material enrichment ─────────────────────────────────────────────────
 
-    Called by the hourly pipeline scheduler. Materials added after the last run
-    are caught automatically since seed_name_only_embeddings() runs on startup.
-    """
+
+async def run_all() -> None:
+    """Enrich all raw materials that have a name-only embedding but no spec yet."""
     names = await rag.get_unenriched_names()
-    logger.info("SearchEngine: enriching %d materials (capped at 10 for testing)", len(names))
+    logger.info("SearchEngine: enriching %d materials", len(names))
     if not names:
         return
 
+    total = len(names)
     ok, fail = 0, 0
-    for name in names:
+    for i, name in enumerate(names, 1):
         try:
             await _enrich_and_embed(name)
             ok += 1
         except Exception:
             fail += 1
             logger.exception("SearchEngine: failed for %r — skipping", name)
+        logger.info("SearchEngine: progress %d/%d (ok=%d, fail=%d)", i, total, ok, fail)
 
     logger.info("SearchEngine: done — %d ok, %d failed", ok, fail)
 
 
 async def run_one(raw_material_name: str) -> None:
-    """Enrich and embed a single raw material. Called on-demand from chat or frontend."""
+    """Enrich and embed a single raw material."""
     logger.info("SearchEngine: on-demand enrich for %r", raw_material_name)
     await _enrich_and_embed(raw_material_name)
     logger.info("SearchEngine: done for %r", raw_material_name)
 
 
 async def _enrich_and_embed(name: str) -> None:
-    """Run the enrichment waterfall for one material, then store a rich embedding.
-
-    run_enrichment is synchronous (blocking HTTP + LLM calls), so it runs in a
-    thread executor to avoid blocking the async event loop.
-    """
+    """Run the material enrichment waterfall, then store a rich embedding."""
     from app.data import db
 
     t0 = time.monotonic()
@@ -87,7 +83,6 @@ async def _enrich_and_embed(name: str) -> None:
         "supplier_ids": [],
     }
 
-    # Resolve supplier names so supplier_website handler can find product pages
     async with db.get_conn() as conn:
         row = await conn.fetchrow(
             """
@@ -117,16 +112,194 @@ async def _enrich_and_embed(name: str) -> None:
 
     loop = asyncio.get_event_loop()
     result: EnrichmentResult = await loop.run_in_executor(
-        None, partial(run_enrichment, name, context)
+        None, partial(run_material_enrichment, name, context) # todo testing OFF
     )
     elapsed = time.monotonic() - t0
 
     enriched_result = _to_store_format(result, elapsed)
+    logger.info(
+        "DB payload for %r:\n%s",
+        name, json.dumps(enriched_result, indent=2, default=str),
+    )
     await rag.store_embedding(enriched_result)
     logger.info(
-        "SearchEngine: stored embedding for %r (completeness %d/%d, %.1fs)",
+        "Stored embedding for %r (completeness %d/%d, %.1fs)",
         name, result.completeness, result.total_properties, elapsed,
     )
+
+
+# ─── Product enrichment ──────────────────────────────────────────────────────
+
+
+async def run_all_products() -> None:
+    """Enrich all finished products that don't have a spec yet.
+
+    Queries the products table for finished goods, extracts a human-readable
+    name from the SKU, and runs the product enrichment waterfall.
+    """
+    from app.data import db
+
+    async with db.get_conn() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT p.id, p.sku, c.name AS company_name
+            FROM products p
+            JOIN companies c ON p.company_id = c.id
+            WHERE p.type = 'finished-good'
+              AND p.spec IS NULL
+            """,
+        )
+
+    logger.info("SearchEngine: enriching %d products", len(rows))
+    if not rows:
+        return
+
+    ok, fail = 0, 0
+    for row in rows:
+        try:
+            await _enrich_product_and_store(
+                product_sku=row["sku"],
+                brand=row["company_name"],
+                company_id=str(row["id"]),
+            )
+            ok += 1
+        except Exception:
+            fail += 1
+            logger.exception(
+                "SearchEngine: product enrichment failed for %r — skipping",
+                row["sku"],
+            )
+
+    logger.info("SearchEngine: products done — %d ok, %d failed", ok, fail)
+
+
+async def run_one_product(product_sku: str) -> None:
+    """Enrich and embed a single finished product by SKU."""
+    from app.data import db
+
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            """
+            SELECT p.id, p.sku, c.name AS company_name
+            FROM products p
+            JOIN companies c ON p.company_id = c.id
+            WHERE p.sku = $1 AND p.type = 'finished-good'
+            """,
+            product_sku,
+        )
+
+    if not row:
+        logger.warning("SearchEngine: product %r not found", product_sku)
+        return
+
+    logger.info("SearchEngine: on-demand product enrich for %r", product_sku)
+    await _enrich_product_and_store(
+        product_sku=row["sku"],
+        brand=row["company_name"],
+        company_id=str(row["id"]),
+    )
+    logger.info("SearchEngine: done for product %r", product_sku)
+
+
+async def _enrich_product_and_store(
+    product_sku: str,
+    brand: str,
+    company_id: str,
+) -> None:
+    """Run the product enrichment waterfall, then store spec on the products table."""
+    from app.data import db
+
+    t0 = time.monotonic()
+
+    product_name = _product_name_from_sku(product_sku, brand)
+
+    context = {
+        "material_id": product_sku,
+        "raw_sku": product_sku,
+        "company_id": company_id,
+        "supplier_ids": [],
+        "brand": brand,
+    }
+
+    loop = asyncio.get_event_loop()
+    result: EnrichmentResult = await loop.run_in_executor(
+        None, partial(run_product_enrichment_shortened, product_name, context),
+    )
+    elapsed = time.monotonic() - t0
+
+    enriched_result = _to_store_format(result, elapsed)
+    spec_json = json.dumps(enriched_result["material"]["properties"])
+    logger.info(
+        "DB payload for product %r:\n%s",
+        product_sku, json.dumps(enriched_result, indent=2, default=str),
+    )
+
+    async with db.get_conn() as conn:
+        await conn.execute(
+            "UPDATE products SET spec = $1 WHERE sku = $2",
+            spec_json, product_sku,
+        )
+
+    logger.info(
+        "Stored product spec for %r (completeness %d/%d, %.1fs)",
+        product_sku, result.completeness, result.total_properties, elapsed,
+    )
+
+
+def _product_name_from_sku(sku: str, brand: str) -> str:
+    """Extract a human-readable product name from a finished-good SKU.
+
+    FG-walmart-10324636                → "Equate" (just brand)
+    FG-thrive-market-orgain-grass-fed-whey-protein-powder-vanilla-bean
+        → "orgain grass fed whey protein powder vanilla bean"
+    FG-the-vitamin-shoppe-vs-2453      → "The Vitamin Shoppe" (just brand)
+    FG-vitacost-cure-hydration-...     → "cure hydration ..."
+    """
+    # Known retailer prefixes (multi-word joined by hyphen)
+    _RETAILER_PREFIXES = [
+        "the-vitamin-shoppe",
+        "thrive-market",
+        "sams-club",
+        "walmart",
+        "amazon",
+        "target-a",
+        "target",
+        "cvs",
+        "walgreens",
+        "costco",
+        "iherb",
+        "gnc",
+        "vitacost",
+    ]
+
+    remainder = sku
+    if remainder.startswith("FG-"):
+        remainder = remainder[3:]
+
+    # Strip retailer prefix
+    for prefix in _RETAILER_PREFIXES:
+        if remainder.startswith(prefix + "-"):
+            remainder = remainder[len(prefix) + 1:]
+            break
+        elif remainder == prefix:
+            remainder = ""
+            break
+
+    # Replace hyphens with spaces
+    name_candidate = remainder.replace("-", " ").strip()
+
+    # If what remains is just a numeric/hex ID or empty, use brand only
+    if not name_candidate or (len(name_candidate.split()) <= 1 and name_candidate.replace(" ", "").isalnum()):
+        return brand
+
+    # Don't prepend brand if the name already starts with it
+    if name_candidate.lower().startswith(brand.lower()):
+        return name_candidate
+
+    return f"{brand} {name_candidate}"
+
+
+# ─── Shared utilities ────────────────────────────────────────────────────────
 
 
 def _to_store_format(result: EnrichmentResult, elapsed: float) -> dict:
@@ -139,7 +312,7 @@ def _to_store_format(result: EnrichmentResult, elapsed: float) -> dict:
                     "value": pr.value,
                     "confidence": pr.confidence,
                     "source_name": pr.source_name,
-                    "source_url": pr.source_url
+                    "source_url_or_reasoning": pr.source_url_or_reasoning
                 }
                 for prop, pr in result.properties.items()
             },

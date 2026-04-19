@@ -57,7 +57,6 @@ def test_successful_extraction_returns_properties():
     allergens_result = next(r for r in results if r["property"] == "allergens")
     assert allergens_result["value"] == {"contains": [], "free_from": ["gluten"]}
     assert allergens_result["source_url"] == "https://example-ingredients.com/magnesium-stearate"
-    assert allergens_result["raw_excerpt"] is not None
 
 
 def test_result_has_all_required_keys():
@@ -81,7 +80,6 @@ def test_result_has_all_required_keys():
     assert "property" in r
     assert "value" in r
     assert "source_url" in r
-    assert "raw_excerpt" in r
 
 
 # ---------------------------------------------------------------------------
@@ -252,27 +250,6 @@ def test_web_search_enrich_no_api_key_returns_empty(monkeypatch):
 # ---------------------------------------------------------------------------
 # Raw excerpt length
 # ---------------------------------------------------------------------------
-
-def test_raw_excerpt_is_max_200_chars():
-    from app.agents.searchEngine.sources.web_search import web_search_enrich
-
-    long_markdown = "A" * 500
-    extracted = {"source_origin": "plant"}
-
-    with patch(f"{_MOD}.search",
-               return_value=[_search_result("https://example.com/product")],
-               ), patch(f"{_MOD}.extract_domain",
-                        return_value="example.com",
-                        ), patch(f"{_MOD}.asyncio.run",
-                                 return_value=long_markdown,
-                                 ), patch(f"{_MOD}._extract_properties_from_page",
-                                          return_value=extracted,
-                                          ):
-        results = web_search_enrich("magnesium stearate", {})
-
-    assert len(results) == 1
-    assert len(results[0]["raw_excerpt"]) == 200
-
 
 # ---------------------------------------------------------------------------
 # _extract_properties_from_page unit tests (with mock Anthropic)

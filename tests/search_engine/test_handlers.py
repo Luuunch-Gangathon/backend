@@ -33,7 +33,7 @@ def test_stub_handler_returns_list():
 def test_stub_handler_result_items_have_required_keys():
     from app.agents.searchEngine.handlers import SOURCE_HANDLERS
 
-    required_keys = {"property", "value", "source_url", "raw_excerpt"}
+    required_keys = {"property", "value"}
     for name, handler in SOURCE_HANDLERS.items():
         results = handler("magnesium stearate", {})
         for item in results:

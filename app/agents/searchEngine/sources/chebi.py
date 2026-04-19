@@ -124,13 +124,11 @@ def chebi_enrich(name: str, context: dict) -> list[dict]:
     label: str = doc.get("label", name)
 
     source_url = _CHEBI_PAGE.format(chebi_id=chebi_id) if chebi_id else None
-    raw_excerpt = f"ChEBI: {label} — roles: {', '.join(roles)}"
 
     return [
         {
             "property": "functional_role",
             "value": roles,
             "source_url": source_url,
-            "raw_excerpt": raw_excerpt,
         }
     ]

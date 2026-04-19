@@ -200,18 +200,6 @@ class TestNihDsldEnrichSuccess:
         assert "NSF Certified" in cert["value"]
         assert cert["source_url"] is not None
 
-    def test_raw_excerpt_present(self):
-        nih_dsld_enrich = self._import()
-        products = [_dsld_product(["Vegan", "GMP"])]
-        mock_resp = _make_response(_dsld_products_response(products))
-
-        with patch("httpx.get", return_value=mock_resp):
-            results = nih_dsld_enrich("magnesium", {})
-
-        for r in results:
-            assert r["raw_excerpt"] is not None
-            assert len(r["raw_excerpt"]) > 0
-
     def test_aggregates_across_products(self):
         """Vegan on product 1, GMP on product 2 — both appear in output."""
         nih_dsld_enrich = self._import()

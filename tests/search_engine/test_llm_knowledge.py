@@ -75,22 +75,6 @@ def test_source_url_is_always_none():
         assert r["source_url"] is None
 
 
-def test_raw_excerpt_is_always_llm_knowledge_string():
-    from app.agents.searchEngine.sources.llm_knowledge import llm_knowledge_enrich
-
-    fake_resp = _make_response(_valid_llm_json())
-
-    with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}), \
-         patch("app.agents.searchEngine.sources.llm_knowledge.anthropic.Anthropic") as MockClient, \
-         patch("app.agents.searchEngine.sources.llm_knowledge.track_usage"):
-        MockClient.return_value.messages.create.return_value = fake_resp
-        results = llm_knowledge_enrich("magnesium stearate", {})
-
-    assert len(results) > 0
-    for r in results:
-        assert r["raw_excerpt"] == "LLM knowledge (no external source)"
-
-
 # ---------------------------------------------------------------------------
 # Price is always excluded
 # ---------------------------------------------------------------------------

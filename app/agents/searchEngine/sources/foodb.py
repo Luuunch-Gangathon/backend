@@ -203,13 +203,10 @@ def foodb_enrich(name: str, context: dict) -> list[dict]:
     food_list_str = ", ".join(food_sources[:5])
     if len(food_sources) > 5:
         food_list_str += f" (and {len(food_sources) - 5} more)"
-    raw_excerpt = f"Found in: {food_list_str} ({origin} sources)"
-
     return [
         {
             "property": "source_origin",
             "value": origin,
             "source_url": source_url,
-            "raw_excerpt": raw_excerpt,
         }
     ]

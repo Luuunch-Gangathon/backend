@@ -1,0 +1,1168 @@
+[
+  {
+    "raw_material_name": "medium-chain-triglycerides",
+    "material": {
+      "material_id": "ing_db_366",
+      "raw_sku": "RM-C17-medium-chain-triglycerides-8f09d80d",
+      "normalized_name": "medium chain triglycerides",
+      "company_id": "co_db_17",
+      "supplier_ids": [
+        "sup_db_1",
+        "sup_db_10"
+      ],
+      "enriched_at": "2026-04-18T19:24:12.350922+00:00",
+      "completeness": 8,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "emollient",
+            "solvent",
+            "carrier oil",
+            "food ingredient"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "plant",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": null,
+            "kosher": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [
+              "Milk"
+            ],
+            "free_from": []
+          },
+          "confidence": "verified",
+          "source_name": "open_food_facts",
+          "source_url": "https://world.openfoodfacts.org/cgi/search.pl?search_terms=medium chain triglycerides&search_simple=1&json=1&page_size=5",
+          "raw_excerpt": "Allergen tags found across top products: Milk"
+        },
+        "certifications": {
+          "value": [
+            "Non Gmo Project",
+            "Organic",
+            "Usda Organic"
+          ],
+          "confidence": "verified",
+          "source_name": "open_food_facts",
+          "source_url": "https://world.openfoodfacts.org/cgi/search.pl?search_terms=medium chain triglycerides&search_simple=1&json=1&page_size=5",
+          "raw_excerpt": "Certification labels found: Non Gmo Project, Organic, Usda Organic"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "The firm was notified by an ingredient supplier of Medium Chain Triglycerides (MCT) that the ingredient potentially contained traces of milk. This affected two of the firm's products that are marketed and sold as vegan and dairy-free.",
+                "classification": "Class I",
+                "date": "2021-04-12"
+              },
+              {
+                "reason": "MCT 50% powder ingredient used in production was recalled due to undeclared milk.",
+                "classification": "Class II",
+                "date": "2021-12-31"
+              },
+              {
+                "reason": "Firm repacked and distributed Medium Chain Triglycerides (MCT) powder that is now under recall by supplier.",
+                "classification": "Class I",
+                "date": "2021-12-27"
+              },
+              {
+                "reason": "The firm was notified by its ingredient supplier of Medium Chain Triglycerides (MCT) that the ingredient potentially contained traces of milk. This affected two of the firm's products that are marketed and sold as vegan and dairy-free.",
+                "classification": "Class I",
+                "date": "2021-04-12"
+              },
+              {
+                "reason": "Firm was notified by supplier of Medium Chain Triglycerides (MCT) that it contained undeclared milk allergens.",
+                "classification": "Class I",
+                "date": "2021-05-07"
+              }
+            ],
+            "has_adverse_events": false,
+            "adverse_events_count": 0
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 5 recalls for 'medium chain triglycerides'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "liquid oil",
+            "grade": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "price": {
+          "value": "8-15 USD per kg",
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        }
+      }
+    },
+    "elapsed_seconds": 39.0
+  },
+  {
+    "raw_material_name": "pumpkin-seed-protein",
+    "material": {
+      "material_id": "ing_db_206",
+      "raw_sku": "RM-C5-pumpkin-seed-protein-e4230ea3",
+      "normalized_name": "pumpkin seed protein",
+      "company_id": "co_db_5",
+      "supplier_ids": [
+        "sup_db_2"
+      ],
+      "enriched_at": "2026-04-18T19:24:43.671020+00:00",
+      "completeness": 8,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "protein source",
+            "nutritional ingredient",
+            "binder"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "plant",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": null,
+            "kosher": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [
+              "tree nuts/seeds"
+            ],
+            "free_from": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "certifications": {
+          "value": [
+            "Non-GMO Project Verified",
+            "Organic (variable by supplier)"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "Potential undeclared gluten product is labeled as gluten free but consumer advocacy group testing revealed results above 20ppm for gluten.",
+                "classification": "Class II",
+                "date": "2024-06-18"
+              }
+            ],
+            "has_adverse_events": false,
+            "adverse_events_count": 0
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 1 recall for 'pumpkin seed protein'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "price": {
+          "value": "15\u201335 USD/kg (bulk, food-grade isolate; 2024 estimate)",
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        }
+      }
+    },
+    "elapsed_seconds": 31.0
+  },
+  {
+    "raw_material_name": "hydrolyzed-whey-protein",
+    "material": {
+      "material_id": "ing_db_674",
+      "raw_sku": "RM-C38-hydrolyzed-whey-protein-9f15d933",
+      "normalized_name": "hydrolyzed whey protein",
+      "company_id": "co_db_38",
+      "supplier_ids": [
+        "sup_db_3"
+      ],
+      "enriched_at": "2026-04-18T19:25:07.280964+00:00",
+      "completeness": 8,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "protein source",
+            "nutritional supplement",
+            "ingredient in food and beverage formulations"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "animal",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": false,
+            "vegetarian": true,
+            "halal": null,
+            "kosher": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [
+              "milk",
+              "lactose (typically reduced but may be present)"
+            ],
+            "free_from": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "certifications": {
+          "value": [
+            "FDA GRAS",
+            "ISO 9001",
+            "Halal (conditional)",
+            "Kosher (conditional)"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "True Nutrition is recalling Whey Protein Isolate, Whey Protein Concentrate, and Hydrolyzed Whey Protein because they contain undeclared milk.",
+                "classification": "Class I",
+                "date": "2012-08-24"
+              },
+              {
+                "reason": "True Nutrition is recalling Whey Protein Isolate, Whey Protein Concentrate, and Hydrolyzed Whey Protein because they contain undeclared milk.",
+                "classification": "Class I",
+                "date": "2012-08-24"
+              },
+              {
+                "reason": "True Nutrition is recalling Whey Protein Isolate, Whey Protein Concentrate, and Hydrolyzed Whey Protein because they contain undeclared milk.",
+                "classification": "Class I",
+                "date": "2012-08-24"
+              },
+              {
+                "reason": "True Nutrition is recalling Whey Protein Isolate, Whey Protein Concentrate, and Hydrolyzed Whey Protein because they contain undeclared milk.",
+                "classification": "Class I",
+                "date": "2012-08-24"
+              },
+              {
+                "reason": "True Nutrition is recalling Whey Protein Isolate, Whey Protein Concentrate, and Hydrolyzed Whey Protein because they contain undeclared milk.",
+                "classification": "Class I",
+                "date": "2012-08-24"
+              }
+            ],
+            "has_adverse_events": true,
+            "adverse_events_count": 2
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 5 recalls and 2 adverse events for 'hydrolyzed whey protein'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "price": {
+          "value": "8\u201320 USD/kg (bulk, food grade)",
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        }
+      }
+    },
+    "elapsed_seconds": 23.6
+  },
+  {
+    "raw_material_name": "green-tea-extract",
+    "material": {
+      "material_id": "ing_db_804",
+      "raw_sku": "RM-C52-green-tea-extract-d0c3336d",
+      "normalized_name": "green tea extract",
+      "company_id": "co_db_52",
+      "supplier_ids": [
+        "sup_db_4",
+        "sup_db_23"
+      ],
+      "enriched_at": "2026-04-18T19:25:53.657055+00:00",
+      "completeness": 8,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "antioxidant",
+            "flavoring agent",
+            "bioactive ingredient"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "plant",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": true,
+            "kosher": true
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [
+              "tree nuts (potential cross-contamination)"
+            ],
+            "free_from": [
+              "gluten",
+              "soy",
+              "dairy",
+              "peanuts"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": [
+            "organic (common)",
+            "non-GMO (common)",
+            "ISO 22000",
+            "GMP"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "Yeast was found in shelf stable 16 oz. aluminum can of Brew Dr. Uplift drink.",
+                "classification": "Class II",
+                "date": "2021-04-26"
+              },
+              {
+                "reason": "Yeast was found in shelf stable 16 oz. aluminum can of Brew Dr. Uplift drink.",
+                "classification": "Class II",
+                "date": "2021-04-26"
+              },
+              {
+                "reason": "Yeast was found in shelf stable 16 oz. aluminum can of Brew Dr. Uplift drink.",
+                "classification": "Class II",
+                "date": "2021-04-26"
+              }
+            ],
+            "has_adverse_events": true,
+            "adverse_events_count": 5
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 3 recalls and 5 adverse events for 'green tea extract'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": "food"
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "price": {
+          "value": "$8\u2013$25 per kg (bulk commodity grade, highly variable by purity and certification)",
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        }
+      }
+    },
+    "elapsed_seconds": 46.4
+  },
+  {
+    "raw_material_name": "hydroxypropyl-methylcellulose",
+    "material": {
+      "material_id": "ing_db_360",
+      "raw_sku": "RM-C17-hydroxypropyl-methylcellulose-46512c9c",
+      "normalized_name": "hydroxypropyl methylcellulose",
+      "company_id": "co_db_17",
+      "supplier_ids": [
+        "sup_db_5",
+        "sup_db_11"
+      ],
+      "enriched_at": "2026-04-18T19:26:46.651892+00:00",
+      "completeness": 7,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "thickening agent",
+            "emulsifier",
+            "film former",
+            "binder",
+            "suspending agent"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "plant",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": null,
+            "kosher": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [],
+            "free_from": [
+              "gluten",
+              "dairy",
+              "nuts"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": [
+            "USP",
+            "EP",
+            "JP",
+            "FCC"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "Undeclared allergen: Wheat",
+                "classification": "Class I",
+                "date": "2025-04-04"
+              },
+              {
+                "reason": "Product contains undeclared ingredients, Hydroxypropyl Methylcellulose (HPMC), Titanium Dioxide, Polyethylene Glycol (PEG).",
+                "classification": "Class III",
+                "date": "2018-09-04"
+              },
+              {
+                "reason": "Product contains undeclared ingredients, Hydroxypropyl Methylcellulose (HPMC), Titanium Dioxide, Polyethylene Glycol 400 and 800 (PEG), Triacetin",
+                "classification": "Class III",
+                "date": "2018-07-26"
+              },
+              {
+                "reason": "Product may contain undeclared soy.",
+                "classification": "Class II",
+                "date": "2021-04-27"
+              },
+              {
+                "reason": "Product contains undeclared ingredients, Hydroxypropyl Methylcellulose (HPMC), Titanium Dioxide, Polyethylene Glycol (PEG), Triacetin, FD&C Yellow #6 (Sunset Yellow FCF), FD&C Red #40 (Allura Red AC), FD&C Yellow #5 (Tartrazine), and FD&C Blue #2 (Indigotine).",
+                "classification": "Class II",
+                "date": "2018-07-26"
+              }
+            ],
+            "has_adverse_events": false,
+            "adverse_events_count": 0
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 5 recalls for 'hydroxypropyl methylcellulose'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": "food"
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "price": {
+          "value": null,
+          "confidence": "unknown",
+          "source_name": null,
+          "source_url": null,
+          "raw_excerpt": null
+        }
+      }
+    },
+    "elapsed_seconds": 52.9
+  },
+  {
+    "raw_material_name": "magnesium-glycinate",
+    "material": {
+      "material_id": "ing_db_260",
+      "raw_sku": "RM-C11-magnesium-glycinate-309625e9",
+      "normalized_name": "magnesium glycinate",
+      "company_id": "co_db_11",
+      "supplier_ids": [
+        "sup_db_6",
+        "sup_db_28"
+      ],
+      "enriched_at": "2026-04-18T19:27:20.085774+00:00",
+      "completeness": 7,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "mineral supplement",
+            "nutrient"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "synthetic",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": true,
+            "kosher": null
+          },
+          "confidence": "verified",
+          "source_name": "open_food_facts",
+          "source_url": "https://world.openfoodfacts.org/cgi/search.pl?search_terms=magnesium glycinate&search_simple=1&json=1&page_size=5",
+          "raw_excerpt": "Dietary labels found: vegetarian, vegan, halal"
+        },
+        "allergens": {
+          "value": {
+            "contains": [],
+            "free_from": [
+              "gluten",
+              "soy",
+              "dairy",
+              "shellfish",
+              "tree nuts",
+              "peanuts"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": [
+            "Non Gmo Project"
+          ],
+          "confidence": "verified",
+          "source_name": "open_food_facts",
+          "source_url": "https://world.openfoodfacts.org/cgi/search.pl?search_terms=magnesium glycinate&search_simple=1&json=1&page_size=5",
+          "raw_excerpt": "Certification labels found: Non Gmo Project"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": false,
+            "recalls": [],
+            "has_adverse_events": true,
+            "adverse_events_count": 5
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 5 adverse events for 'magnesium glycinate'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": "pharma"
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "price": {
+          "value": null,
+          "confidence": "unknown",
+          "source_name": null,
+          "source_url": null,
+          "raw_excerpt": null
+        }
+      }
+    },
+    "elapsed_seconds": 33.5
+  },
+  {
+    "raw_material_name": "bcaas",
+    "material": {
+      "material_id": "ing_db_409",
+      "raw_sku": "RM-C18-bcaas-162e8977",
+      "normalized_name": "bcaas",
+      "company_id": "co_db_18",
+      "supplier_ids": [
+        "sup_db_7",
+        "sup_db_28"
+      ],
+      "enriched_at": "2026-04-18T19:27:52.711718+00:00",
+      "completeness": 7,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "amino acid supplement",
+            "sports nutrition ingredient"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "synthetic",
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": true,
+            "kosher": true
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [],
+            "free_from": [
+              "gluten",
+              "dairy",
+              "soy",
+              "tree nuts",
+              "peanuts"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": [
+            "USP",
+            "BP",
+            "EP"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "Potential contamination of undeclared allergen peanuts",
+                "classification": "Class I",
+                "date": "2024-12-17"
+              }
+            ],
+            "has_adverse_events": true,
+            "adverse_events_count": 5
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 1 recall and 5 adverse events for 'bcaas'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": "pharma"
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "price": {
+          "value": null,
+          "confidence": "unknown",
+          "source_name": null,
+          "source_url": null,
+          "raw_excerpt": null
+        }
+      }
+    },
+    "elapsed_seconds": 32.6
+  },
+  {
+    "raw_material_name": "para-amino-benzoic-acid",
+    "material": {
+      "material_id": "ing_db_174",
+      "raw_sku": "RM-C2-para-amino-benzoic-acid-b19c9ed7",
+      "normalized_name": "para amino benzoic acid",
+      "company_id": "co_db_2",
+      "supplier_ids": [
+        "sup_db_8",
+        "sup_db_33"
+      ],
+      "enriched_at": "2026-04-18T19:28:28.345670+00:00",
+      "completeness": 6,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "UV absorber",
+            "pharmaceutical intermediate",
+            "cosmetic ingredient"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "synthetic",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": true,
+            "kosher": true
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [],
+            "free_from": [
+              "gluten",
+              "soy",
+              "nuts",
+              "dairy"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": null,
+          "confidence": "unknown",
+          "source_name": null,
+          "source_url": null,
+          "raw_excerpt": null
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": false,
+            "recalls": [],
+            "has_adverse_events": false,
+            "adverse_events_count": 0
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "No recalls or adverse events found"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": "pharma"
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "price": {
+          "value": null,
+          "confidence": "unknown",
+          "source_name": null,
+          "source_url": null,
+          "raw_excerpt": null
+        }
+      }
+    },
+    "elapsed_seconds": 35.6
+  },
+  {
+    "raw_material_name": "hypromellose",
+    "material": {
+      "material_id": "ing_db_507",
+      "raw_sku": "RM-C28-hypromellose-155bba6b",
+      "normalized_name": "hypromellose",
+      "company_id": "co_db_28",
+      "supplier_ids": [
+        "sup_db_9",
+        "sup_db_11"
+      ],
+      "enriched_at": "2026-04-18T19:28:56.730562+00:00",
+      "completeness": 7,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "thickening agent",
+            "film former",
+            "suspending agent",
+            "emulsifier",
+            "binder",
+            "tablet coating agent"
+          ],
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "source_origin": {
+          "value": "synthetic",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": null,
+            "kosher": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [],
+            "free_from": [
+              "gluten",
+              "lactose",
+              "peanuts",
+              "tree nuts",
+              "shellfish",
+              "fish",
+              "soy"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": [
+            "USP",
+            "EP",
+            "BP",
+            "FCC"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "Product recalled due to undeclared niacin.",
+                "classification": "Class II",
+                "date": "2021-12-20"
+              }
+            ],
+            "has_adverse_events": false,
+            "adverse_events_count": 0
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 1 recall for 'hypromellose'"
+        },
+        "form_grade": {
+          "value": {
+            "form": "powder",
+            "grade": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "price": {
+          "value": null,
+          "confidence": "unknown",
+          "source_name": null,
+          "source_url": null,
+          "raw_excerpt": null
+        }
+      }
+    },
+    "elapsed_seconds": 28.4
+  },
+  {
+    "raw_material_name": "stevia-leaf-extract",
+    "material": {
+      "material_id": "ing_db_487",
+      "raw_sku": "RM-C26-stevia-leaf-extract-40dbb2cc",
+      "normalized_name": "stevia leaf extract",
+      "company_id": "co_db_26",
+      "supplier_ids": [
+        "sup_db_10",
+        "sup_db_27"
+      ],
+      "enriched_at": "2026-04-18T19:29:15.363545+00:00",
+      "completeness": 8,
+      "total_properties": 8,
+      "properties": {
+        "functional_role": {
+          "value": [
+            "Zero-calorie sweetener",
+            "Sugar reduction ingredient"
+          ],
+          "confidence": "verified",
+          "source_name": "supplier_website",
+          "source_url": "https://www.cargill.com/food-bev/na/truvia",
+          "raw_excerpt": "[skip to main content](https://www.cargill.com/food-bev/na/truvia#maincontent)\n[![Cargill Logo](https://www.cargill.com/image/1432220384159/cargill-logo-header.png?v=1728003182000) ](https://www.cargill.com/home)\nSearch\nSearch\n[![Cargill](https://www.cargill.com/CCOM/assets/images/logo-cargill-white.png)](https://www.cargill.com/home)\n  * [About Cargill](https://www.cargill.com/about)\n[About Cargill](https://www.cargill.com/about)\n    * [Our approach](https://www.cargill.com/about/our-approach)\n"
+        },
+        "source_origin": {
+          "value": "plant",
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "dietary_flags": {
+          "value": {
+            "vegan": true,
+            "vegetarian": true,
+            "halal": null,
+            "kosher": null
+          },
+          "confidence": "inferred",
+          "source_name": "llm_knowledge",
+          "source_url": null,
+          "raw_excerpt": "LLM knowledge (no external source)"
+        },
+        "allergens": {
+          "value": {
+            "contains": [],
+            "free_from": [
+              "gluten",
+              "soy",
+              "nuts",
+              "dairy"
+            ]
+          },
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "certifications": {
+          "value": [
+            "organic",
+            "non-GMO",
+            "kosher",
+            "halal"
+          ],
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        },
+        "regulatory_status": {
+          "value": {
+            "gras": null,
+            "has_recalls": true,
+            "recalls": [
+              {
+                "reason": "Potential for the product to develop mold and spoil.",
+                "classification": "Class II",
+                "date": "2023-05-25"
+              }
+            ],
+            "has_adverse_events": false,
+            "adverse_events_count": 0
+          },
+          "confidence": "verified",
+          "source_name": "openfda",
+          "source_url": "https://api.fda.gov/food/enforcement.json",
+          "raw_excerpt": "Found 1 recall for 'stevia leaf extract'"
+        },
+        "form_grade": {
+          "value": {
+            "form": null,
+            "grade": null
+          },
+          "confidence": "verified",
+          "source_name": "supplier_website",
+          "source_url": "https://www.cargill.com/food-bev/na/truvia",
+          "raw_excerpt": "[skip to main content](https://www.cargill.com/food-bev/na/truvia#maincontent)\n[![Cargill Logo](https://www.cargill.com/image/1432220384159/cargill-logo-header.png?v=1728003182000) ](https://www.cargill.com/home)\nSearch\nSearch\n[![Cargill](https://www.cargill.com/CCOM/assets/images/logo-cargill-white.png)](https://www.cargill.com/home)\n  * [About Cargill](https://www.cargill.com/about)\n[About Cargill](https://www.cargill.com/about)\n    * [Our approach](https://www.cargill.com/about/our-approach)\n"
+        },
+        "price": {
+          "value": "15-40 USD per kg",
+          "confidence": "speculative",
+          "source_name": "llm_general_fallback",
+          "source_url": null,
+          "raw_excerpt": "LLM general fallback (speculative)"
+        }
+      }
+    },
+    "elapsed_seconds": 18.7
+  }
+]

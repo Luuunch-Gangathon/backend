@@ -13,8 +13,7 @@ def test_property_result_valid():
         value={"cas_number": "557-04-0", "synonyms": ["magnesium octadecanoate"]},
         confidence="verified",
         source_name="pubchem",
-        source_url="https://pubchem.ncbi.nlm.nih.gov/compound/11177",
-        raw_excerpt="Magnesium stearate, CAS 557-04-0",
+        source_url_or_reasoning="https://pubchem.ncbi.nlm.nih.gov/compound/11177",
     )
     assert pr.confidence == "verified"
     assert pr.source_name == "pubchem"
@@ -27,8 +26,7 @@ def test_property_result_unknown():
         value=None,
         confidence="unknown",
         source_name=None,
-        source_url=None,
-        raw_excerpt=None,
+        source_url_or_reasoning=None,
     )
     assert pr.confidence == "unknown"
     assert pr.value is None
@@ -42,9 +40,8 @@ def test_property_result_invalid_confidence():
             value="something",
             confidence="super_trusted",
             source_name="test",
-            source_url=None,
-            raw_excerpt=None,
-        )
+            source_url_or_reasoning=None,
+            )
 
 
 def test_enrichment_result_valid():
@@ -54,8 +51,7 @@ def test_enrichment_result_valid():
         value=True,
         confidence="verified",
         source_name="pubchem",
-        source_url="https://example.com",
-        raw_excerpt="excerpt",
+        source_url_or_reasoning="https://example.com",
     )
     er = EnrichmentResult(
         material_id="ing_db_42",

@@ -122,13 +122,10 @@ def pubchem_enrich(name: str, context: dict) -> list[dict]:
     }
 
     source_url = f"https://pubchem.ncbi.nlm.nih.gov/compound/{cid}" if cid else None
-    raw_excerpt = f"PubChem CID {cid}, MF: {formula}, MW: {mw}"
-
     return [
         {
             "property": "chemical_identity",
             "value": value,
             "source_url": source_url,
-            "raw_excerpt": raw_excerpt,
         }
     ]

@@ -109,18 +109,6 @@ def openfda_enrich(name: str, context: dict) -> list[dict]:
     has_recalls = len(recalls) > 0
     has_adverse = adverse_count > 0
 
-    if not has_recalls and not has_adverse:
-        raw_excerpt = "No recalls or adverse events found"
-    else:
-        parts: list[str] = []
-        if has_recalls:
-            parts.append(f"{len(recalls)} recall{'s' if len(recalls) != 1 else ''}")
-        if has_adverse:
-            parts.append(
-                f"{adverse_count} adverse event{'s' if adverse_count != 1 else ''}"
-            )
-        raw_excerpt = f"Found {' and '.join(parts)} for {name!r}"
-
     value: dict[str, Any] = {
         "recalls": recalls,
         "adverse_events_count": adverse_count,
@@ -133,6 +121,5 @@ def openfda_enrich(name: str, context: dict) -> list[dict]:
             "property": "regulatory_status",
             "value": value,
             "source_url": _ENFORCEMENT_URL,
-            "raw_excerpt": raw_excerpt,
         }
     ]

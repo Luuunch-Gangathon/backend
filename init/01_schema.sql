@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS products (
     id         INTEGER PRIMARY KEY,
     sku        TEXT    NOT NULL,
     company_id INTEGER NOT NULL REFERENCES companies(id),
-    type       TEXT    NOT NULL CHECK (type IN ('finished-good', 'raw-material'))
+    type       TEXT    NOT NULL CHECK (type IN ('finished-good', 'raw-material')),
+    spec       JSONB   -- enriched compliance properties, only for finished-goods
 );
 
 CREATE TABLE IF NOT EXISTS boms (

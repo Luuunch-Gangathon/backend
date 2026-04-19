@@ -164,8 +164,6 @@ def test_foodb_enrich_plant_origin():
     assert r["property"] == "source_origin"
     assert r["value"] == "plant"
     assert r["source_url"] == "https://foodb.ca/compounds/FDB012345"
-    assert r["raw_excerpt"] is not None
-    assert "plant" in r["raw_excerpt"]
 
 
 def test_foodb_enrich_animal_origin():
@@ -223,19 +221,6 @@ def test_foodb_enrich_source_url_falls_back_to_numeric_id():
 
     assert len(results) == 1
     assert results[0]["source_url"] == "https://foodb.ca/compounds/42"
-
-
-def test_foodb_enrich_raw_excerpt_contains_food_names():
-    from app.agents.searchEngine.sources.foodb import foodb_enrich
-
-    with patch("httpx.get", return_value=_make_response(200, _PLANT_COMPOUND_RESPONSE)):
-        results = foodb_enrich("quercetin", {})
-
-    excerpt = results[0]["raw_excerpt"]
-    # Should mention at least one of the food source names
-    assert any(
-        food in excerpt for food in ["spinach", "kale", "broccoli", "apple", "onion"]
-    )
 
 
 # ---------------------------------------------------------------------------

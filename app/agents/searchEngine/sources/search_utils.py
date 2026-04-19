@@ -30,6 +30,132 @@ logger = logging.getLogger(__name__)
 _domain_cache: dict[str, str | None] = {}
 
 # Domains that are never supplier websites
+# Known supplier domains — skip slow DDG+LLM discovery for these.
+KNOWN_SUPPLIER_DOMAINS: dict[str, str] = {
+    "purebulk": "purebulk.com",
+    "bulksupplements": "bulksupplements.com",
+}
+
+
+def get_known_domain(supplier_name: str) -> str | None:
+    """Check if supplier has a known domain. Case-insensitive."""
+    return KNOWN_SUPPLIER_DOMAINS.get(supplier_name.lower().strip())
+
+
+def shopify_product_search(domain: str, query: str, limit: int = 3) -> list[dict]:
+    """Search a Shopify store's suggest API. Returns [{title, handle, url}].
+
+    Free, no rate limits, returns exact product handles.
+    """
+    import httpx
+
+    search_url = (
+        f"https://{domain}/search/suggest.json"
+        f"?q={query.replace(' ', '+')}"
+        f"&resources[type]=product&resources[limit]={limit}"
+    )
+    try:
+        resp = httpx.get(search_url, timeout=5)
+        resp.raise_for_status()
+        data = resp.json()
+        products = data.get("resources", {}).get("results", {}).get("products", [])
+        return [
+            {
+                "title": p.get("title", ""),
+                "handle": p.get("handle", ""),
+                "url": f"https://{domain}/products/{p.get('handle', '')}",
+            }
+            for p in products
+        ]
+    except Exception as e:
+        logger.warning("Shopify search failed on %s for '%s' — %s", domain, query, e)
+        return []
+
+
+def rank_product_urls(urls: list[str]) -> str | None:
+    """Pick the best product URL from a list of candidates.
+
+    Priority:
+    1. /products/ URL not ending in -bulk → best
+    2. /blog/ URL → fallback (may have dietary info)
+    3. Anything else or -bulk → skip
+    """
+    product_urls = []
+    blog_urls = []
+
+    for url in urls:
+        path = url.lower().split("?")[0]
+        if "-bulk" in path.split("/")[-1]:
+            continue
+        if "/products/" in path:
+            product_urls.append(url)
+        elif "/blog/" in path:
+            blog_urls.append(url)
+
+    if product_urls:
+        return product_urls[0]
+    if blog_urls:
+        return blog_urls[0]
+    return None
+
+
+def _title_matches_material(title: str, query_words: list[str]) -> bool:
+    """Check if a Shopify product title is a plausible match for the material.
+
+    Requires at least half of the query words (min 1) to appear in the title.
+    This prevents "sodium" matching "BHB Sodium" when searching "sodium ascorbate".
+    """
+    title_words = set(re.findall(r'[a-z0-9]+', title.lower()))
+    matches = sum(1 for w in query_words if w in title_words)
+    # Require ALL words for short queries (1-2 words), majority for longer
+    if len(query_words) <= 2:
+        return matches == len(query_words)
+    return matches >= (len(query_words) + 1) // 2  # ceil(n/2)
+
+
+def find_product_page_known_domain(material_name: str, domain: str) -> str | None:
+    """Find a product page on a known Shopify supplier domain.
+
+    Strategy:
+    1. Shopify suggest API with full material name
+    2. If no results, try dropping the last word progressively (but never single word)
+    3. Verify result title matches the material before accepting
+    4. Pick best URL: /products/ (not -bulk) preferred
+    """
+    query = material_name.replace("-", " ")
+    words = query.split()
+
+    # Try full query, then progressively shorter (but min 2 words)
+    queries_to_try = [" ".join(words[:i]) for i in range(len(words), 1, -1)]
+    # Also try full query (even if single word)
+    if len(words) == 1:
+        queries_to_try = [query]
+
+    for q in queries_to_try:
+        results = shopify_product_search(domain, q)
+        if not results:
+            if q != query:
+                logger.info("No Shopify results for '%s', trying shorter", q)
+            continue
+
+        # Filter results: title must plausibly match the material
+        matched = [r for r in results if _title_matches_material(r["title"], words)]
+        if not matched:
+            logger.info("Shopify results for '%s' didn't match material '%s' (titles: %s)",
+                        q, material_name,
+                        ", ".join(r["title"] for r in results[:3]))
+            continue
+
+        urls = [r["url"] for r in matched]
+        best = rank_product_urls(urls)
+        if best:
+            logger.info("Found product page: %s for '%s'", best, material_name)
+            return best
+
+    logger.info("No product found for '%s' on %s", material_name, domain)
+    return None
+
+
 _DOMAIN_BLOCKLIST = {
     "wikipedia.org", "en.wikipedia.org", "de.wikipedia.org",
     "linkedin.com", "facebook.com", "twitter.com", "x.com",

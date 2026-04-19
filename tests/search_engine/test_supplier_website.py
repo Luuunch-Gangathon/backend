@@ -61,7 +61,6 @@ def test_convert_to_handler_results():
     chem = next(r for r in results if r["property"] == "chemical_identity")
     assert chem["value"] == {"cas_number": "557-04-0"}
     assert chem["source_url"] == "https://purebulk.com/products/mag"
-    assert chem["raw_excerpt"] == "page text"
 
 
 def test_convert_to_handler_results_wrong_material():
@@ -178,10 +177,10 @@ def test_supplier_website_enrich_full_flow():
     )
 
     with patch(
-        "app.agents.searchEngine.sources.supplier_website.get_supplier_domain",
+        "app.agents.searchEngine.sources.supplier_website.get_known_domain",
         return_value="purebulk.com",
     ), patch(
-        "app.agents.searchEngine.sources.supplier_website.find_product_page",
+        "app.agents.searchEngine.sources.supplier_website.find_product_page_known_domain",
         return_value="https://purebulk.com/products/magnesium-stearate",
     ), patch(
         "app.agents.searchEngine.sources.supplier_website._run_crawl_and_extract",
@@ -243,19 +242,17 @@ def test_supplier_website_enrich_stops_at_first_successful_supplier():
 
     find_call_count = 0
 
-    def mock_find(material, domain):
+    def mock_find_known(material, domain):
         nonlocal find_call_count
         find_call_count += 1
-        if domain == "purebulk.com":
-            return "https://purebulk.com/products/mag"
-        return "https://jostchemical.com/products/mag"
+        return "https://purebulk.com/products/mag"
 
     with patch(
-        "app.agents.searchEngine.sources.supplier_website.get_supplier_domain",
-        side_effect=["purebulk.com", "jostchemical.com"],
+        "app.agents.searchEngine.sources.supplier_website.get_known_domain",
+        return_value="purebulk.com",
     ), patch(
-        "app.agents.searchEngine.sources.supplier_website.find_product_page",
-        side_effect=mock_find,
+        "app.agents.searchEngine.sources.supplier_website.find_product_page_known_domain",
+        side_effect=mock_find_known,
     ), patch(
         "app.agents.searchEngine.sources.supplier_website._run_crawl_and_extract",
         return_value=(fake_props, "page text"),
