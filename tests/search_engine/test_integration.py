@@ -11,7 +11,6 @@ def _fake_foodb(name: str, context: dict) -> list[dict]:
             "property": "source_origin",
             "value": "plant",
             "source_url": "https://foodb.ca/compounds/FDB001234",
-            "raw_excerpt": "plant-derived",
         }
     ]
 
@@ -20,14 +19,31 @@ def _fake_empty(name: str, context: dict) -> list[dict]:
     return []
 
 
+_ALL_SOURCE_NAMES = [
+    "supplier_website", "pubchem", "chebi", "foodb", "open_food_facts",
+    "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
+    "web_search", "llm_knowledge", "llm_general_fallback",
+]
+
+_TEST_SOURCES = [
+    {"name": "supplier_website", "trust_tier": "verified", "provides": ["*"]},
+    {"name": "chebi", "trust_tier": "verified", "provides": ["functional_role"]},
+    {"name": "foodb", "trust_tier": "verified", "provides": ["source_origin"]},
+    {"name": "open_food_facts", "trust_tier": "verified", "provides": ["allergens", "dietary_flags", "certifications"]},
+    {"name": "nih_dsld", "trust_tier": "verified", "provides": ["dietary_flags", "certifications"]},
+    {"name": "openfda", "trust_tier": "verified", "provides": ["regulatory_status"]},
+    {"name": "fda_eafus", "trust_tier": "verified", "provides": ["regulatory_status"]},
+    {"name": "efsa", "trust_tier": "verified", "provides": ["regulatory_status"]},
+    {"name": "retail_page", "trust_tier": "probable", "provides": ["*"]},
+    {"name": "llm_knowledge", "trust_tier": "inferred", "provides": ["*"]},
+    {"name": "llm_general_fallback", "trust_tier": "speculative", "provides": ["*"]},
+]
+
+
 def test_full_pipeline():
     from app.agents.searchEngine import enrich
 
-    fake_handlers = {s: _fake_empty for s in [
-        "supplier_website", "pubchem", "chebi", "open_food_facts",
-        "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
-        "web_search", "llm_knowledge", "llm_general_fallback",
-    ]}
+    fake_handlers = {s: _fake_empty for s in _ALL_SOURCE_NAMES}
     fake_handlers["foodb"] = _fake_foodb
 
     raw_fields = {
@@ -37,7 +53,8 @@ def test_full_pipeline():
         "SupplierIds": [12, 7],
     }
 
-    with patch("app.agents.searchEngine.engine.SOURCE_HANDLERS", fake_handlers):
+    with patch("app.agents.searchEngine.handlers.SOURCE_HANDLERS", fake_handlers), \
+         patch("app.agents.searchEngine.shortened_config.SHORTENED_MATERIAL_SOURCES", _TEST_SOURCES):
         result = enrich(raw_fields)
 
     assert result.material_id == "ing_db_42"
@@ -52,11 +69,7 @@ def test_full_pipeline():
 def test_full_pipeline_unknown_material():
     from app.agents.searchEngine import enrich
 
-    fake_handlers = {s: _fake_empty for s in [
-        "supplier_website", "pubchem", "chebi", "foodb", "open_food_facts",
-        "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
-        "web_search", "llm_knowledge",
-    ]}
+    fake_handlers = {s: _fake_empty for s in _ALL_SOURCE_NAMES}
 
     raw_fields = {
         "Id": 999,
@@ -64,7 +77,8 @@ def test_full_pipeline_unknown_material():
         "CompanyId": 1,
     }
 
-    with patch("app.agents.searchEngine.engine.SOURCE_HANDLERS", fake_handlers):
+    with patch("app.agents.searchEngine.handlers.SOURCE_HANDLERS", fake_handlers), \
+         patch("app.agents.searchEngine.shortened_config.SHORTENED_MATERIAL_SOURCES", _TEST_SOURCES):
         result = enrich(raw_fields)
 
     assert result.completeness == 0

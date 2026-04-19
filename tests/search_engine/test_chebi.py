@@ -165,23 +165,6 @@ class TestChebiEnrich:
             "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:9243"
         )
 
-    def test_success_raw_excerpt_mentions_label_and_roles(self):
-        """raw_excerpt summarises the label and roles."""
-        chebi_enrich = self._import()
-
-        with patch("httpx.get") as mock_get:
-            mock_get.side_effect = [
-                _make_response(200, SEARCH_EXACT_RESPONSE),
-                _make_response(200, ROLE_LUBRICANT),
-                _make_response(200, ROLE_FOOD_ADDITIVE),
-                _make_response(200, ROLE_ANTI_CAKING),
-            ]
-            results = chebi_enrich("magnesium stearate", {})
-
-        excerpt = results[0]["raw_excerpt"]
-        assert "magnesium stearate" in excerpt.lower()
-        assert "lubricant" in excerpt.lower()
-
     def test_value_is_a_list(self):
         """value is a list of role strings."""
         chebi_enrich = self._import()

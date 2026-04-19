@@ -13,8 +13,7 @@ class PropertyResult(BaseModel):
     value: Any
     confidence: Literal["verified", "probable", "inferred", "speculative", "unknown"]
     source_name: Optional[str] = None
-    source_url: Optional[str] = None
-    raw_excerpt: Optional[str] = None
+    source_url_or_reasoning: Optional[str] = None
 
 
 class EnrichmentResult(BaseModel):

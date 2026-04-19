@@ -80,7 +80,6 @@ def convert_to_handler_results(
                     "property": field_name,
                     "value": value,
                     "source_url": source_url,
-                    "raw_excerpt": raw_markdown[:500] if raw_markdown else None,
                 }
             )
     return results
@@ -176,7 +175,9 @@ async def _crawl_and_extract(
 
 from app.agents.searchEngine.sources.search_utils import (
     get_supplier_domain,
+    get_known_domain,
     find_product_page,
+    find_product_page_known_domain,
 )
 
 
@@ -202,15 +203,16 @@ def supplier_website_enrich(name: str, context: dict) -> list[dict]:
         # sync enrich() has no DB access — skip supplier website enrichment.
         return []
 
+    # Only try known supplier domains — skip slow DDG resolution entirely
     for supplier_name in supplier_names:
-        domain = get_supplier_domain(supplier_name)
-        if domain is None:
-            logger.info("Could not resolve domain for supplier: %s", supplier_name)
+        known_domain = get_known_domain(supplier_name)
+        if not known_domain:
             continue
 
-        product_url = find_product_page(name, domain)
+        logger.info("Using known domain for '%s': %s", supplier_name, known_domain)
+        product_url = find_product_page_known_domain(name, known_domain)
         if product_url is None:
-            logger.info("No product page found for '%s' on %s", name, domain)
+            logger.info("No product page found for '%s' on %s", name, known_domain)
             continue
 
         result = _run_crawl_and_extract(product_url, name)

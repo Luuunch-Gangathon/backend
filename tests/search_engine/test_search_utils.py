@@ -188,3 +188,24 @@ def test_find_product_page_returns_none_on_no_results():
         url = find_product_page("unknown material", "purebulk.com")
 
     assert url is None
+
+
+def test_rank_product_urls():
+    from app.agents.searchEngine.sources.search_utils import rank_product_urls
+
+    # prefers /products/ over /blog/, skips -bulk
+    urls = [
+        "https://purebulk.com/products/magnesium-stearate-bulk",
+        "https://purebulk.com/blog/magnesium-info",
+        "https://purebulk.com/products/magnesium-stearate",
+    ]
+    assert rank_product_urls(urls) == "https://purebulk.com/products/magnesium-stearate"
+
+    # only -bulk → falls back to blog
+    assert rank_product_urls(urls[:2]) == "https://purebulk.com/blog/magnesium-info"
+
+    # only -bulk → None
+    assert rank_product_urls(urls[:1]) is None
+
+    # empty → None
+    assert rank_product_urls([]) is None

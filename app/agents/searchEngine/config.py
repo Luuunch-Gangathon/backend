@@ -18,65 +18,69 @@ SOURCES: list[dict] = [
         "trust_tier": "verified",
         "provides": ["*"],
     },
-    # NOTE: for demo purposes
+    # {
+    #     "name": "chebi",  # only finds pure chemicals, misses ingredient trade names
+    #     "trust_tier": "verified",
+    #     "provides": ["functional_role"],
+    # },
+    # {
+    #     "name": "open_food_facts",  # product DB, not ingredient DB — returns misleading data for raw materials
+    #     "trust_tier": "verified",
+    #     "provides": ["allergens", "dietary_flags", "certifications"],
+    # },
+    # {
+    #     "name": "openfda",  # returns recalls for products containing the ingredient, not about the ingredient itself
+    #     "trust_tier": "verified",
+    #     "provides": ["regulatory_status"],
+    # },
     # {
     #     "name": "pubchem",
     #     "trust_tier": "verified",
     #     "provides": ["chemical_identity"],
     # },
     # {
-    #     "name": "chebi",
-    #     "trust_tier": "verified",
-    #     "provides": ["functional_role"],
-    # },
-    # {
-    #     "name": "foodb",
+    #     "name": "foodb",  # API availability uncertain
     #     "trust_tier": "verified",
     #     "provides": ["source_origin"],
     # },
     # {
-    #     "name": "open_food_facts",
-    #     "trust_tier": "verified",
-    #     "provides": ["allergens", "dietary_flags", "certifications"],
-    # },
-    # {
-    #     "name": "nih_dsld",
+    #     "name": "nih_dsld",  # Cloudflare blocked
     #     "trust_tier": "verified",
     #     "provides": ["dietary_flags", "certifications"],
     # },
     # {
-    #     "name": "openfda",
+    #     "name": "fda_eafus",  # not implemented — CSV download TODO
     #     "trust_tier": "verified",
     #     "provides": ["regulatory_status"],
     # },
     # {
-    #     "name": "fda_eafus",
+    #     "name": "efsa",  # not implemented
     #     "trust_tier": "verified",
     #     "provides": ["regulatory_status"],
     # },
     # {
-    #     "name": "efsa",
-    #     "trust_tier": "verified",
-    #     "provides": ["regulatory_status"],
-    # },
-    # {
-    #     "name": "retail_page",
+    #     "name": "retail_page",  # not implemented
     #     "trust_tier": "probable",
     #     "provides": ["*"],
     # },
     # {
-    #     "name": "web_search",  # temporarily excluded — needs fine-tuning (picks irrelevant pages, truncated content)
+    #     "name": "web_search",  # picks irrelevant pages, needs fine-tuning
     #     "trust_tier": "inferred",
     #     "provides": ["*"],
     # },
+    # {
+    #     "name": "llm_knowledge",  # replaced by llm_enrichment
+    #     "trust_tier": "inferred",
+    #     "provides": ["*"],
+    # },
+    # {
+    #     "name": "llm_general_fallback",  # replaced by llm_enrichment
+    #     "trust_tier": "speculative",
+    #     "provides": ["*"],
+    # },
     {
-        "name": "llm_knowledge",
-        "trust_tier": "inferred",
-        "provides": ["*"],
-    },
-    {
-        "name": "llm_general_fallback",
-        "trust_tier": "speculative",
+        "name": "llm_enrichment",
+        "trust_tier": "inferred",  # individual properties may be downgraded to speculative based on self-assessed confidence
         "provides": ["*"],
     },
 ]

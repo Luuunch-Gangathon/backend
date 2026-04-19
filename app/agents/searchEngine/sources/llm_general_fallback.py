@@ -120,7 +120,6 @@ def llm_general_fallback_enrich(name: str, context: dict) -> list[dict]:
                         "property": prop,
                         "value": normalized,
                         "source_url": None,
-                        "raw_excerpt": "LLM general fallback (speculative)",
                     })
                 continue
 
@@ -138,7 +137,6 @@ def llm_general_fallback_enrich(name: str, context: dict) -> list[dict]:
                     "property": prop,
                     "value": value,
                     "source_url": None,
-                    "raw_excerpt": "LLM general fallback (speculative)",
                 })
 
         logger.info(

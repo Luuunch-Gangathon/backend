@@ -164,9 +164,6 @@ def nih_dsld_enrich(name: str, context: dict) -> list[dict]:
                 "property": "dietary_flags",
                 "value": dietary_flags,
                 "source_url": source_url,
-                "raw_excerpt": (
-                    f"Dietary flags from DSLD label claims: {', '.join(dietary_flags.keys())}"
-                ),
             }
         )
 
@@ -176,9 +173,6 @@ def nih_dsld_enrich(name: str, context: dict) -> list[dict]:
                 "property": "certifications",
                 "value": certifications,
                 "source_url": source_url,
-                "raw_excerpt": (
-                    f"Certifications from DSLD label claims: {', '.join(certifications)}"
-                ),
             }
         )
 

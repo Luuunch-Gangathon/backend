@@ -1,6 +1,7 @@
 """Pipeline — runs once on startup.
 
-SearchEngine enriches all raw materials that don't have embeddings yet.
+SearchEngine enriches all raw materials and finished products
+that don't have specs yet.
 All other agents (compliance, proposal, auditor) are on-demand only.
 """
 
@@ -12,12 +13,17 @@ logger = logging.getLogger(__name__)
 
 
 async def run() -> None:
-    """Run startup pipeline. Currently: SearchEngine only."""
+    """Run startup pipeline: material enrichment, then product enrichment."""
     logger.info("Pipeline: started")
 
     try:
         await search_engine.run_all()
     except Exception:
-        logger.exception("Pipeline: SearchEngine failed — skipping")
+        logger.exception("Pipeline: material enrichment failed — skipping")
+
+    try:
+        await search_engine.run_all_products()
+    except Exception:
+        logger.exception("Pipeline: product enrichment failed — skipping")
 
     logger.info("Pipeline: done")

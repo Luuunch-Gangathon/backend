@@ -87,7 +87,6 @@ class TestOpenfdaEnrich:
         item = results[0]
         assert item["property"] == "regulatory_status"
         assert item["source_url"] == "https://api.fda.gov/food/enforcement.json"
-        assert item["raw_excerpt"] is not None
 
         value = item["value"]
         assert value["has_recalls"] is True
@@ -146,9 +145,6 @@ class TestOpenfdaEnrich:
         assert value["adverse_events_count"] == 5
         assert len(value["recalls"]) == 1
 
-        raw = results[0]["raw_excerpt"]
-        assert "1" in raw   # "1 recall"
-        assert "5" in raw   # "5 adverse event"
 
     # --- clean record (both 404) ---
 
@@ -170,7 +166,6 @@ class TestOpenfdaEnrich:
         assert value["adverse_events_count"] == 0
         assert value["has_recalls"] is False
         assert value["has_adverse_events"] is False
-        assert item["raw_excerpt"] == "No recalls or adverse events found"
 
     # --- API errors ---
 

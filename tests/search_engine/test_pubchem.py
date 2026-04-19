@@ -81,7 +81,6 @@ def test_pubchem_enrich_success():
     r = results[0]
     assert r["property"] == "chemical_identity"
     assert r["source_url"] == "https://pubchem.ncbi.nlm.nih.gov/compound/11177"
-    assert r["raw_excerpt"] == "PubChem CID 11177, MF: C36H70MgO4, MW: 591.3"
 
     v = r["value"]
     assert v["pubchem_cid"] == 11177

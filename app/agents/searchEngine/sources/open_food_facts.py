@@ -13,7 +13,7 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-_OFF_SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl"
+_OFF_SEARCH_URL = "https://world.openfoodfacts.net/cgi/search.pl"
 _HEADERS = {"User-Agent": "SphereCast/1.0"}
 
 _DIETARY_KEYWORDS = {"vegan", "vegetarian", "halal", "kosher"}
@@ -112,7 +112,7 @@ def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
     aggregated = _aggregate(products)
 
     source_url = (
-        f"https://world.openfoodfacts.org/cgi/search.pl"
+        f"https://world.openfoodfacts.net/cgi/search.pl"
         f"?search_terms={name}&search_simple=1&json=1&page_size=5"
     )
 
@@ -127,7 +127,6 @@ def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
                 "property": "allergens",
                 "value": {"contains": allergens_list, "free_from": []},
                 "source_url": source_url,
-                "raw_excerpt": f"Allergen tags found across top products: {', '.join(allergens_list)}",
             }
         )
 
@@ -139,7 +138,6 @@ def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
                 "property": "dietary_flags",
                 "value": dietary,
                 "source_url": source_url,
-                "raw_excerpt": f"Dietary labels found: {', '.join(dietary.keys())}",
             }
         )
 
@@ -151,7 +149,6 @@ def open_food_facts_enrich(name: str, context: dict) -> list[dict]:
                 "property": "certifications",
                 "value": certs,
                 "source_url": source_url,
-                "raw_excerpt": f"Certification labels found: {', '.join(certs)}",
             }
         )
 

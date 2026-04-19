@@ -162,7 +162,6 @@ def web_search_enrich(name: str, context: dict) -> list[dict]:
         return []
 
     # Convert to handler result format — only include non-null known properties
-    raw_excerpt = markdown[:200]
     handler_results = []
     for field in _PROPERTY_FIELDS:
         value = extracted.get(field)
@@ -172,7 +171,6 @@ def web_search_enrich(name: str, context: dict) -> list[dict]:
                     "property": field,
                     "value": value,
                     "source_url": target_url,
-                    "raw_excerpt": raw_excerpt,
                 }
             )
 
