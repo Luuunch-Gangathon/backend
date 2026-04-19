@@ -1,24 +1,6619 @@
 {
   "version": "1.0",
-  "description": "Ground-truth cases for compliance benchmark. Each case defines one substitution scenario: which product, which raw material to replace, and what results we expect the compliance engine to return.",
+  "description": "Ground-truth cases for compliance benchmark. Each case defines one substitution scenario: which product, which raw material to replace, and what results we expect the compliance engine to return. Rankings produced by an independent oracle (claude-opus-4-7) applying the 5-dimension compliance rubric over enriched product and raw-material specs \u2014 scoped to 5 target companies (Nature's Nutrition, PRIME HYDRATION+, One A Day, New Chapter, Liquid I.V.) where the current supplier is PureBulk.",
   "cases": [
     {
-      "case_id": "example-001",
-      "description": "One sentence explaining what substitution this tests and why it should work or fail.",
-      "product_id": 0,
-      "raw_material_id": 0,
-      "expected_ids": [0, 0],
-      "ideal_ranking": [0, 0],
-      "difficulty": "easy"
+      "case_id": "dipotassium-phosphate-001",
+      "description": "Replace dipotassium-phosphate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 490,
+      "expected_ids": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "ideal_ranking": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        94,
+        86,
+        84,
+        78
+      ]
+    },
+    {
+      "case_id": "dipotassium-phosphate-002",
+      "description": "Replace dipotassium-phosphate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 490,
+      "expected_ids": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "ideal_ranking": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        88,
+        87,
+        78
+      ]
+    },
+    {
+      "case_id": "dipotassium-phosphate-003",
+      "description": "Replace dipotassium-phosphate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 490,
+      "expected_ids": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "ideal_ranking": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        88,
+        87,
+        76
+      ]
+    },
+    {
+      "case_id": "dipotassium-phosphate-004",
+      "description": "Replace dipotassium-phosphate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 490,
+      "expected_ids": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "ideal_ranking": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        94,
+        88,
+        87,
+        75
+      ]
+    },
+    {
+      "case_id": "dipotassium-phosphate-005",
+      "description": "Replace dipotassium-phosphate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 490,
+      "expected_ids": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "ideal_ranking": [
+        704,
+        997,
+        786,
+        878,
+        493
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        94,
+        85,
+        83,
+        78
+      ]
+    },
+    {
+      "case_id": "potassium-citrate-001",
+      "description": "Replace potassium-citrate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 493,
+      "expected_ids": [
+        575,
+        717,
+        785,
+        1017,
+        497
+      ],
+      "ideal_ranking": [
+        575,
+        717,
+        785,
+        1017,
+        497
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        100,
+        99,
+        98,
+        97,
+        80
+      ]
+    },
+    {
+      "case_id": "potassium-citrate-002",
+      "description": "Replace potassium-citrate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 493,
+      "expected_ids": [
+        575,
+        717,
+        785,
+        1017,
+        328
+      ],
+      "ideal_ranking": [
+        575,
+        717,
+        785,
+        1017,
+        328
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        85
+      ]
+    },
+    {
+      "case_id": "potassium-citrate-003",
+      "description": "Replace potassium-citrate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 493,
+      "expected_ids": [
+        575,
+        717,
+        785,
+        1017,
+        328
+      ],
+      "ideal_ranking": [
+        575,
+        717,
+        785,
+        1017,
+        328
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        82
+      ]
+    },
+    {
+      "case_id": "potassium-citrate-004",
+      "description": "Replace potassium-citrate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 493,
+      "expected_ids": [
+        575,
+        717,
+        785,
+        1017,
+        497
+      ],
+      "ideal_ranking": [
+        575,
+        717,
+        785,
+        1017,
+        497
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        78
+      ]
+    },
+    {
+      "case_id": "potassium-citrate-005",
+      "description": "Replace potassium-citrate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 493,
+      "expected_ids": [
+        575,
+        717,
+        785,
+        1017,
+        328
+      ],
+      "ideal_ranking": [
+        575,
+        717,
+        785,
+        1017,
+        328
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        100,
+        99,
+        98,
+        97,
+        82
+      ]
+    },
+    {
+      "case_id": "salt-001",
+      "description": "Replace salt in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 495,
+      "expected_ids": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "ideal_ranking": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        95,
+        93,
+        91
+      ]
+    },
+    {
+      "case_id": "salt-002",
+      "description": "Replace salt in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 495,
+      "expected_ids": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "ideal_ranking": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        93,
+        90,
+        88,
+        86
+      ]
+    },
+    {
+      "case_id": "salt-003",
+      "description": "Replace salt in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 495,
+      "expected_ids": [
+        486,
+        880,
+        439,
+        696,
+        214
+      ],
+      "ideal_ranking": [
+        486,
+        880,
+        439,
+        696,
+        214
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        92,
+        88,
+        85,
+        82
+      ]
+    },
+    {
+      "case_id": "salt-004",
+      "description": "Replace salt in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 495,
+      "expected_ids": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "ideal_ranking": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        97,
+        96,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "salt-005",
+      "description": "Replace salt in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 495,
+      "expected_ids": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "ideal_ranking": [
+        486,
+        880,
+        439,
+        696,
+        712
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        95,
+        93,
+        91
+      ]
+    },
+    {
+      "case_id": "sodium-citrate-001",
+      "description": "Replace sodium-citrate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 497,
+      "expected_ids": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "ideal_ranking": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        84,
+        78,
+        77
+      ]
+    },
+    {
+      "case_id": "sodium-citrate-002",
+      "description": "Replace sodium-citrate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 497,
+      "expected_ids": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "ideal_ranking": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        80,
+        76,
+        75
+      ]
+    },
+    {
+      "case_id": "sodium-citrate-003",
+      "description": "Replace sodium-citrate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 497,
+      "expected_ids": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "ideal_ranking": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        82,
+        78,
+        77
+      ]
+    },
+    {
+      "case_id": "sodium-citrate-004",
+      "description": "Replace sodium-citrate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 497,
+      "expected_ids": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "ideal_ranking": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        85,
+        80,
+        79
+      ]
+    },
+    {
+      "case_id": "sodium-citrate-005",
+      "description": "Replace sodium-citrate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 497,
+      "expected_ids": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "ideal_ranking": [
+        328,
+        1026,
+        321,
+        186,
+        252
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        82,
+        76,
+        75
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-001",
+      "description": "Replace vitamin-b12-cyanocobalamin in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 499,
+      "expected_ids": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "ideal_ranking": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-002",
+      "description": "Replace vitamin-b12-cyanocobalamin in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 499,
+      "expected_ids": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "ideal_ranking": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-003",
+      "description": "Replace vitamin-b12-cyanocobalamin in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 499,
+      "expected_ids": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "ideal_ranking": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-004",
+      "description": "Replace vitamin-b12-cyanocobalamin in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 499,
+      "expected_ids": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "ideal_ranking": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-cyanocobalamin-005",
+      "description": "Replace vitamin-b12-cyanocobalamin in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 499,
+      "expected_ids": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "ideal_ranking": [
+        702,
+        995,
+        165,
+        349,
+        570
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        97,
+        96,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-001",
+      "description": "Replace vitamin-b3-niacinamide in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 500,
+      "expected_ids": [
+        1013,
+        173,
+        300,
+        1012,
+        647
+      ],
+      "ideal_ranking": [
+        1013,
+        173,
+        300,
+        1012,
+        647
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-002",
+      "description": "Replace vitamin-b3-niacinamide in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 500,
+      "expected_ids": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "ideal_ranking": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-003",
+      "description": "Replace vitamin-b3-niacinamide in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 500,
+      "expected_ids": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "ideal_ranking": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        96,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-004",
+      "description": "Replace vitamin-b3-niacinamide in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 500,
+      "expected_ids": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "ideal_ranking": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ]
+    },
+    {
+      "case_id": "vitamin-b3-niacinamide-005",
+      "description": "Replace vitamin-b3-niacinamide in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 500,
+      "expected_ids": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "ideal_ranking": [
+        1013,
+        173,
+        300,
+        647,
+        1012
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-001",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 501,
+      "expected_ids": [
+        568,
+        986,
+        167,
+        350,
+        632
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        167,
+        350,
+        632
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        93,
+        89,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-002",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 501,
+      "expected_ids": [
+        568,
+        167,
+        350,
+        632,
+        936
+      ],
+      "ideal_ranking": [
+        568,
+        167,
+        350,
+        632,
+        936
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        92,
+        91,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-003",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 501,
+      "expected_ids": [
+        568,
+        986,
+        301,
+        371,
+        589
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        301,
+        371,
+        589
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        89,
+        87,
+        85
+      ]
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-004",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 501,
+      "expected_ids": [
+        568,
+        986,
+        167,
+        350,
+        632
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        167,
+        350,
+        632
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        97,
+        93,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-b5-d-calcium-pantothenate-005",
+      "description": "Replace vitamin-b5-d-calcium-pantothenate in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 501,
+      "expected_ids": [
+        568,
+        986,
+        167,
+        350,
+        632
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        167,
+        350,
+        632
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        93,
+        89,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-001",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 502,
+      "expected_ids": [
+        177,
+        576,
+        710,
+        1019,
+        377
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        710,
+        1019,
+        377
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        92,
+        91,
+        90
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-002",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 502,
+      "expected_ids": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-003",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 502,
+      "expected_ids": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-004",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 502,
+      "expected_ids": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-pyridoxine-hydrochloride-005",
+      "description": "Replace vitamin-b6-pyridoxine-hydrochloride in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 502,
+      "expected_ids": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        310,
+        400,
+        596
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-001",
+      "description": "Replace vitamin-c-ascorbic-acid in FG-iherb-105065 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 7,
+      "raw_material_id": 503,
+      "expected_ids": [
+        699,
+        982,
+        614,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        614,
+        227,
+        244
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        94,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-002",
+      "description": "Replace vitamin-c-ascorbic-acid in FG-target-a-81806945 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 101,
+      "raw_material_id": 503,
+      "expected_ids": [
+        699,
+        982,
+        614,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        614,
+        227,
+        244
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        95,
+        92,
+        90
+      ]
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-003",
+      "description": "Replace vitamin-c-ascorbic-acid in FG-walgreens-300411121 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 134,
+      "raw_material_id": 503,
+      "expected_ids": [
+        699,
+        982,
+        614,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        614,
+        227,
+        244
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        94,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-004",
+      "description": "Replace vitamin-c-ascorbic-acid in FG-walgreens-300447518 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 129,
+      "raw_material_id": 503,
+      "expected_ids": [
+        614,
+        699,
+        982,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        699,
+        982,
+        227,
+        244
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-c-ascorbic-acid-005",
+      "description": "Replace vitamin-c-ascorbic-acid in FG-walmart-270357039 (company: Liquid I.V., current supplier: PureBulk).",
+      "product_id": 36,
+      "raw_material_id": 503,
+      "expected_ids": [
+        614,
+        699,
+        982,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        699,
+        982,
+        227,
+        244
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-001",
+      "description": "Replace ascorbic-acid in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 567,
+      "expected_ids": [
+        160,
+        236,
+        335,
+        457,
+        622
+      ],
+      "ideal_ranking": [
+        160,
+        236,
+        335,
+        457,
+        622
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        97,
+        96,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "calcium-citrate-001",
+      "description": "Replace calcium-citrate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 569,
+      "expected_ids": [
+        150,
+        460,
+        777,
+        265,
+        340
+      ],
+      "ideal_ranking": [
+        150,
+        460,
+        777,
+        265,
+        340
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        78,
+        77
+      ]
+    },
+    {
+      "case_id": "calcium-d-pantothenate-001",
+      "description": "Replace calcium-d-pantothenate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 568,
+      "expected_ids": [
+        986,
+        167,
+        350,
+        632,
+        936
+      ],
+      "ideal_ranking": [
+        986,
+        167,
+        350,
+        632,
+        936
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        87,
+        86,
+        85,
+        84
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-001",
+      "description": "Replace cyanocobalamin in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 570,
+      "expected_ids": [
+        165,
+        349,
+        631,
+        935,
+        702
+      ],
+      "ideal_ranking": [
+        165,
+        349,
+        631,
+        935,
+        702
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        90
+      ]
+    },
+    {
+      "case_id": "magnesium-citrate-001",
+      "description": "Replace magnesium-citrate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 571,
+      "expected_ids": [
+        442,
+        508,
+        532,
+        708,
+        780
+      ],
+      "ideal_ranking": [
+        442,
+        508,
+        532,
+        708,
+        780
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "manganese-chelate-001",
+      "description": "Replace manganese-chelate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 572,
+      "expected_ids": [
+        782,
+        871,
+        272,
+        365,
+        642
+      ],
+      "ideal_ranking": [
+        782,
+        871,
+        272,
+        365,
+        642
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        86,
+        82,
+        78,
+        77,
+        76
+      ]
+    },
+    {
+      "case_id": "niacin-001",
+      "description": "Replace niacin in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 573,
+      "expected_ids": [
+        369,
+        585,
+        646,
+        173,
+        300
+      ],
+      "ideal_ranking": [
+        369,
+        585,
+        646,
+        173,
+        300
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        85,
+        84
+      ]
+    },
+    {
+      "case_id": "pink-himalayan-salt-001",
+      "description": "Replace pink-himalayan-salt in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 574,
+      "expected_ids": [
+        327,
+        723,
+        784,
+        486,
+        880
+      ],
+      "ideal_ranking": [
+        327,
+        723,
+        784,
+        486,
+        880
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "potassium-citrate-006",
+      "description": "Replace potassium-citrate in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 575,
+      "expected_ids": [
+        493,
+        717,
+        785,
+        1017,
+        569
+      ],
+      "ideal_ranking": [
+        493,
+        717,
+        785,
+        1017,
+        569
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        78
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hcl-001",
+      "description": "Replace pyridoxine-hcl in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 576,
+      "expected_ids": [
+        177,
+        502,
+        400,
+        596,
+        662
+      ],
+      "ideal_ranking": [
+        177,
+        502,
+        400,
+        596,
+        662
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        96,
+        94,
+        92,
+        90
+      ]
+    },
+    {
+      "case_id": "sodium-chloride-001",
+      "description": "Replace sodium-chloride in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 577,
+      "expected_ids": [
+        214,
+        612,
+        486,
+        880,
+        241
+      ],
+      "ideal_ranking": [
+        214,
+        612,
+        486,
+        880,
+        241
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        87
+      ]
+    },
+    {
+      "case_id": "zinc-oxide-001",
+      "description": "Replace zinc-oxide in FG-target-a-1003257378 (company: Nature's Nutrition, current supplier: PureBulk).",
+      "product_id": 111,
+      "raw_material_id": 578,
+      "expected_ids": [
+        250,
+        280,
+        405,
+        668,
+        957
+      ],
+      "ideal_ranking": [
+        250,
+        280,
+        405,
+        668,
+        957
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "biotin-001",
+      "description": "Replace biotin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 580,
+      "expected_ids": [
+        286,
+        339,
+        624,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        624,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        91,
+        90
+      ]
+    },
+    {
+      "case_id": "biotin-002",
+      "description": "Replace biotin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 580,
+      "expected_ids": [
+        286,
+        339,
+        624,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        624,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "b-vitamins-001",
+      "description": "Replace b-vitamins in FG-thrive-market-new-chapter-mens-advanced-multivitamin (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 28,
+      "raw_material_id": 579,
+      "expected_ids": [
+        221,
+        281,
+        285,
+        458,
+        519
+      ],
+      "ideal_ranking": [
+        221,
+        281,
+        285,
+        458,
+        519
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "folate-001",
+      "description": "Replace folate in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 583,
+      "expected_ids": [
+        291,
+        998,
+        356,
+        633,
+        937
+      ],
+      "ideal_ranking": [
+        291,
+        998,
+        356,
+        633,
+        937
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        85,
+        84,
+        83
+      ]
+    },
+    {
+      "case_id": "folate-002",
+      "description": "Replace folate in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 583,
+      "expected_ids": [
+        291,
+        998,
+        356,
+        633,
+        937
+      ],
+      "ideal_ranking": [
+        291,
+        998,
+        356,
+        633,
+        937
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        88,
+        87,
+        86
+      ]
+    },
+    {
+      "case_id": "niacin-002",
+      "description": "Replace niacin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 585,
+      "expected_ids": [
+        369,
+        573,
+        646,
+        173,
+        300
+      ],
+      "ideal_ranking": [
+        369,
+        573,
+        646,
+        173,
+        300
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "niacin-003",
+      "description": "Replace niacin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 585,
+      "expected_ids": [
+        369,
+        573,
+        646,
+        173,
+        300
+      ],
+      "ideal_ranking": [
+        369,
+        573,
+        646,
+        173,
+        300
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "pantothenic-acid-001",
+      "description": "Replace pantothenic-acid in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 589,
+      "expected_ids": [
+        301,
+        371,
+        648,
+        1014,
+        986
+      ],
+      "ideal_ranking": [
+        301,
+        371,
+        648,
+        1014,
+        986
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        88
+      ]
+    },
+    {
+      "case_id": "pantothenic-acid-002",
+      "description": "Replace pantothenic-acid in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 589,
+      "expected_ids": [
+        301,
+        371,
+        648,
+        1014,
+        986
+      ],
+      "ideal_ranking": [
+        301,
+        371,
+        648,
+        1014,
+        986
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        90
+      ]
+    },
+    {
+      "case_id": "riboflavin-001",
+      "description": "Replace riboflavin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 590,
+      "expected_ids": [
+        309,
+        178,
+        303,
+        379
+      ],
+      "ideal_ranking": [
+        309,
+        178,
+        303,
+        379
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        87,
+        86,
+        85
+      ]
+    },
+    {
+      "case_id": "riboflavin-002",
+      "description": "Replace riboflavin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 590,
+      "expected_ids": [
+        178,
+        303,
+        379,
+        652,
+        309
+      ],
+      "ideal_ranking": [
+        178,
+        303,
+        379,
+        652,
+        309
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ]
+    },
+    {
+      "case_id": "thiamin-001",
+      "description": "Replace thiamin in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 593,
+      "expected_ids": [
+        305,
+        393,
+        307,
+        394,
+        658
+      ],
+      "ideal_ranking": [
+        305,
+        393,
+        307,
+        394,
+        658
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "thiamin-002",
+      "description": "Replace thiamin in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 593,
+      "expected_ids": [
+        657,
+        1033,
+        305,
+        393,
+        307
+      ],
+      "ideal_ranking": [
+        657,
+        1033,
+        305,
+        393,
+        307
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        88,
+        87,
+        86
+      ]
+    },
+    {
+      "case_id": "vitamin-a-001",
+      "description": "Replace vitamin-a in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 594,
+      "expected_ids": [
+        660,
+        306,
+        398,
+        474,
+        743
+      ],
+      "ideal_ranking": [
+        660,
+        306,
+        398,
+        474,
+        743
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        68,
+        67,
+        66,
+        65
+      ]
+    },
+    {
+      "case_id": "vitamin-a-002",
+      "description": "Replace vitamin-a in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 594,
+      "expected_ids": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "ideal_ranking": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        80,
+        78,
+        75,
+        74
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-001",
+      "description": "Replace vitamin-b12 in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 595,
+      "expected_ids": [
+        499,
+        702,
+        995,
+        744,
+        308
+      ],
+      "ideal_ranking": [
+        499,
+        702,
+        995,
+        744,
+        308
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        90,
+        88,
+        85,
+        82
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-002",
+      "description": "Replace vitamin-b12 in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 595,
+      "expected_ids": [
+        308,
+        399,
+        661,
+        923,
+        499
+      ],
+      "ideal_ranking": [
+        308,
+        399,
+        661,
+        923,
+        499
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-001",
+      "description": "Replace vitamin-b6 in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 596,
+      "expected_ids": [
+        502,
+        310,
+        400,
+        662,
+        1037
+      ],
+      "ideal_ranking": [
+        502,
+        310,
+        400,
+        662,
+        1037
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        92,
+        90,
+        88,
+        86
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-002",
+      "description": "Replace vitamin-b6 in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 596,
+      "expected_ids": [
+        310,
+        400,
+        662,
+        1037,
+        502
+      ],
+      "ideal_ranking": [
+        310,
+        400,
+        662,
+        1037,
+        502
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        93
+      ]
+    },
+    {
+      "case_id": "vitamin-c-001",
+      "description": "Replace vitamin-c in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 597,
+      "expected_ids": [
+        614,
+        503,
+        227,
+        244,
+        257
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        227,
+        244,
+        257
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        88,
+        85,
+        82
+      ]
+    },
+    {
+      "case_id": "vitamin-c-002",
+      "description": "Replace vitamin-c in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 597,
+      "expected_ids": [
+        614,
+        503,
+        227,
+        244,
+        257
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        227,
+        244,
+        257
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        95,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-c-003",
+      "description": "Replace vitamin-c in FG-thrive-market-new-chapter-mens-advanced-multivitamin (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 28,
+      "raw_material_id": 597,
+      "expected_ids": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        95,
+        88,
+        86,
+        84
+      ]
+    },
+    {
+      "case_id": "vitamin-d3-001",
+      "description": "Replace vitamin-d3 in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 598,
+      "expected_ids": [
+        246,
+        402,
+        476,
+        159,
+        245
+      ],
+      "ideal_ranking": [
+        246,
+        402,
+        476,
+        159,
+        245
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        78,
+        77,
+        76,
+        74,
+        72
+      ]
+    },
+    {
+      "case_id": "vitamin-d3-002",
+      "description": "Replace vitamin-d3 in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 598,
+      "expected_ids": [
+        246,
+        402,
+        476,
+        552,
+        911
+      ],
+      "ideal_ranking": [
+        246,
+        402,
+        476,
+        552,
+        911
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        82,
+        81,
+        80,
+        79,
+        78
+      ]
+    },
+    {
+      "case_id": "vitamin-d3-003",
+      "description": "Replace vitamin-d3 in FG-thrive-market-new-chapter-mens-advanced-multivitamin (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 28,
+      "raw_material_id": 598,
+      "expected_ids": [
+        246,
+        402,
+        476,
+        552,
+        159
+      ],
+      "ideal_ranking": [
+        246,
+        402,
+        476,
+        552,
+        159
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        82
+      ]
+    },
+    {
+      "case_id": "vitamin-e-001",
+      "description": "Replace vitamin-e in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 599,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        665
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        665
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-e-002",
+      "description": "Replace vitamin-e in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 599,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        665
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        665
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "vitamin-k-001",
+      "description": "Replace vitamin-k in FG-iherb-52816 (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 4,
+      "raw_material_id": 600,
+      "expected_ids": [
+        314,
+        404,
+        479,
+        315,
+        666
+      ],
+      "ideal_ranking": [
+        314,
+        404,
+        479,
+        315,
+        666
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-k-002",
+      "description": "Replace vitamin-k in FG-thrive-market-new-chapter-every-womans-one-daily-multivitamin-40-plus (company: New Chapter, current supplier: PureBulk).",
+      "product_id": 20,
+      "raw_material_id": 600,
+      "expected_ids": [
+        315,
+        314,
+        404,
+        479,
+        666
+      ],
+      "ideal_ranking": [
+        315,
+        314,
+        404,
+        479,
+        666
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        90,
+        89,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-002",
+      "description": "Replace ascorbic-acid in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 622,
+      "expected_ids": [
+        699,
+        982,
+        503,
+        614,
+        160
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        503,
+        614,
+        160
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-003",
+      "description": "Replace ascorbic-acid in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 622,
+      "expected_ids": [
+        699,
+        982,
+        503,
+        614,
+        160
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        503,
+        614,
+        160
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-004",
+      "description": "Replace ascorbic-acid in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 622,
+      "expected_ids": [
+        699,
+        982,
+        614,
+        503,
+        160
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        614,
+        503,
+        160
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        93,
+        91,
+        89
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-005",
+      "description": "Replace ascorbic-acid in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 622,
+      "expected_ids": [
+        699,
+        982,
+        503,
+        614,
+        160
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        503,
+        614,
+        160
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-006",
+      "description": "Replace ascorbic-acid in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 622,
+      "expected_ids": [
+        699,
+        982,
+        614,
+        503,
+        160
+      ],
+      "ideal_ranking": [
+        699,
+        982,
+        614,
+        503,
+        160
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "beta-carotene-001",
+      "description": "Replace beta-carotene in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 623,
+      "expected_ids": [
+        161,
+        338,
+        864,
+        928,
+        711
+      ],
+      "ideal_ranking": [
+        161,
+        338,
+        864,
+        928,
+        711
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        91,
+        72
+      ]
+    },
+    {
+      "case_id": "beta-carotene-002",
+      "description": "Replace beta-carotene in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 623,
+      "expected_ids": [
+        161,
+        338,
+        864,
+        928,
+        703
+      ],
+      "ideal_ranking": [
+        161,
+        338,
+        864,
+        928,
+        703
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        91,
+        72
+      ]
+    },
+    {
+      "case_id": "beta-carotene-003",
+      "description": "Replace beta-carotene in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 623,
+      "expected_ids": [
+        161,
+        338,
+        864,
+        928,
+        711
+      ],
+      "ideal_ranking": [
+        161,
+        338,
+        864,
+        928,
+        711
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        70
+      ]
+    },
+    {
+      "case_id": "beta-carotene-004",
+      "description": "Replace beta-carotene in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 623,
+      "expected_ids": [
+        161,
+        338,
+        864,
+        928
+      ],
+      "ideal_ranking": [
+        161,
+        338,
+        864,
+        928
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "beta-carotene-005",
+      "description": "Replace beta-carotene in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 623,
+      "expected_ids": [
+        161,
+        338,
+        864,
+        928,
+        711
+      ],
+      "ideal_ranking": [
+        161,
+        338,
+        864,
+        928,
+        711
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        72
+      ]
+    },
+    {
+      "case_id": "biotin-003",
+      "description": "Replace biotin in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "biotin-004",
+      "description": "Replace biotin in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "biotin-005",
+      "description": "Replace biotin in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "biotin-006",
+      "description": "Replace biotin in FG-cvs-880579 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 145,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "biotin-007",
+      "description": "Replace biotin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "biotin-008",
+      "description": "Replace biotin in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        97,
+        96,
+        95,
+        94,
+        93
+      ]
+    },
+    {
+      "case_id": "biotin-009",
+      "description": "Replace biotin in FG-walgreens-300413257 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 133,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "biotin-010",
+      "description": "Replace biotin in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 624,
+      "expected_ids": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "ideal_ranking": [
+        286,
+        339,
+        580,
+        929,
+        983
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-001",
+      "description": "Replace calcium-carbonate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-002",
+      "description": "Replace calcium-carbonate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-003",
+      "description": "Replace calcium-carbonate in FG-cvs-410537 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 147,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        100,
+        99,
+        98,
+        97,
+        96
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-004",
+      "description": "Replace calcium-carbonate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-005",
+      "description": "Replace calcium-carbonate in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        91,
+        90
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-006",
+      "description": "Replace calcium-carbonate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        99,
+        98,
+        97,
+        96,
+        95
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-007",
+      "description": "Replace calcium-carbonate in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "calcium-carbonate-008",
+      "description": "Replace calcium-carbonate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 625,
+      "expected_ids": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "ideal_ranking": [
+        265,
+        340,
+        459,
+        520,
+        607
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "cholecalciferol-001",
+      "description": "Replace cholecalciferol in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 626,
+      "expected_ids": [
+        342,
+        932,
+        159,
+        431,
+        455
+      ],
+      "ideal_ranking": [
+        342,
+        932,
+        159,
+        431,
+        455
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        85,
+        84,
+        83
+      ]
+    },
+    {
+      "case_id": "cholecalciferol-002",
+      "description": "Replace cholecalciferol in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 626,
+      "expected_ids": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "ideal_ranking": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        78,
+        74,
+        73
+      ]
+    },
+    {
+      "case_id": "cholecalciferol-003",
+      "description": "Replace cholecalciferol in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 626,
+      "expected_ids": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "ideal_ranking": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        78,
+        77,
+        76
+      ]
+    },
+    {
+      "case_id": "cholecalciferol-004",
+      "description": "Replace cholecalciferol in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 626,
+      "expected_ids": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "ideal_ranking": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        78,
+        72,
+        70
+      ]
+    },
+    {
+      "case_id": "cholecalciferol-005",
+      "description": "Replace cholecalciferol in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 626,
+      "expected_ids": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "ideal_ranking": [
+        342,
+        932,
+        266,
+        159,
+        431
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        74,
+        68,
+        67
+      ]
+    },
+    {
+      "case_id": "chromium-chloride-001",
+      "description": "Replace chromium-chloride in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 627,
+      "expected_ids": [
+        289,
+        343,
+        461,
+        990,
+        344
+      ],
+      "ideal_ranking": [
+        289,
+        343,
+        461,
+        990,
+        344
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        86,
+        85,
+        84,
+        83,
+        82
+      ]
+    },
+    {
+      "case_id": "chromium-chloride-002",
+      "description": "Replace chromium-chloride in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 627,
+      "expected_ids": [
+        344,
+        289,
+        343,
+        461,
+        990
+      ],
+      "ideal_ranking": [
+        344,
+        289,
+        343,
+        461,
+        990
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        86,
+        84,
+        83,
+        82,
+        81
+      ]
+    },
+    {
+      "case_id": "chromium-chloride-003",
+      "description": "Replace chromium-chloride in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 627,
+      "expected_ids": [
+        344,
+        289,
+        343,
+        461,
+        990
+      ],
+      "ideal_ranking": [
+        344,
+        289,
+        343,
+        461,
+        990
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        88,
+        85,
+        83,
+        81,
+        79
+      ]
+    },
+    {
+      "case_id": "chromium-chloride-004",
+      "description": "Replace chromium-chloride in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 627,
+      "expected_ids": [
+        344,
+        289,
+        608,
+        345,
+        933
+      ],
+      "ideal_ranking": [
+        344,
+        289,
+        608,
+        345,
+        933
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        86,
+        82,
+        78,
+        75,
+        73
+      ]
+    },
+    {
+      "case_id": "chromium-chloride-005",
+      "description": "Replace chromium-chloride in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 627,
+      "expected_ids": [
+        289,
+        343,
+        461,
+        990,
+        344
+      ],
+      "ideal_ranking": [
+        289,
+        343,
+        461,
+        990,
+        344
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        86,
+        85,
+        84,
+        83,
+        82
+      ]
+    },
+    {
+      "case_id": "copper-sulfate-001",
+      "description": "Replace copper-sulfate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 629,
+      "expected_ids": [
+        267,
+        348,
+        934,
+        628,
+        615
+      ],
+      "ideal_ranking": [
+        267,
+        348,
+        934,
+        628,
+        615
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        86,
+        84,
+        82,
+        74,
+        70
+      ]
+    },
+    {
+      "case_id": "copper-sulfate-002",
+      "description": "Replace copper-sulfate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 629,
+      "expected_ids": [
+        267,
+        348,
+        934,
+        290,
+        462
+      ],
+      "ideal_ranking": [
+        267,
+        348,
+        934,
+        290,
+        462
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        82,
+        80,
+        78,
+        72,
+        70
+      ]
+    },
+    {
+      "case_id": "copper-sulfate-003",
+      "description": "Replace copper-sulfate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 629,
+      "expected_ids": [
+        267,
+        348,
+        934,
+        347,
+        615
+      ],
+      "ideal_ranking": [
+        267,
+        348,
+        934,
+        347,
+        615
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        82,
+        80,
+        78,
+        70,
+        65
+      ]
+    },
+    {
+      "case_id": "copper-sulfate-004",
+      "description": "Replace copper-sulfate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 629,
+      "expected_ids": [
+        348,
+        934,
+        267,
+        615,
+        272
+      ],
+      "ideal_ranking": [
+        348,
+        934,
+        267,
+        615,
+        272
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        82,
+        81,
+        74,
+        70,
+        67
+      ]
+    },
+    {
+      "case_id": "copper-sulfate-005",
+      "description": "Replace copper-sulfate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 629,
+      "expected_ids": [
+        267,
+        348,
+        934,
+        290,
+        462
+      ],
+      "ideal_ranking": [
+        267,
+        348,
+        934,
+        290,
+        462
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        74,
+        72,
+        71,
+        62,
+        60
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-002",
+      "description": "Replace cyanocobalamin in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 631,
+      "expected_ids": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "ideal_ranking": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-003",
+      "description": "Replace cyanocobalamin in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 631,
+      "expected_ids": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "ideal_ranking": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-004",
+      "description": "Replace cyanocobalamin in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 631,
+      "expected_ids": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "ideal_ranking": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-005",
+      "description": "Replace cyanocobalamin in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 631,
+      "expected_ids": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "ideal_ranking": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        90
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-006",
+      "description": "Replace cyanocobalamin in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 631,
+      "expected_ids": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "ideal_ranking": [
+        165,
+        349,
+        570,
+        935,
+        702
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        87
+      ]
+    },
+    {
+      "case_id": "d-calcium-pantothenate-001",
+      "description": "Replace d-calcium-pantothenate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 632,
+      "expected_ids": [
+        568,
+        986,
+        501,
+        167,
+        350
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        501,
+        167,
+        350
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        88,
+        85,
+        84
+      ]
+    },
+    {
+      "case_id": "d-calcium-pantothenate-002",
+      "description": "Replace d-calcium-pantothenate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 632,
+      "expected_ids": [
+        568,
+        501,
+        986,
+        167,
+        350
+      ],
+      "ideal_ranking": [
+        568,
+        501,
+        986,
+        167,
+        350
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        97,
+        93,
+        91,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "d-calcium-pantothenate-003",
+      "description": "Replace d-calcium-pantothenate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 632,
+      "expected_ids": [
+        568,
+        501,
+        986,
+        167,
+        350
+      ],
+      "ideal_ranking": [
+        568,
+        501,
+        986,
+        167,
+        350
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        90,
+        88,
+        85
+      ]
+    },
+    {
+      "case_id": "d-calcium-pantothenate-004",
+      "description": "Replace d-calcium-pantothenate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 632,
+      "expected_ids": [
+        568,
+        986,
+        501,
+        167,
+        350
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        501,
+        167,
+        350
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        89,
+        86,
+        85
+      ]
+    },
+    {
+      "case_id": "d-calcium-pantothenate-005",
+      "description": "Replace d-calcium-pantothenate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 632,
+      "expected_ids": [
+        568,
+        986,
+        501,
+        167,
+        350
+      ],
+      "ideal_ranking": [
+        568,
+        986,
+        501,
+        167,
+        350
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        97,
+        94,
+        91,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-001",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 669,
+      "expected_ids": [
+        407,
+        703,
+        406,
+        843,
+        746
+      ],
+      "ideal_ranking": [
+        407,
+        703,
+        406,
+        843,
+        746
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        88,
+        82,
+        78,
+        74
+      ]
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-002",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 669,
+      "expected_ids": [
+        407,
+        406,
+        703,
+        843,
+        278
+      ],
+      "ideal_ranking": [
+        407,
+        406,
+        703,
+        843,
+        278
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        86,
+        83,
+        78,
+        74
+      ]
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-003",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 669,
+      "expected_ids": [
+        407,
+        703,
+        406,
+        843,
+        746
+      ],
+      "ideal_ranking": [
+        407,
+        703,
+        406,
+        843,
+        746
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        88,
+        82,
+        78,
+        75
+      ]
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-004",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 669,
+      "expected_ids": [
+        407,
+        703,
+        406,
+        843,
+        746
+      ],
+      "ideal_ranking": [
+        407,
+        703,
+        406,
+        843,
+        746
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        88,
+        82,
+        79,
+        76
+      ]
+    },
+    {
+      "case_id": "dl-alpha-tocopheryl-acetate-005",
+      "description": "Replace dl-alpha-tocopheryl-acetate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 669,
+      "expected_ids": [
+        407,
+        703,
+        406,
+        278,
+        396
+      ],
+      "ideal_ranking": [
+        407,
+        703,
+        406,
+        278,
+        396
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        88,
+        83,
+        78,
+        77
+      ]
+    },
+    {
+      "case_id": "folic-acid-001",
+      "description": "Replace folic-acid in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 633,
+      "expected_ids": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "ideal_ranking": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        94,
+        86,
+        85,
+        84
+      ]
+    },
+    {
+      "case_id": "folic-acid-002",
+      "description": "Replace folic-acid in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 633,
+      "expected_ids": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "ideal_ranking": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        88,
+        87,
+        86
+      ]
+    },
+    {
+      "case_id": "folic-acid-003",
+      "description": "Replace folic-acid in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 633,
+      "expected_ids": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "ideal_ranking": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        94,
+        86,
+        85,
+        84
+      ]
+    },
+    {
+      "case_id": "folic-acid-004",
+      "description": "Replace folic-acid in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 633,
+      "expected_ids": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "ideal_ranking": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        82,
+        81,
+        80
+      ]
+    },
+    {
+      "case_id": "folic-acid-005",
+      "description": "Replace folic-acid in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 633,
+      "expected_ids": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "ideal_ranking": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        88,
+        87,
+        86
+      ]
+    },
+    {
+      "case_id": "folic-acid-006",
+      "description": "Replace folic-acid in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 633,
+      "expected_ids": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "ideal_ranking": [
+        356,
+        937,
+        291,
+        583,
+        998
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        88,
+        87,
+        86
+      ]
+    },
+    {
+      "case_id": "manganese-sulfate-001",
+      "description": "Replace manganese-sulfate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 642,
+      "expected_ids": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "ideal_ranking": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        88,
+        85
+      ]
+    },
+    {
+      "case_id": "manganese-sulfate-002",
+      "description": "Replace manganese-sulfate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 642,
+      "expected_ids": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "ideal_ranking": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        84,
+        80
+      ]
+    },
+    {
+      "case_id": "manganese-sulfate-003",
+      "description": "Replace manganese-sulfate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 642,
+      "expected_ids": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "ideal_ranking": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        85,
+        83
+      ]
+    },
+    {
+      "case_id": "manganese-sulfate-004",
+      "description": "Replace manganese-sulfate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 642,
+      "expected_ids": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "ideal_ranking": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        82,
+        78
+      ]
+    },
+    {
+      "case_id": "manganese-sulfate-005",
+      "description": "Replace manganese-sulfate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 642,
+      "expected_ids": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "ideal_ranking": [
+        272,
+        365,
+        942,
+        871,
+        572
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        86,
+        83
+      ]
+    },
+    {
+      "case_id": "niacin-004",
+      "description": "Replace niacin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 646,
+      "expected_ids": [
+        369,
+        573,
+        585,
+        173,
+        300
+      ],
+      "ideal_ranking": [
+        369,
+        573,
+        585,
+        173,
+        300
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "niacin-005",
+      "description": "Replace niacin in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 646,
+      "expected_ids": [
+        369,
+        573,
+        585,
+        173,
+        300
+      ],
+      "ideal_ranking": [
+        369,
+        573,
+        585,
+        173,
+        300
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "niacinamide-001",
+      "description": "Replace niacinamide in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 647,
+      "expected_ids": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "ideal_ranking": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        92,
+        90
+      ]
+    },
+    {
+      "case_id": "niacinamide-002",
+      "description": "Replace niacinamide in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 647,
+      "expected_ids": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "ideal_ranking": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "niacinamide-003",
+      "description": "Replace niacinamide in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 647,
+      "expected_ids": [
+        173,
+        300,
+        1012,
+        500,
+        1013
+      ],
+      "ideal_ranking": [
+        173,
+        300,
+        1012,
+        500,
+        1013
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "niacinamide-004",
+      "description": "Replace niacinamide in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 647,
+      "expected_ids": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "ideal_ranking": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "niacinamide-005",
+      "description": "Replace niacinamide in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 647,
+      "expected_ids": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "ideal_ranking": [
+        173,
+        300,
+        1012,
+        1013,
+        500
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "pantothenic-acid-003",
+      "description": "Replace pantothenic-acid in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 648,
+      "expected_ids": [
+        301,
+        371,
+        589,
+        1014,
+        986
+      ],
+      "ideal_ranking": [
+        301,
+        371,
+        589,
+        1014,
+        986
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        88
+      ]
+    },
+    {
+      "case_id": "potassium-iodide-001",
+      "description": "Replace potassium-iodide in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 650,
+      "expected_ids": [
+        376,
+        293,
+        786,
+        878,
+        375
+      ],
+      "ideal_ranking": [
+        376,
+        293,
+        786,
+        878,
+        375
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        86,
+        72,
+        71,
+        68
+      ]
+    },
+    {
+      "case_id": "potassium-iodide-002",
+      "description": "Replace potassium-iodide in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 650,
+      "expected_ids": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "ideal_ranking": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        80,
+        55,
+        48,
+        47
+      ]
+    },
+    {
+      "case_id": "potassium-iodide-003",
+      "description": "Replace potassium-iodide in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 650,
+      "expected_ids": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "ideal_ranking": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        82,
+        70,
+        58,
+        57
+      ]
+    },
+    {
+      "case_id": "potassium-iodide-004",
+      "description": "Replace potassium-iodide in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 650,
+      "expected_ids": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "ideal_ranking": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        80,
+        68,
+        60,
+        59
+      ]
+    },
+    {
+      "case_id": "potassium-iodide-005",
+      "description": "Replace potassium-iodide in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 650,
+      "expected_ids": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "ideal_ranking": [
+        376,
+        293,
+        375,
+        786,
+        878
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        82,
+        71,
+        58,
+        57
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-001",
+      "description": "Replace pyridoxine-hydrochloride in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 651,
+      "expected_ids": [
+        177,
+        576,
+        502,
+        377,
+        948
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        502,
+        377,
+        948
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-002",
+      "description": "Replace pyridoxine-hydrochloride in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 651,
+      "expected_ids": [
+        377,
+        948,
+        710,
+        1019,
+        502
+      ],
+      "ideal_ranking": [
+        377,
+        948,
+        710,
+        1019,
+        502
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        91,
+        85,
+        83,
+        80
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-003",
+      "description": "Replace pyridoxine-hydrochloride in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 651,
+      "expected_ids": [
+        177,
+        576,
+        502,
+        377,
+        948
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        502,
+        377,
+        948
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        92,
+        90,
+        88,
+        87
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-004",
+      "description": "Replace pyridoxine-hydrochloride in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 651,
+      "expected_ids": [
+        177,
+        576,
+        502,
+        377,
+        948
+      ],
+      "ideal_ranking": [
+        177,
+        576,
+        502,
+        377,
+        948
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        92,
+        90,
+        89
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-005",
+      "description": "Replace pyridoxine-hydrochloride in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 651,
+      "expected_ids": [
+        377,
+        948,
+        177,
+        576,
+        502
+      ],
+      "ideal_ranking": [
+        377,
+        948,
+        177,
+        576,
+        502
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        91,
+        90
+      ]
+    },
+    {
+      "case_id": "riboflavin-003",
+      "description": "Replace riboflavin in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 652,
+      "expected_ids": [
+        309,
+        178,
+        303,
+        379,
+        590
+      ],
+      "ideal_ranking": [
+        309,
+        178,
+        303,
+        379,
+        590
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        91,
+        89,
+        87,
+        85
+      ]
+    },
+    {
+      "case_id": "riboflavin-004",
+      "description": "Replace riboflavin in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 652,
+      "expected_ids": [
+        178,
+        303,
+        379,
+        309,
+        590
+      ],
+      "ideal_ranking": [
+        178,
+        303,
+        379,
+        309,
+        590
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "riboflavin-005",
+      "description": "Replace riboflavin in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 652,
+      "expected_ids": [
+        309,
+        178,
+        303,
+        379,
+        590
+      ],
+      "ideal_ranking": [
+        309,
+        178,
+        303,
+        379,
+        590
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "riboflavin-006",
+      "description": "Replace riboflavin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 652,
+      "expected_ids": [
+        309,
+        178,
+        303,
+        379,
+        590
+      ],
+      "ideal_ranking": [
+        309,
+        178,
+        303,
+        379,
+        590
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        90,
+        88,
+        86
+      ]
+    },
+    {
+      "case_id": "riboflavin-007",
+      "description": "Replace riboflavin in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 652,
+      "expected_ids": [
+        178,
+        303,
+        379,
+        309,
+        590
+      ],
+      "ideal_ranking": [
+        178,
+        303,
+        379,
+        309,
+        590
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "riboflavin-008",
+      "description": "Replace riboflavin in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 652,
+      "expected_ids": [
+        178,
+        303,
+        309,
+        379,
+        590
+      ],
+      "ideal_ranking": [
+        178,
+        303,
+        309,
+        379,
+        590
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "riboflavin-009",
+      "description": "Replace riboflavin in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 652,
+      "expected_ids": [
+        178,
+        303,
+        379,
+        309,
+        590
+      ],
+      "ideal_ranking": [
+        178,
+        303,
+        379,
+        309,
+        590
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "sodium-selenite-001",
+      "description": "Replace sodium-selenite in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 655,
+      "expected_ids": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "ideal_ranking": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        82,
+        81,
+        80
+      ]
+    },
+    {
+      "case_id": "sodium-selenite-002",
+      "description": "Replace sodium-selenite in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 655,
+      "expected_ids": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "ideal_ranking": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        92,
+        82,
+        80,
+        78
+      ]
+    },
+    {
+      "case_id": "sodium-selenite-003",
+      "description": "Replace sodium-selenite in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 655,
+      "expected_ids": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "ideal_ranking": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        78,
+        77,
+        76
+      ]
+    },
+    {
+      "case_id": "sodium-selenite-004",
+      "description": "Replace sodium-selenite in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 655,
+      "expected_ids": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "ideal_ranking": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        93,
+        82,
+        81,
+        80
+      ]
+    },
+    {
+      "case_id": "sodium-selenite-005",
+      "description": "Replace sodium-selenite in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 655,
+      "expected_ids": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "ideal_ranking": [
+        386,
+        952,
+        304,
+        380,
+        472
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        95,
+        84,
+        83,
+        82
+      ]
+    },
+    {
+      "case_id": "thiamin-003",
+      "description": "Replace thiamin in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 657,
+      "expected_ids": [
+        593,
+        1033,
+        394,
+        658,
+        956
+      ],
+      "ideal_ranking": [
+        593,
+        1033,
+        394,
+        658,
+        956
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        88,
+        87,
+        86
+      ]
+    },
+    {
+      "case_id": "thiamin-004",
+      "description": "Replace thiamin in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 657,
+      "expected_ids": [
+        593,
+        1033,
+        307,
+        305,
+        393
+      ],
+      "ideal_ranking": [
+        593,
+        1033,
+        307,
+        305,
+        393
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        93,
+        88,
+        86,
+        85
+      ]
+    },
+    {
+      "case_id": "thiamine-mononitrate-001",
+      "description": "Replace thiamine-mononitrate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 658,
+      "expected_ids": [
+        394,
+        956,
+        307,
+        305,
+        393
+      ],
+      "ideal_ranking": [
+        394,
+        956,
+        307,
+        305,
+        393
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        88,
+        86,
+        84
+      ]
+    },
+    {
+      "case_id": "thiamine-mononitrate-002",
+      "description": "Replace thiamine-mononitrate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 658,
+      "expected_ids": [
+        394,
+        956,
+        305,
+        393,
+        183
+      ],
+      "ideal_ranking": [
+        394,
+        956,
+        305,
+        393,
+        183
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        100,
+        99,
+        92,
+        91,
+        88
+      ]
+    },
+    {
+      "case_id": "thiamine-mononitrate-003",
+      "description": "Replace thiamine-mononitrate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 658,
+      "expected_ids": [
+        394,
+        956,
+        593,
+        657,
+        1033
+      ],
+      "ideal_ranking": [
+        394,
+        956,
+        593,
+        657,
+        1033
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "thiamine-mononitrate-004",
+      "description": "Replace thiamine-mononitrate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 658,
+      "expected_ids": [
+        394,
+        956,
+        307,
+        305,
+        393
+      ],
+      "ideal_ranking": [
+        394,
+        956,
+        307,
+        305,
+        393
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        97,
+        90,
+        88,
+        86
+      ]
+    },
+    {
+      "case_id": "thiamine-mononitrate-005",
+      "description": "Replace thiamine-mononitrate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 658,
+      "expected_ids": [
+        394,
+        956,
+        305,
+        393,
+        307
+      ],
+      "ideal_ranking": [
+        394,
+        956,
+        305,
+        393,
+        307
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        92,
+        91,
+        90
+      ]
+    },
+    {
+      "case_id": "vitamin-a-003",
+      "description": "Replace vitamin-a in FG-cvs-410537 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 147,
+      "raw_material_id": 659,
+      "expected_ids": [
+        660,
+        184,
+        743,
+        306,
+        398
+      ],
+      "ideal_ranking": [
+        660,
+        184,
+        743,
+        306,
+        398
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        89,
+        82,
+        78,
+        75,
+        74
+      ]
+    },
+    {
+      "case_id": "vitamin-a-004",
+      "description": "Replace vitamin-a in FG-cvs-880579 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 145,
+      "raw_material_id": 659,
+      "expected_ids": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "ideal_ranking": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        88,
+        80,
+        76,
+        70,
+        69
+      ]
+    },
+    {
+      "case_id": "vitamin-a-005",
+      "description": "Replace vitamin-a in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 659,
+      "expected_ids": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "ideal_ranking": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        85,
+        82,
+        78,
+        76
+      ]
+    },
+    {
+      "case_id": "vitamin-a-006",
+      "description": "Replace vitamin-a in FG-walgreens-300413257 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 133,
+      "raw_material_id": 659,
+      "expected_ids": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "ideal_ranking": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        85,
+        80,
+        78,
+        76
+      ]
+    },
+    {
+      "case_id": "vitamin-a-007",
+      "description": "Replace vitamin-a in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 659,
+      "expected_ids": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "ideal_ranking": [
+        660,
+        743,
+        184,
+        306,
+        398
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        85,
+        82,
+        78,
+        77
+      ]
+    },
+    {
+      "case_id": "vitamin-a-acetate-001",
+      "description": "Replace vitamin-a-acetate in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 660,
+      "expected_ids": [
+        378,
+        743,
+        407,
+        669,
+        703
+      ],
+      "ideal_ranking": [
+        378,
+        743,
+        407,
+        669,
+        703
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        85,
+        72,
+        71,
+        68
+      ]
+    },
+    {
+      "case_id": "vitamin-a-acetate-002",
+      "description": "Replace vitamin-a-acetate in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 660,
+      "expected_ids": [
+        378,
+        743,
+        306,
+        398,
+        474
+      ],
+      "ideal_ranking": [
+        378,
+        743,
+        306,
+        398,
+        474
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        88,
+        80,
+        75,
+        74,
+        73
+      ]
+    },
+    {
+      "case_id": "vitamin-a-acetate-003",
+      "description": "Replace vitamin-a-acetate in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 660,
+      "expected_ids": [
+        378,
+        743,
+        407,
+        669,
+        703
+      ],
+      "ideal_ranking": [
+        378,
+        743,
+        407,
+        669,
+        703
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        85,
+        78,
+        77,
+        74
+      ]
+    },
+    {
+      "case_id": "vitamin-a-acetate-004",
+      "description": "Replace vitamin-a-acetate in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 660,
+      "expected_ids": [
+        378,
+        743,
+        703,
+        407,
+        669
+      ],
+      "ideal_ranking": [
+        378,
+        743,
+        703,
+        407,
+        669
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        85,
+        72,
+        66,
+        65
+      ]
+    },
+    {
+      "case_id": "vitamin-a-acetate-005",
+      "description": "Replace vitamin-a-acetate in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 660,
+      "expected_ids": [
+        378,
+        743,
+        306,
+        398,
+        474
+      ],
+      "ideal_ranking": [
+        378,
+        743,
+        306,
+        398,
+        474
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        86,
+        78,
+        74,
+        73,
+        72
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-003",
+      "description": "Replace vitamin-b12 in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 661,
+      "expected_ids": [
+        308,
+        399,
+        595,
+        702,
+        923
+      ],
+      "ideal_ranking": [
+        308,
+        399,
+        595,
+        702,
+        923
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "vitamin-b12-004",
+      "description": "Replace vitamin-b12 in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 661,
+      "expected_ids": [
+        308,
+        399,
+        595,
+        923,
+        499
+      ],
+      "ideal_ranking": [
+        308,
+        399,
+        595,
+        923,
+        499
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-003",
+      "description": "Replace vitamin-b6 in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 662,
+      "expected_ids": [
+        310,
+        400,
+        596,
+        1037,
+        502
+      ],
+      "ideal_ranking": [
+        310,
+        400,
+        596,
+        1037,
+        502
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "vitamin-b6-004",
+      "description": "Replace vitamin-b6 in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 662,
+      "expected_ids": [
+        310,
+        400,
+        596,
+        1037,
+        502
+      ],
+      "ideal_ranking": [
+        310,
+        400,
+        596,
+        1037,
+        502
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        90
+      ]
+    },
+    {
+      "case_id": "vitamin-c-004",
+      "description": "Replace vitamin-c in FG-cvs-410537 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 147,
+      "raw_material_id": 663,
+      "expected_ids": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        93,
+        88,
+        86,
+        85
+      ]
+    },
+    {
+      "case_id": "vitamin-c-005",
+      "description": "Replace vitamin-c in FG-cvs-880579 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 145,
+      "raw_material_id": 663,
+      "expected_ids": [
+        614,
+        503,
+        227,
+        244,
+        257
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        227,
+        244,
+        257
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        91,
+        88,
+        85,
+        82
+      ]
+    },
+    {
+      "case_id": "vitamin-c-006",
+      "description": "Replace vitamin-c in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 663,
+      "expected_ids": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        95,
+        88,
+        82,
+        80
+      ]
+    },
+    {
+      "case_id": "vitamin-c-007",
+      "description": "Replace vitamin-c in FG-walgreens-300413257 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 133,
+      "raw_material_id": 663,
+      "expected_ids": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        97,
+        94,
+        88,
+        86,
+        85
+      ]
+    },
+    {
+      "case_id": "vitamin-c-008",
+      "description": "Replace vitamin-c in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 663,
+      "expected_ids": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "ideal_ranking": [
+        614,
+        503,
+        790,
+        227,
+        244
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        91,
+        85,
+        82,
+        80
+      ]
+    },
+    {
+      "case_id": "vitamin-d-001",
+      "description": "Replace vitamin-d in FG-cvs-880579 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 145,
+      "raw_material_id": 664,
+      "expected_ids": [
+        245,
+        284,
+        312,
+        475,
+        831
+      ],
+      "ideal_ranking": [
+        245,
+        284,
+        312,
+        475,
+        831
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-d-002",
+      "description": "Replace vitamin-d in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 664,
+      "expected_ids": [
+        266,
+        246,
+        402,
+        476,
+        552
+      ],
+      "ideal_ranking": [
+        266,
+        246,
+        402,
+        476,
+        552
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        90,
+        85,
+        84,
+        83,
+        82
+      ]
+    },
+    {
+      "case_id": "vitamin-d-003",
+      "description": "Replace vitamin-d in FG-walgreens-300413257 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 133,
+      "raw_material_id": 664,
+      "expected_ids": [
+        266,
+        246,
+        402,
+        476,
+        552
+      ],
+      "ideal_ranking": [
+        266,
+        246,
+        402,
+        476,
+        552
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        90,
+        84,
+        83,
+        82,
+        81
+      ]
+    },
+    {
+      "case_id": "vitamin-d-004",
+      "description": "Replace vitamin-d in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 664,
+      "expected_ids": [
+        245,
+        284,
+        312,
+        475,
+        831
+      ],
+      "ideal_ranking": [
+        245,
+        284,
+        312,
+        475,
+        831
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-e-003",
+      "description": "Replace vitamin-e in FG-cvs-410537 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 147,
+      "raw_material_id": 665,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        599
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        599
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-e-004",
+      "description": "Replace vitamin-e in FG-cvs-880579 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 145,
+      "raw_material_id": 665,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        703
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        703
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        85
+      ]
+    },
+    {
+      "case_id": "vitamin-e-005",
+      "description": "Replace vitamin-e in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 665,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        703
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        703
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        89,
+        88,
+        87,
+        86,
+        82
+      ]
+    },
+    {
+      "case_id": "vitamin-e-006",
+      "description": "Replace vitamin-e in FG-walgreens-300413257 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 133,
+      "raw_material_id": 665,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        703
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        703
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        85
+      ]
+    },
+    {
+      "case_id": "vitamin-e-007",
+      "description": "Replace vitamin-e in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 665,
+      "expected_ids": [
+        313,
+        403,
+        478,
+        554,
+        599
+      ],
+      "ideal_ranking": [
+        313,
+        403,
+        478,
+        554,
+        599
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-k-003",
+      "description": "Replace vitamin-k in FG-sams-club-prod15990273 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 121,
+      "raw_material_id": 666,
+      "expected_ids": [
+        314,
+        404,
+        479,
+        600,
+        315
+      ],
+      "ideal_ranking": [
+        314,
+        404,
+        479,
+        600,
+        315
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        92,
+        91,
+        90,
+        89,
+        88
+      ]
+    },
+    {
+      "case_id": "vitamin-k-004",
+      "description": "Replace vitamin-k in FG-walgreens-prod6028865 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 127,
+      "raw_material_id": 666,
+      "expected_ids": [
+        315,
+        372,
+        314,
+        404,
+        479
+      ],
+      "ideal_ranking": [
+        315,
+        372,
+        314,
+        404,
+        479
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        94,
+        85,
+        80,
+        79,
+        78
+      ]
+    },
+    {
+      "case_id": "zinc-oxide-002",
+      "description": "Replace zinc-oxide in FG-costco-100143268 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 118,
+      "raw_material_id": 668,
+      "expected_ids": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "ideal_ranking": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "zinc-oxide-003",
+      "description": "Replace zinc-oxide in FG-cvs-246284 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 141,
+      "raw_material_id": 668,
+      "expected_ids": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "ideal_ranking": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "zinc-oxide-004",
+      "description": "Replace zinc-oxide in FG-cvs-448437 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 143,
+      "raw_material_id": 668,
+      "expected_ids": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "ideal_ranking": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "zinc-oxide-005",
+      "description": "Replace zinc-oxide in FG-target-a-10996455 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 92,
+      "raw_material_id": 668,
+      "expected_ids": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "ideal_ranking": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        96,
+        95,
+        94,
+        93,
+        92
+      ]
+    },
+    {
+      "case_id": "zinc-oxide-006",
+      "description": "Replace zinc-oxide in FG-walgreens-prod6083374 (company: One A Day, current supplier: PureBulk).",
+      "product_id": 125,
+      "raw_material_id": 668,
+      "expected_ids": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "ideal_ranking": [
+        250,
+        280,
+        405,
+        578,
+        957
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        95,
+        94,
+        93,
+        92,
+        91
+      ]
+    },
+    {
+      "case_id": "ascorbic-acid-vitamin-c-001",
+      "description": "Replace ascorbic-acid-vitamin-c in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 699,
+      "expected_ids": [
+        982,
+        503,
+        160,
+        236,
+        335
+      ],
+      "ideal_ranking": [
+        982,
+        503,
+        160,
+        236,
+        335
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        98,
+        96,
+        92,
+        90,
+        88
+      ]
+    },
+    {
+      "case_id": "cyanocobalamin-vitamin-b12-001",
+      "description": "Replace cyanocobalamin-vitamin-b12 in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 702,
+      "expected_ids": [
+        995,
+        499,
+        165,
+        349,
+        570
+      ],
+      "ideal_ranking": [
+        995,
+        499,
+        165,
+        349,
+        570
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        92,
+        90,
+        88,
+        86
+      ]
+    },
+    {
+      "case_id": "d-alpha-tocopheryl-acetate-vitamin-e-001",
+      "description": "Replace d-alpha-tocopheryl-acetate-vitamin-e in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 703,
+      "expected_ids": [
+        843,
+        746,
+        166,
+        313,
+        403
+      ],
+      "ideal_ranking": [
+        843,
+        746,
+        166,
+        313,
+        403
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        92,
+        89,
+        86,
+        84,
+        82
+      ]
+    },
+    {
+      "case_id": "dipotassium-phosphate-006",
+      "description": "Replace dipotassium-phosphate in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 704,
+      "expected_ids": [
+        490,
+        997,
+        786,
+        878,
+        493
+      ],
+      "ideal_ranking": [
+        490,
+        997,
+        786,
+        878,
+        493
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        96,
+        94,
+        88,
+        86,
+        78
+      ]
+    },
+    {
+      "case_id": "l-isoleucine-001",
+      "description": "Replace l-isoleucine in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 705,
+      "expected_ids": [
+        706,
+        707,
+        839,
+        295,
+        219
+      ],
+      "ideal_ranking": [
+        706,
+        707,
+        839,
+        295,
+        219
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        86,
+        83,
+        78,
+        62,
+        45
+      ]
+    },
+    {
+      "case_id": "l-leucine-001",
+      "description": "Replace l-leucine in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 706,
+      "expected_ids": [
+        839,
+        705,
+        707,
+        295,
+        808
+      ],
+      "ideal_ranking": [
+        839,
+        705,
+        707,
+        295,
+        808
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        88,
+        74,
+        72,
+        55,
+        54
+      ]
+    },
+    {
+      "case_id": "l-valine-001",
+      "description": "Replace l-valine in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 707,
+      "expected_ids": [
+        706,
+        705,
+        839,
+        308,
+        221
+      ],
+      "ideal_ranking": [
+        706,
+        705,
+        839,
+        308,
+        221
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        86,
+        84,
+        81,
+        60,
+        55
+      ]
+    },
+    {
+      "case_id": "magnesium-citrate-002",
+      "description": "Replace magnesium-citrate in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 708,
+      "expected_ids": [
+        442,
+        508,
+        532,
+        571,
+        780
+      ],
+      "ideal_ranking": [
+        442,
+        508,
+        532,
+        571,
+        780
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        98,
+        97,
+        96,
+        95,
+        94
+      ]
+    },
+    {
+      "case_id": "pyridoxine-hydrochloride-vitamin-b6-001",
+      "description": "Replace pyridoxine-hydrochloride-vitamin-b6 in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 710,
+      "expected_ids": [
+        502,
+        177,
+        576,
+        377,
+        651
+      ],
+      "ideal_ranking": [
+        502,
+        177,
+        576,
+        377,
+        651
+      ],
+      "difficulty": "easy",
+      "oracle_scores": [
+        94,
+        91,
+        89,
+        87,
+        85
+      ]
+    },
+    {
+      "case_id": "retinyl-palmitate-vitamin-a-001",
+      "description": "Replace retinyl-palmitate-vitamin-a in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 711,
+      "expected_ids": [
+        660,
+        703,
+        743,
+        378,
+        949
+      ],
+      "ideal_ranking": [
+        660,
+        703,
+        743,
+        378,
+        949
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        89,
+        72,
+        68,
+        64,
+        63
+      ]
+    },
+    {
+      "case_id": "sea-salt-001",
+      "description": "Replace sea-salt in FG-amazon-b0ft5z9k9n (company: PRIME HYDRATION+, current supplier: PureBulk).",
+      "product_id": 58,
+      "raw_material_id": 712,
+      "expected_ids": [
+        439,
+        696,
+        486,
+        880,
+        241
+      ],
+      "ideal_ranking": [
+        439,
+        696,
+        486,
+        880,
+        241
+      ],
+      "difficulty": "medium",
+      "oracle_scores": [
+        95,
+        94,
+        88,
+        87,
+        80
+      ]
     }
   ],
   "_field_reference": {
-    "case_id": "Unique string identifier for this test case. Use format: '<material>-<context>-<number>', e.g. 'soy-lecithin-protein-bar-001'",
-    "description": "Human-readable explanation of the scenario. What are we substituting, in what product, and why is it interesting.",
-    "product_id": "Integer DB id of the finished-good product (type='finished-good' in products table).",
-    "raw_material_id": "Integer DB id of the raw material we want to replace (type='raw-material' in products table).",
-    "expected_ids": "List of integer raw-material IDs that SHOULD appear in the top-K results. Precision/Recall/F1 computed against this set.",
-    "ideal_ranking": "Ordered list of expected_ids best-to-worst. Used for NDCG and MRR. Set to [] if order does not matter.",
-    "difficulty": "One of: 'easy' (obvious substitutes, high similarity), 'medium' (reasonable fit with tradeoffs), 'hard' (non-obvious, edge case)."
+    "case_id": "Unique string identifier. Format: '<material>-<NNN>'.",
+    "description": "Human-readable explanation of the substitution scenario.",
+    "product_id": "Integer DB id of the finished-good product.",
+    "raw_material_id": "Integer DB id of the raw material being replaced.",
+    "expected_ids": "Raw-material IDs that SHOULD appear in the top-K results. Precision/Recall/F1 computed against this set.",
+    "ideal_ranking": "expected_ids ordered best-to-worst. Used for NDCG and MRR.",
+    "difficulty": "'easy' (top\u226575, spread<10), 'medium' (moderate), 'hard' (top<60, few candidates, or oracle fallback).",
+    "oracle_scores": "Per-position scores (0\u2013100) returned by the oracle. Debug trace only \u2014 not used by the benchmark.",
+    "note": "Present only when oracle fallback was used (expected_ids seeded from raw candidates)."
   }
 }

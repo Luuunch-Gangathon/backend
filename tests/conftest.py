@@ -13,7 +13,7 @@ import requests
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql://spherecast:spherecast@localhost:5432/spherecast",
+    "postgresql://spherecast:spherecast@localhost:5432/spherecast2",
 )
 
 BASE_URL = "http://localhost:8000"
