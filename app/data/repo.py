@@ -387,6 +387,22 @@ async def save_substitutions(
 # RAG context — used by AgnesAgent to enrich LLM prompt
 # ---------------------------------------------------------------------------
 
+async def get_product_spec(product_id: int) -> dict:
+    """Fetch the enriched spec for a finished-good product.
+
+    Returns an empty dict if the product has no spec yet (or doesn't exist).
+    """
+    async with db.get_conn() as conn:
+        row = await conn.fetchrow(
+            "SELECT spec FROM products WHERE id = $1 AND type = 'finished-good'",
+            product_id,
+        )
+    if row is None or row["spec"] is None:
+        return {}
+    spec = row["spec"]
+    return json.loads(spec) if isinstance(spec, str) else spec
+
+
 async def get_specs_for_raw_materials(rm_ids: list[int]) -> dict[int, dict]:
     """Fetch enriched specs from substitution_groups for a list of raw material DB ids.
 
