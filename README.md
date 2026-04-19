@@ -204,6 +204,10 @@ pytest tests/search_engine/ -q
 # Integration tests (server + DB must be running)
 uvicorn app.main:app --reload
 pytest tests/ -q
+
+# or
+
+pytest tests/ -v
 ```
 
 Pre-commit hook: `git config core.hooksPath .githooks`
