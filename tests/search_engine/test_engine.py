@@ -31,8 +31,6 @@ def _fake_handler_empty(name: str, context: dict) -> list[dict]:
     return []
 
 
-# Tests define their own sources so they don't depend on which sources
-# are active/commented in the production config.
 _TEST_SOURCES = [
     {"name": "supplier_website", "trust_tier": "verified", "provides": ["*"]},
     {"name": "chebi", "trust_tier": "verified", "provides": ["functional_role"]},
@@ -113,7 +111,6 @@ def test_engine_skips_property_already_filled():
         handlers=fake_handlers,
     )
 
-    # foodb (verified) filled source_origin, so llm_knowledge must not overwrite it
     assert result.properties["source_origin"].source_name == "foodb"
     assert result.properties["source_origin"].value == "plant"
 
@@ -165,6 +162,5 @@ def test_engine_respects_trust_tier_order():
         handlers=fake_handlers,
     )
 
-    # retail_page is "probable" — should still fill since no verified source had it
     assert result.properties["source_origin"].confidence == "probable"
     assert result.properties["source_origin"].source_name == "retail_page"

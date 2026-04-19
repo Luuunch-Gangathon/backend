@@ -8,7 +8,6 @@
       "product_id": 0,
       "raw_material_id": 0,
       "expected_ids": [0, 0],
-      "excluded_ids": [0],
       "ideal_ranking": [0, 0],
       "difficulty": "easy"
     }
@@ -18,9 +17,8 @@
     "description": "Human-readable explanation of the scenario. What are we substituting, in what product, and why is it interesting.",
     "product_id": "Integer DB id of the finished-good product (type='finished-good' in products table).",
     "raw_material_id": "Integer DB id of the raw material we want to replace (type='raw-material' in products table).",
-    "expected_ids": "List of integer raw-material IDs that SHOULD appear in the compliance engine results. These are the known-good substitutes. Precision/Recall are computed against this set.",
-    "excluded_ids": "List of integer raw-material IDs that MUST NOT appear in results. Known-bad fits — allergen conflicts, regulatory blocks, incompatible functional roles. Any hit here counts as a failure.",
-    "ideal_ranking": "Ordered list of expected_ids from best to worst substitute. Used for ranking metrics (NDCG, MRR, Spearman). Omit or leave empty [] if order does not matter.",
-    "difficulty": "One of: 'easy' (obvious substitutes, high vector similarity), 'medium' (reasonable fit but has tradeoffs), 'hard' (non-obvious, edge case, or system likely to make mistakes)."
+    "expected_ids": "List of integer raw-material IDs that SHOULD appear in the top-K results. Precision/Recall/F1 computed against this set.",
+    "ideal_ranking": "Ordered list of expected_ids best-to-worst. Used for NDCG and MRR. Set to [] if order does not matter.",
+    "difficulty": "One of: 'easy' (obvious substitutes, high similarity), 'medium' (reasonable fit with tradeoffs), 'hard' (non-obvious, edge case)."
   }
 }

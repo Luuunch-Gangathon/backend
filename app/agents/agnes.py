@@ -1,17 +1,29 @@
-"""AgnesAgent — chat with LLM tool calling.
+"""AgnesAgent — autonomous chat with LLM tool calling.
 
-LLM decides which tools to call autonomously based on user intent.
-Session-based history: server stores conversation per session_id.
-Frontend sends session_id each request — no full history transmission.
+Architecture:
+  LLM decides which tools to call autonomously via LangChain bind_tools().
+  No hardcoded routing — tool selection is 100% LLM-driven.
+  Agent loop: invoke → check tool_calls → execute → feed result back → repeat.
+
+Session management:
+  Server stores conversation history per session_id (in-memory).
+  Frontend sends session_id each request — no full history transmission.
+  Product context (product_id) is session-scoped, injected into system prompt.
 
 Tools available to the LLM:
   search_all_materials     → enrich all unenriched materials via SearchEngine
   search_material(name)    → enrich single material via SearchEngine
-  check_product_compliance → score substitutes for all RMs in session product
+  check_product_compliance → score substitutes for RMs in session product (uses compliance agent)
   show_bom(product_id)     → show ingredients for a product
   show_company(company_id) → show company info + products
 
-Anything without tool calls → normal chat with RAG context.
+Reasoning visibility:
+  Each tool call is logged as a reasoning_step in the response,
+  so frontend can render the agent's thought process (which tools called, results).
+
+RAG context:
+  Every request runs rag.search() on the user message and injects matching
+  materials (with company/supplier rollups) into the system prompt.
 """
 
 from __future__ import annotations
@@ -227,7 +239,10 @@ async def ask(
     messages.extend(history.messages)
     messages.append(HumanMessage(content=message))
 
-    # Agent loop: invoke → execute tool calls → invoke again until plain text reply
+    # Agent loop: invoke → execute tool calls → invoke again until plain text reply.
+    # Collect reasoning_steps so frontend can render the tool-call trace.
+    reasoning_steps: list[str] = []
+
     while True:
         response = await llm_with_tools.ainvoke(messages)
         messages.append(response)
@@ -240,13 +255,21 @@ async def ask(
             result = await tool_map[tc["name"]].ainvoke(tc["args"])
             messages.append(ToolMessage(content=str(result), tool_call_id=tc["id"]))
 
+            args_str = ", ".join(f"{k}={v}" for k, v in tc["args"].items())
+            result_summary = str(result)[:300]
+            reasoning_steps.append(f"Called {tc['name']}({args_str}) → {result_summary}")
+
     reply_text = response.content
     history.add_user_message(message)
     history.add_ai_message(reply_text)
 
-    logger.info("AgnesAgent: session %s — %d messages total", session_id, len(history.messages))
+    logger.info("AgnesAgent: session %s — %d messages, %d tool calls", session_id, len(history.messages), len(reasoning_steps))
 
     return AgnesAskResponse(
-        reply=AgnesMessage(role="assistant", content=reply_text),
+        reply=AgnesMessage(
+            role="assistant",
+            content=reply_text,
+            reasoning_steps=reasoning_steps if reasoning_steps else None,
+        ),
         session_id=session_id,
     )

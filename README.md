@@ -87,6 +87,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # edit .env — set OPENAI_API_KEY (embeddings + Agnes chat)
 #             set ANTHROPIC_API_KEY (SearchEngine LLM enrichment)
+#             set SKIP_SEARCH_ENGINE=true to skip enrichment on startup (local dev)
 
 # 4. Enable git hook (once per clone)
 git config core.hooksPath .githooks
@@ -204,6 +205,8 @@ SearchEngine.run_all() / run_one(name)
 **Two-phase embedding strategy:**
 - Phase 1 (startup): `seed_name_only_embeddings()` gives every material a cheap name-only vector so similarity search works immediately.
 - Phase 2 (scheduled/on-demand): `run_all()` / `run_one()` upgrades to spec-based vectors as enrichment completes. `store_embedding()` always overwrites; `store_name_only_embedding()` never does.
+
+**Skipping enrichment on startup:** set `SKIP_SEARCH_ENGINE=true` in `.env` to bypass Phase 2 on boot — useful for local development. Phase 1 (name-only seeding) still runs. On-demand enrichment via `POST /raw-materials/{id}/enrich` is unaffected.
 
 **Requires** `ANTHROPIC_API_KEY` for LLM handlers. If unset, a `WARNING` is logged and properties stay null (name-only embedding is kept).
 

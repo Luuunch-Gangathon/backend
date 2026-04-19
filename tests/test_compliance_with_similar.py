@@ -78,10 +78,15 @@ async def test_check_compliance_accepts_similar_pairs(seed) -> None:
 
     mock_parse.assert_called_once()
 
-    # Verify vector_similarity appears in the user prompt for every substitute.
+    # Verify each substitute in the prompt has the expected fields.
+    # Note: vector_similarity was intentionally removed — system prompt now bans LLM from using it.
     user_msg = next(m["content"] for m in captured_messages if m["role"] == "user")
-    payload = json.loads(user_msg.split("Substitute candidates:\n")[1].split("\n\nReturn")[0])
+    # Find the candidates JSON block — robust to wording changes in the template
+    candidates_start = user_msg.index(":\n", user_msg.index("Substitute candidates")) + 2
+    candidates_end = user_msg.index("\n\n", candidates_start)
+    payload = json.loads(user_msg[candidates_start:candidates_end])
+    assert len(payload) >= 1, "Expected at least one candidate in prompt"
     for entry in payload:
-        assert "vector_similarity" in entry, f"Missing vector_similarity in {entry}"
-        score = entry["vector_similarity"]
-        assert 0.0 <= score <= 1.0, f"vector_similarity out of range: {score}"
+        assert "id" in entry, f"Missing id in {entry}"
+        assert "sku" in entry, f"Missing sku in {entry}"
+        assert "spec" in entry, f"Missing spec in {entry}"

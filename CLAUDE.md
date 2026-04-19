@@ -30,6 +30,39 @@ yarn gen:types   # reads http://localhost:8000/openapi.json
 - For fields whose JSON key is a Python reserved word (e.g. `pass`), use
   `Field(alias="pass")` + `response_model_by_alias=True` on the route.
 
+## Compliance scoring rubric
+
+Compliance agent scores substitutes on 5 dimensions (0–20 each, total 0–100):
+
+| Dimension | What it measures |
+|-----------|-----------------|
+| `functional_equivalence` | Same functional role in the formulation |
+| `spec_compatibility` | Physical/chemical overlap (form, grade, origin) |
+| `regulatory_fit` | GRAS, recalls, regulatory pathway alignment |
+| `dietary_compliance` | Preserves dietary claims (vegan, halal, allergens) |
+| `certification_match` | Retains certifications (organic, non-GMO, etc.) |
+
+Response includes `score_breakdown` with per-dimension scores so every number is auditable.
+Prompt: `app/prompts/system/compliance.j2`. Schema: `app/schemas/compliance.py`.
+
+## Agnes chat agent
+
+Fully autonomous tool-calling agent (LangChain bind_tools, GPT-4o-mini).
+LLM decides which tools to call — no hardcoded routing.
+Returns `reasoning_steps[]` showing which tools were called and their results.
+
+Tools: `search_all_materials`, `search_material`, `show_bom`, `show_company`, `check_product_compliance`.
+
+## Benchmark
+
+```bash
+python scripts/benchmark.py          # default K=3
+python scripts/benchmark.py --k 5    # override K
+```
+
+Dataset: `knowledge/benchmark/compliance_cases.json`
+Results: `knowledge/benchmark/results.json` + `results.md`
+
 ## Run locally
 ```bash
 python3 -m venv .venv && source .venv/bin/activate

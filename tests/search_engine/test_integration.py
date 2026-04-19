@@ -22,7 +22,7 @@ def _fake_empty(name: str, context: dict) -> list[dict]:
 _ALL_SOURCE_NAMES = [
     "supplier_website", "pubchem", "chebi", "foodb", "open_food_facts",
     "nih_dsld", "openfda", "fda_eafus", "efsa", "retail_page",
-    "web_search", "llm_knowledge", "llm_general_fallback",
+    "web_search", "llm_knowledge", "llm_general_fallback", "llm_enrichment",
 ]
 
 _TEST_SOURCES = [

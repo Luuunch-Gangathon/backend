@@ -5,5 +5,10 @@ Finished good (product): {{ product | tojson }}
 Substitute candidates (each includes enriched spec data where available):
 {{ substitutes | tojson(indent=2) }}
 
-Ground your reasoning in the spec fields (functional_role, source_origin, dietary_flags, allergens, certifications, regulatory_status, form_grade) when present.
-Return the top {{ top_x }} substitutes ranked by score.
+For each candidate:
+1. Evaluate all 5 scoring dimensions (functional_equivalence, spec_compatibility, regulatory_fit, dietary_compliance, certification_match) — score each 0–20.
+2. Sum the dimension scores for the total score (0–100).
+3. In reasoning, state each dimension score and the evidence.
+4. Return score_breakdown with all 5 dimension scores.
+
+Return the top {{ top_x }} substitutes ranked by total score.

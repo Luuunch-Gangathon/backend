@@ -1,10 +1,23 @@
-"""ComplianceAgent
+"""ComplianceAgent — quantifiable substitute scoring with evidence trails.
 
 Given a product id and raw material id:
-  1. Runs pgvector similarity search to find candidate substitutes
-     (skipped if the caller supplies `candidate_ids`).
-  2. Ranks them via GPT-4o structured output.
-  3. Returns a scored list of proposals.
+  1. Resolves candidate substitutes (pgvector similarity search, or caller-supplied IDs).
+  2. Loads enriched specs for original + candidates from substitution_groups.
+  3. Calls GPT-4o structured output with a 5-dimension scoring rubric.
+  4. Returns SubstituteProposal[] with score_breakdown + reasoning.
+
+Scoring rubric (0–20 each, total 0–100):
+  functional_equivalence — same functional role in the formulation
+  spec_compatibility     — physical/chemical spec overlap (form, grade, origin)
+  regulatory_fit         — GRAS, recalls, regulatory pathway alignment
+  dietary_compliance     — preserves dietary claims (vegan, halal, allergens)
+  certification_match    — retains required certifications (organic, non-GMO)
+
+The LLM is instructed to cite each dimension score and evidence in its reasoning,
+making every score auditable and defensible.
+
+Hallucination guard: IDs not present in the candidate list are dropped.
+Temperature = 0 for deterministic output.
 """
 
 from __future__ import annotations

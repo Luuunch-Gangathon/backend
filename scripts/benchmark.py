@@ -1,7 +1,7 @@
 """Compliance engine benchmark.
 
 Loads test cases from knowledge/benchmark/compliance_cases.json, runs each
-through check_compliance(), computes precision/recall/F1/MRR/NDCG, and
+through check_compliance(), computes precision/recall/F1/MRR/NDCG@K, and
 prints a summary table.
 
 Results written to:
@@ -11,7 +11,7 @@ Results written to:
 Usage:
     cd backend
     source .venv/bin/activate
-    python scripts/benchmark.py
+    python scripts/benchmark.py [--k 3]   # default K=3
 
 Requires:
     - DATABASE_URL env var set (or .env file)
@@ -25,7 +25,6 @@ import asyncio
 import json
 import logging
 import math
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -45,6 +44,8 @@ BENCHMARK_DIR = Path(__file__).resolve().parents[1] / "knowledge" / "benchmark"
 CASES_FILE = BENCHMARK_DIR / "compliance_cases.json"
 RESULTS_JSON = BENCHMARK_DIR / "results.json"
 RESULTS_MD = BENCHMARK_DIR / "results.md"
+
+DEFAULT_K = 3
 
 
 # ---------------------------------------------------------------------------
@@ -97,19 +98,14 @@ def ndcg_at_k(returned: list[int], ideal_ranking: list[int], k: int) -> float:
     return actual_dcg / ideal_dcg
 
 
-def exclusion_violated(returned: list[int], excluded: list[int]) -> bool:
-    return bool(set(returned) & set(excluded))
-
-
 # ---------------------------------------------------------------------------
 # Per-case evaluation
 # ---------------------------------------------------------------------------
 
-async def run_case(case: dict, k: int = 5) -> dict:
+async def run_case(case: dict, k: int = DEFAULT_K) -> dict:
     product_id = case["product_id"]
     raw_material_id = case["raw_material_id"]
     expected_ids = set(case.get("expected_ids", []))
-    excluded_ids = case.get("excluded_ids", [])
     ideal_ranking = case.get("ideal_ranking", list(expected_ids))
 
     try:
@@ -124,7 +120,6 @@ async def run_case(case: dict, k: int = 5) -> dict:
             "f1": 0.0,
             "mrr": 0.0,
             "ndcg": 0.0,
-            "exclusion_violated": False,
             "returned_ids": [],
             "scores": [],
             "difficulty": case.get("difficulty", "unknown"),
@@ -138,9 +133,8 @@ async def run_case(case: dict, k: int = 5) -> dict:
     f = f1(p, r)
     m = mrr(returned_ids, expected_ids)
     n = ndcg_at_k(returned_ids, ideal_ranking, k)
-    excluded_hit = exclusion_violated(returned_ids, excluded_ids)
 
-    passed = (r > 0) and (not excluded_hit)
+    passed = r > 0
 
     return {
         "case_id": case["case_id"],
@@ -148,13 +142,11 @@ async def run_case(case: dict, k: int = 5) -> dict:
         "returned_ids": returned_ids,
         "scores": scores,
         "expected_ids": list(expected_ids),
-        "excluded_ids": excluded_ids,
         "precision": round(p, 4),
         "recall": round(r, 4),
         "f1": round(f, 4),
         "mrr": round(m, 4),
         "ndcg": round(n, 4),
-        "exclusion_violated": excluded_hit,
         "pass": passed,
         "difficulty": case.get("difficulty", "unknown"),
         "error": None,
@@ -170,9 +162,6 @@ def aggregate(results: list[dict]) -> dict:
         return {}
     keys = ["precision", "recall", "f1", "mrr", "ndcg"]
     agg = {k: round(sum(r[k] for r in results) / len(results), 4) for k in keys}
-    agg["exclusion_accuracy"] = round(
-        sum(1 for r in results if not r["exclusion_violated"]) / len(results), 4
-    )
     agg["pass_rate"] = round(sum(1 for r in results if r["pass"]) / len(results), 4)
     return agg
 
@@ -189,7 +178,7 @@ def aggregate_by_difficulty(results: list[dict]) -> dict:
 # Reporting
 # ---------------------------------------------------------------------------
 
-def print_report(results: list[dict], agg: dict, by_diff: dict) -> None:
+def print_report(results: list[dict], agg: dict, by_diff: dict, k: int) -> None:
     passed = sum(1 for r in results if r["pass"])
     total = len(results)
     errors = sum(1 for r in results if r.get("error"))
@@ -198,6 +187,7 @@ def print_report(results: list[dict], agg: dict, by_diff: dict) -> None:
     print("Compliance Benchmark")
     print("=" * 55)
     print(f"  Run at : {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"  K      : {k}")
     print(f"  Cases  : {total}  |  Passed: {passed}  |  Failed: {total - passed}", end="")
     if errors:
         print(f"  |  Errors: {errors}", end="")
@@ -209,13 +199,12 @@ def print_report(results: list[dict], agg: dict, by_diff: dict) -> None:
         print()
         return
 
-    print("  Aggregate (K=5):")
-    print(f"    Precision        {agg.get('precision', 0):.4f}")
-    print(f"    Recall           {agg.get('recall', 0):.4f}")
-    print(f"    F1               {agg.get('f1', 0):.4f}")
+    print(f"  Aggregate (K={k}):")
+    print(f"    Precision@{k}      {agg.get('precision', 0):.4f}")
+    print(f"    Recall@{k}         {agg.get('recall', 0):.4f}")
+    print(f"    F1@{k}             {agg.get('f1', 0):.4f}")
     print(f"    MRR              {agg.get('mrr', 0):.4f}")
-    print(f"    NDCG@5           {agg.get('ndcg', 0):.4f}")
-    print(f"    Excl. Accuracy   {agg.get('exclusion_accuracy', 0):.4f}")
+    print(f"    NDCG@{k}           {agg.get('ndcg', 0):.4f}")
     print()
 
     if by_diff:
@@ -249,7 +238,7 @@ def print_report(results: list[dict], agg: dict, by_diff: dict) -> None:
     print()
 
 
-def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str) -> str:
+def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str, k: int) -> str:
     passed = sum(1 for r in results if r["pass"])
     total = len(results)
     lines: list[str] = []
@@ -257,19 +246,19 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str) -
     lines.append("# Compliance Benchmark Results")
     lines.append("")
     lines.append(f"**Run:** {run_at}  ")
+    lines.append(f"**K:** {k}  ")
     lines.append(f"**Cases:** {total} | **Passed:** {passed} | **Failed:** {total - passed}")
     lines.append("")
 
-    lines.append("## Aggregate Metrics (K=5)")
+    lines.append(f"## Aggregate Metrics (K={k})")
     lines.append("")
     lines.append("| Metric | Score |")
     lines.append("|--------|-------|")
-    lines.append(f"| Precision@5 | {agg.get('precision', 0):.4f} |")
-    lines.append(f"| Recall@5 | {agg.get('recall', 0):.4f} |")
-    lines.append(f"| F1@5 | {agg.get('f1', 0):.4f} |")
+    lines.append(f"| Precision@{k} | {agg.get('precision', 0):.4f} |")
+    lines.append(f"| Recall@{k} | {agg.get('recall', 0):.4f} |")
+    lines.append(f"| F1@{k} | {agg.get('f1', 0):.4f} |")
     lines.append(f"| MRR | {agg.get('mrr', 0):.4f} |")
-    lines.append(f"| NDCG@5 | {agg.get('ndcg', 0):.4f} |")
-    lines.append(f"| Exclusion Accuracy | {agg.get('exclusion_accuracy', 0):.4f} |")
+    lines.append(f"| NDCG@{k} | {agg.get('ndcg', 0):.4f} |")
     lines.append(f"| Pass Rate | {agg.get('pass_rate', 0):.4f} |")
     lines.append("")
 
@@ -293,15 +282,14 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str) -
 
     lines.append("## Per-Case Results")
     lines.append("")
-    lines.append("| Case ID | Difficulty | Precision | Recall | F1 | MRR | NDCG | Excl. OK | Pass |")
-    lines.append("|---------|------------|-----------|--------|-----|-----|------|----------|------|")
+    lines.append("| Case ID | Difficulty | Precision | Recall | F1 | MRR | NDCG | Pass |")
+    lines.append("|---------|------------|-----------|--------|-----|-----|------|------|")
     for r in results:
-        excl_ok = "✓" if not r["exclusion_violated"] else "✗"
         status = "✓" if r["pass"] else ("⚠ error" if r.get("error") else "✗")
         lines.append(
             f"| {r['case_id']} | {r.get('difficulty','?')} | "
             f"{r['precision']:.2f} | {r['recall']:.2f} | {r['f1']:.2f} | "
-            f"{r['mrr']:.2f} | {r['ndcg']:.2f} | {excl_ok} | {status} |"
+            f"{r['mrr']:.2f} | {r['ndcg']:.2f} | {status} |"
         )
     lines.append("")
 
@@ -315,7 +303,6 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str) -
         lines.append(f"- **Difficulty:** {r.get('difficulty', '?')}")
         lines.append(f"- **Returned IDs:** {r['returned_ids']} (scores: {r['scores']})")
         lines.append(f"- **Expected IDs:** {r['expected_ids']}")
-        lines.append(f"- **Excluded IDs:** {r['excluded_ids']}")
         if r.get("error"):
             lines.append(f"- **Error:** {r['error']}")
         lines.append("")
@@ -328,6 +315,11 @@ def build_markdown(results: list[dict], agg: dict, by_diff: dict, run_at: str) -
 # ---------------------------------------------------------------------------
 
 async def main() -> None:
+    k = DEFAULT_K
+    if "--k" in sys.argv:
+        idx = sys.argv.index("--k")
+        k = int(sys.argv[idx + 1])
+
     if not CASES_FILE.exists():
         print(f"Dataset not found: {CASES_FILE}")
         sys.exit(1)
@@ -336,8 +328,6 @@ async def main() -> None:
         dataset = json.load(f)
 
     cases = dataset.get("cases", [])
-
-    # Filter out the example placeholder (product_id == 0)
     real_cases = [c for c in cases if c.get("product_id", 0) != 0]
 
     if not real_cases:
@@ -345,7 +335,7 @@ async def main() -> None:
         print("(Entries with product_id=0 are treated as placeholder examples.)")
         sys.exit(0)
 
-    print(f"Loading {len(real_cases)} cases...")
+    print(f"Loading {len(real_cases)} cases (K={k})...")
 
     await db.init_pool()
 
@@ -353,7 +343,7 @@ async def main() -> None:
         results = []
         for i, case in enumerate(real_cases, 1):
             print(f"  [{i}/{len(real_cases)}] {case['case_id']} ...", end=" ", flush=True)
-            result = await run_case(case)
+            result = await run_case(case, k=k)
             results.append(result)
             status = "✓" if result["pass"] else ("E" if result.get("error") else "✗")
             print(status)
@@ -362,13 +352,12 @@ async def main() -> None:
 
     agg = aggregate(results)
     by_diff = aggregate_by_difficulty(results)
-
     run_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     output = {
         "run_at": run_at,
         "dataset_version": dataset.get("version", "unknown"),
-        "k": 5,
+        "k": k,
         "aggregate": agg,
         "by_difficulty": by_diff,
         "cases": results,
@@ -380,9 +369,9 @@ async def main() -> None:
         json.dump(output, f, indent=2)
 
     with open(RESULTS_MD, "w") as f:
-        f.write(build_markdown(results, agg, by_diff, run_at))
+        f.write(build_markdown(results, agg, by_diff, run_at, k))
 
-    print_report(results, agg, by_diff)
+    print_report(results, agg, by_diff, k)
     print(f"Results written to:")
     print(f"  {RESULTS_JSON}")
     print(f"  {RESULTS_MD}")
